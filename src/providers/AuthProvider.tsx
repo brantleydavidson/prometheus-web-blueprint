@@ -119,6 +119,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const signInWithGoogle = async (): Promise<void> => {
     try {
       setLoading(true);
+      // Use the current window origin to determine the redirect URL
+      const redirectUrl = `${window.location.origin}/admin`;
+      console.log(`Using redirect URL: ${redirectUrl}`);
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -126,7 +130,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             access_type: 'offline',
             prompt: 'consent',
           },
-          redirectTo: `${window.location.origin}/admin`
+          redirectTo: redirectUrl
         }
       });
 
