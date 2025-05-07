@@ -1,13 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Edit, Trash, Eye, ExternalLink } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthProvider';
 import {
@@ -20,6 +15,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Edit, Trash, Eye, ExternalLink } from 'lucide-react';
 
 const Pages = () => {
   const [pages, setPages] = useState([]);
@@ -123,11 +123,7 @@ const Pages = () => {
   };
 
   const handleEdit = (pageId) => {
-    // Navigate to edit page component when it's created
-    toast({
-      title: 'Coming soon',
-      description: 'Page editor will be available soon!'
-    });
+    navigate(`/admin/pages/edit/${pageId}`);
   };
 
   const handleView = (pageSlug) => {

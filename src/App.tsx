@@ -15,6 +15,7 @@ import Admin from "./pages/admin/Admin";
 import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import Pages from "./pages/admin/Pages";
+import PageEditor from "./pages/admin/PageEditor";
 import BlogPosts from "./pages/admin/BlogPosts";
 import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import Categories from "./pages/admin/Categories";
@@ -44,6 +45,8 @@ const App = () => (
             <Route path="/admin" element={<Admin />}>
               <Route index element={<Dashboard />} />
               <Route path="pages" element={<Pages />} />
+              <Route path="pages/new" element={<PageEditor />} />
+              <Route path="pages/edit/:id" element={<PageEditor />} />
               <Route path="blog-posts" element={<BlogPosts />} />
               <Route path="blog-posts/new" element={<BlogPostEditor />} />
               <Route path="blog-posts/edit/:id" element={<BlogPostEditor />} />
