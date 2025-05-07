@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import WhoWeHelp from "./pages/WhoWeHelp";
 import B2B from "./pages/B2B";
@@ -30,37 +31,39 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/who-we-help" element={<WhoWeHelp />} />
-            <Route path="/b2b" element={<B2B />} />
-            <Route path="/dtc" element={<DTC />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/blueprint" element={<Blueprint />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={<Admin />}>
-              <Route index element={<Dashboard />} />
-              <Route path="pages" element={<Pages />} />
-              <Route path="pages/new" element={<PageEditor />} />
-              <Route path="pages/edit/:id" element={<PageEditor />} />
-              <Route path="blog-posts" element={<BlogPosts />} />
-              <Route path="blog-posts/new" element={<BlogPostEditor />} />
-              <Route path="blog-posts/edit/:id" element={<BlogPostEditor />} />
-              <Route path="categories" element={<Categories />} />
-              <Route path="assets" element={<Assets />} />
-              <Route path="templates" element={<TemplateManager />} />
-              <Route path="settings" element={<AccountSettings />} />
-            </Route>
-            <Route path="/login" element={<Login />} />
-            
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <HelmetProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/who-we-help" element={<WhoWeHelp />} />
+              <Route path="/b2b" element={<B2B />} />
+              <Route path="/dtc" element={<DTC />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/blueprint" element={<Blueprint />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={<Admin />}>
+                <Route index element={<Dashboard />} />
+                <Route path="pages" element={<Pages />} />
+                <Route path="pages/new" element={<PageEditor />} />
+                <Route path="pages/edit/:id" element={<PageEditor />} />
+                <Route path="blog-posts" element={<BlogPosts />} />
+                <Route path="blog-posts/new" element={<BlogPostEditor />} />
+                <Route path="blog-posts/edit/:id" element={<BlogPostEditor />} />
+                <Route path="categories" element={<Categories />} />
+                <Route path="assets" element={<Assets />} />
+                <Route path="templates" element={<TemplateManager />} />
+                <Route path="settings" element={<AccountSettings />} />
+              </Route>
+              <Route path="/login" element={<Login />} />
+              
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </HelmetProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

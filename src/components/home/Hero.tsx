@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 const Hero = () => {
   const [animatedKPI, setAnimatedKPI] = useState(0);
-  const targetKPI = 62; // Example KPI value
+  const targetKPI = 28; // Updated KPI value based on new content
   
   useEffect(() => {
     const duration = 1500; // Animation duration in ms
@@ -32,11 +32,11 @@ const Hero = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="snap-into-place">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-prometheus-navy mb-6">
-            Tame the Tech.<br />
-            <span className="text-prometheus-orange">Unleash the Growth.</span>
+            Tame Your Tech.<br />
+            <span className="text-prometheus-orange">Unleash Growth.</span>
           </h1>
           <p className="text-xl mb-8 text-gray-600">
-            High-performance marketing operations that connect technology investments to revenue outcomes.
+            Transform your disconnected tech stack into a unified Growth Engine. Our team of MarTech & AI specialists design, build, and optimize systems that deliver measurable revenue—not just fancy dashboards.
           </p>
           <div className="flex flex-wrap gap-4">
             <Button asChild size="lg" className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white">

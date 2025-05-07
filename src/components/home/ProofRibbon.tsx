@@ -11,9 +11,10 @@ const logos = [
 ];
 
 const kpiCards = [
-  { stat: '147%', label: 'Lead volume increase', industry: 'Restoration' },
-  { stat: '30%', label: 'Proposal cycle reduction', industry: 'Professional Services' },
-  { stat: '35%', label: 'Manufacturing line utilization', industry: 'Manufacturing' },
+  { stat: '28%', label: 'Revenue lift in 6 months', industry: 'Manufacturing' },
+  { stat: '40%', label: 'More leads surfaced', industry: 'Restoration' },
+  { stat: '30%', label: 'Faster sales cycles', industry: 'Professional Services' },
+  { stat: '22%', label: 'Cost reduction in MarTech spend', industry: 'B2B' },
 ];
 
 const ProofRibbon = () => {
@@ -34,7 +35,7 @@ const ProofRibbon = () => {
           ))}
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {kpiCards.map((card, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow border border-gray-100 text-center">
               <span className="text-4xl font-bold text-prometheus-orange block mb-2">{card.stat}</span>

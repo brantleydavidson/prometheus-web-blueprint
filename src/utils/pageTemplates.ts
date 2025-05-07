@@ -14,7 +14,7 @@ export const defaultContentTemplates = {
   landing: {
     hero: {
       title: "Landing Page",
-      subtitle: "Welcome to our landing page",
+      subtitle: "Transform your disconnected tech stack into a unified Growth Engine.",
       ctaText: "Get Started",
       ctaLink: "/contact"
     },
@@ -27,11 +27,21 @@ export const defaultContentTemplates = {
         title: "Feature 2",
         description: "Description of feature 2"
       }
+    ],
+    metrics: [
+      {
+        value: "28%",
+        label: "Revenue Lift"
+      },
+      {
+        value: "40%",
+        label: "More Leads"
+      }
     ]
   },
   contact: {
     title: "Contact Us",
-    description: "Get in touch with our team",
+    description: "Ready to transform your tech chaos into controlled growth? Get in touch with our team.",
     contactInfo: {
       email: "contact@example.com",
       phone: "(555) 123-4567",
