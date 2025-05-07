@@ -16,6 +16,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
@@ -23,6 +24,16 @@ const Login = () => {
   useEffect(() => {
     if (user) {
       navigate('/admin');
+    }
+    
+    // Check if there's an error in the URL parameters (from Google redirect)
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorParam = urlParams.get('error');
+    const errorDescription = urlParams.get('error_description');
+    
+    if (errorParam) {
+      console.error('Auth Error from URL:', errorParam, errorDescription);
+      setError(errorDescription || `Authentication error: ${errorParam}`);
     }
   }, [user, navigate]);
 
@@ -58,15 +69,17 @@ const Login = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      setIsLoading(true);
       setError(null);
+      setGoogleLoading(true);
+      
+      console.log('Starting Google sign in from Login page');
       await signInWithGoogle();
       // Redirection is handled by the OAuth flow
     } catch (error: any) {
       console.error('Error signing in with Google:', error);
       setError(error.message || 'Failed to sign in with Google');
     } finally {
-      setIsLoading(false);
+      setGoogleLoading(false);
     }
   };
 
@@ -102,7 +115,7 @@ const Login = () => {
                   variant="outline" 
                   className="w-full flex items-center justify-center gap-2"
                   onClick={handleGoogleSignIn}
-                  disabled={isLoading}
+                  disabled={googleLoading}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 186.69 190.5">
                     <g transform="translate(1184.583 765.171)">
@@ -112,7 +125,7 @@ const Login = () => {
                       <path fill="#ea4335" d="M-1089.333-727.244c14.028 0 26.497 4.849 36.455 14.201l27.276-27.276c-16.539-15.413-38.013-24.852-63.731-24.852-37.234 0-69.359 21.388-85.032 52.561l31.693 24.592c7.533-22.514 28.575-39.226 53.339-39.226z"/>
                     </g>
                   </svg>
-                  {isLoading ? "Connecting..." : "Sign in with Google"}
+                  {googleLoading ? "Connecting..." : "Sign in with Google"}
                 </Button>
                 
                 <div className="relative">
@@ -171,7 +184,7 @@ const Login = () => {
                   variant="outline" 
                   className="w-full flex items-center justify-center gap-2"
                   onClick={handleGoogleSignIn}
-                  disabled={isLoading}
+                  disabled={googleLoading}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 186.69 190.5">
                     <g transform="translate(1184.583 765.171)">
@@ -181,7 +194,7 @@ const Login = () => {
                       <path fill="#ea4335" d="M-1089.333-727.244c14.028 0 26.497 4.849 36.455 14.201l27.276-27.276c-16.539-15.413-38.013-24.852-63.731-24.852-37.234 0-69.359 21.388-85.032 52.561l31.693 24.592c7.533-22.514 28.575-39.226 53.339-39.226z"/>
                     </g>
                   </svg>
-                  {isLoading ? "Connecting..." : "Sign up with Google"}
+                  {googleLoading ? "Connecting..." : "Sign up with Google"}
                 </Button>
                 
                 <div className="relative">

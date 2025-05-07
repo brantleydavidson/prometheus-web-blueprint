@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -120,17 +121,20 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       
-      // For Google authentication, we'll use a more robust approach
-      // Always use the Supabase callback URL which is guaranteed to work
-      const callbackUrl = `https://dxufdcvoupjqvxnwnost.supabase.co/auth/v1/callback`;
+      // Get current URL for better debugging
+      const currentUrl = window.location.href;
+      console.log(`Google Auth - Starting from URL: ${currentUrl}`);
+      
+      // Use the current origin as the redirect URL
+      const redirectTo = `${window.location.origin}/admin`;
       
       console.log(`Google Auth - Starting authentication flow`);
-      console.log(`Google Auth - Using callback URL: ${callbackUrl}`);
+      console.log(`Google Auth - Using redirect URL: ${redirectTo}`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: callbackUrl,
+          redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
