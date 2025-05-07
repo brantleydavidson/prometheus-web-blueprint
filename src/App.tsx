@@ -11,27 +11,48 @@ import DTC from "./pages/DTC";
 import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import Blueprint from "./pages/Blueprint";
+import Admin from "./pages/admin/Admin";
+import Login from "./pages/admin/Login";
+import Dashboard from "./pages/admin/Dashboard";
+import Pages from "./pages/admin/Pages";
+import BlogPosts from "./pages/admin/BlogPosts";
+import Categories from "./pages/admin/Categories";
+import Assets from "./pages/admin/Assets";
+import AuthProvider from "./providers/AuthProvider";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/who-we-help" element={<WhoWeHelp />} />
-          <Route path="/b2b" element={<B2B />} />
-          <Route path="/dtc" element={<DTC />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/blueprint" element={<Blueprint />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/who-we-help" element={<WhoWeHelp />} />
+            <Route path="/b2b" element={<B2B />} />
+            <Route path="/dtc" element={<DTC />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/blueprint" element={<Blueprint />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin" element={<Admin />}>
+              <Route index element={<Dashboard />} />
+              <Route path="pages" element={<Pages />} />
+              <Route path="blog-posts" element={<BlogPosts />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="assets" element={<Assets />} />
+            </Route>
+            <Route path="/login" element={<Login />} />
+            
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
