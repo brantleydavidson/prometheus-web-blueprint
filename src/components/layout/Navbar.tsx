@@ -1,11 +1,14 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const [whoWeHelpOpen, setWhoWeHelpOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   // Adding a delay before closing the dropdown
   const closeTimeout = React.useRef<NodeJS.Timeout | null>(null);
@@ -24,6 +27,56 @@ const Navbar = () => {
       setWhoWeHelpOpen(false);
     }, 600); // Increased from 300ms to 600ms for better user experience
   };
+
+  const MobileNavLinks = () => (
+    <div className="flex flex-col space-y-6 pt-6">
+      <Link 
+        to="/who-we-help" 
+        className="text-lg font-medium hover:text-prometheus-orange"
+      >
+        Who We Help
+      </Link>
+      <div className="pl-4 flex flex-col space-y-3">
+        <Link to="/b2b" className="text-lg font-medium hover:text-prometheus-orange">
+          B2B Solutions
+        </Link>
+        <Link to="/b2b/manufacturing" className="text-md text-gray-600 pl-2 hover:text-prometheus-orange">
+          Manufacturing
+        </Link>
+        <Link to="/dtc" className="text-lg font-medium hover:text-prometheus-orange">
+          DTC Solutions
+        </Link>
+        <Link to="/dtc/restoration" className="text-md text-gray-600 pl-2 hover:text-prometheus-orange">
+          Restoration
+        </Link>
+      </div>
+      
+      <Link to="/services" className="text-lg font-medium hover:text-prometheus-orange">Services</Link>
+      <div className="pl-4 flex flex-col space-y-3">
+        <Link to="/services/ai-enablement" className="text-md text-gray-600 pl-2 hover:text-prometheus-orange">
+          AI Enablement
+        </Link>
+        <Link to="/services/consulting-gtm" className="text-md text-gray-600 pl-2 hover:text-prometheus-orange">
+          GTM Strategy
+        </Link>
+        <Link to="/services/crm-implementation" className="text-md text-gray-600 pl-2 hover:text-prometheus-orange">
+          CRM Implementation
+        </Link>
+        <Link to="/services/customer-journey" className="text-md text-gray-600 pl-2 hover:text-prometheus-orange">
+          Customer Journey
+        </Link>
+      </div>
+      
+      <Link to="/insights" className="text-lg font-medium hover:text-prometheus-orange">Insights & Playbooks</Link>
+      <Link to="/about" className="text-lg font-medium hover:text-prometheus-orange">About</Link>
+      
+      <div className="pt-4">
+        <Button asChild className="w-full bg-prometheus-orange hover:bg-prometheus-orange/90 text-white">
+          <Link to="/book-audit">Book Growth Audit</Link>
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -105,9 +158,34 @@ const Navbar = () => {
           </nav>
         </div>
         
-        <Button asChild className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white">
-          <Link to="/book-audit">Book Growth Audit</Link>
-        </Button>
+        {isMobile ? (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[85vw] max-w-sm bg-white p-6">
+              <div className="flex flex-col h-full">
+                <div className="flex justify-between items-center mb-6">
+                  <Link to="/" className="flex items-center">
+                    <img 
+                      src="https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/mwe5d71dr4.png" 
+                      alt="Prometheus Agency" 
+                      className="h-8"
+                    />
+                  </Link>
+                </div>
+                <MobileNavLinks />
+              </div>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Button asChild className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white">
+            <Link to="/book-audit">Book Growth Audit</Link>
+          </Button>
+        )}
       </div>
     </header>
   );
