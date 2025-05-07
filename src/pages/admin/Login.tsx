@@ -8,12 +8,15 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/providers/AuthProvider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
@@ -26,11 +29,13 @@ const Login = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     try {
       await signIn(email, password);
       navigate('/admin');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing in:', error);
+      setError(error.message || 'Failed to sign in');
     } finally {
       setIsLoading(false);
     }
@@ -39,11 +44,13 @@ const Login = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     try {
       await signUp(email, password, fullName);
       // Redirect is handled by the auth state change in AuthProvider
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing up:', error);
+      setError(error.message || 'Failed to sign up');
     } finally {
       setIsLoading(false);
     }
@@ -52,10 +59,12 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       await signInWithGoogle();
       // Redirection is handled by the OAuth flow
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing in with Google:', error);
+      setError(error.message || 'Failed to sign in with Google');
     } finally {
       setIsLoading(false);
     }
@@ -70,6 +79,13 @@ const Login = () => {
         </div>
         
         <Card>
+          {error && (
+            <Alert variant="destructive" className="mx-6 mt-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        
           <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="signin">Sign In</TabsTrigger>

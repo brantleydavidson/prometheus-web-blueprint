@@ -120,10 +120,21 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       
-      // Use the current window origin to determine the redirect URL
-      const redirectUrl = `${window.location.origin}/admin`;
+      // Get the current host - works for both development and production
+      const currentHost = window.location.host;
+      
+      // Determine if we're in a localhost environment
+      const isLocalhost = currentHost.includes('localhost') || currentHost.includes('127.0.0.1');
+      
+      // Set the redirect URL based on environment
+      // For production, use the Supabase site URL to avoid localhost redirects
+      const redirectUrl = isLocalhost 
+        ? `${window.location.origin}/admin`
+        : `https://dxufdcvoupjqvxnwnost.supabase.co/auth/v1/callback`;
       
       console.log(`Google Auth - Using redirect URL: ${redirectUrl}`);
+      console.log(`Google Auth - Current host: ${currentHost}`);
+      console.log(`Google Auth - Is localhost: ${isLocalhost}`);
       console.log(`Google Auth - Current location: ${window.location.href}`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
