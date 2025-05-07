@@ -12,6 +12,50 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Save } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+
+// Default content templates for new pages
+const defaultContentTemplates = {
+  default: {
+    heading: "Default Page",
+    subheading: "This is a default page template",
+    content: [
+      {
+        type: "paragraph",
+        text: "Enter your content here. You can edit this content in the JSON editor below."
+      }
+    ]
+  },
+  landing: {
+    hero: {
+      title: "Landing Page",
+      subtitle: "Welcome to our landing page",
+      ctaText: "Get Started",
+      ctaLink: "/contact"
+    },
+    sections: [
+      {
+        title: "Feature 1",
+        description: "Description of feature 1"
+      },
+      {
+        title: "Feature 2",
+        description: "Description of feature 2"
+      }
+    ]
+  },
+  contact: {
+    title: "Contact Us",
+    description: "Get in touch with our team",
+    contactInfo: {
+      email: "contact@example.com",
+      phone: "(555) 123-4567",
+      address: "123 Main St, City, State 12345"
+    },
+    formFields: ["name", "email", "message"]
+  }
+};
 
 const PageEditor = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,14 +72,24 @@ const PageEditor = () => {
   const [metaDescription, setMetaDescription] = useState('');
   const [published, setPublished] = useState(false);
   const [template, setTemplate] = useState('default');
+  const [isHomePage, setIsHomePage] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchPage();
     } else {
+      // Set default template content for new pages
+      setContent(JSON.stringify(defaultContentTemplates.default, null, 2));
       setLoading(false);
     }
   }, [id]);
+
+  useEffect(() => {
+    // When template changes, update the default content if it's a new page
+    if (!id && template) {
+      setContent(JSON.stringify(defaultContentTemplates[template as keyof typeof defaultContentTemplates] || defaultContentTemplates.default, null, 2));
+    }
+  }, [template, id]);
 
   const fetchPage = async () => {
     setLoading(true);
@@ -55,6 +109,7 @@ const PageEditor = () => {
         setPublished(data.published || false);
         setMetaTitle(data.meta_title || '');
         setMetaDescription(data.meta_description || '');
+        setIsHomePage(data.slug === '');
         
         // Handle content based on content type
         if (typeof data.content === 'object') {
@@ -91,8 +146,13 @@ const PageEditor = () => {
     try {
       contentObj = content ? JSON.parse(content) : {};
     } catch (e) {
-      // If content is not valid JSON, use it as a string
-      contentObj = { text: content };
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Invalid JSON content. Please check your syntax.'
+      });
+      setSaving(false);
+      return;
     }
     
     const pageData = {
@@ -175,12 +235,21 @@ const PageEditor = () => {
           <Button variant="outline" onClick={() => navigate('/admin/pages')}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button onClick={handleSave} disabled={saving || isHomePage}>
             <Save className="mr-2 h-4 w-4" />
             {saving ? 'Saving...' : 'Save Page'}
           </Button>
         </div>
       </div>
+
+      {isHomePage && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+          <p className="text-yellow-800">
+            <strong>Note:</strong> The home page is managed through code for advanced functionality. 
+            You can view its content here, but modifications should be done by editing the code directly.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -194,6 +263,7 @@ const PageEditor = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter page title" 
+                    disabled={isHomePage}
                   />
                 </div>
                 
@@ -204,6 +274,7 @@ const PageEditor = () => {
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="page-url-slug" 
+                    disabled={isHomePage}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Leave blank to auto-generate from title
@@ -219,6 +290,7 @@ const PageEditor = () => {
                     placeholder="Page content in JSON format" 
                     rows={15}
                     className="font-mono text-sm"
+                    disabled={isHomePage}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     Enter page content in JSON format
@@ -239,12 +311,17 @@ const PageEditor = () => {
                     id="published" 
                     checked={published}
                     onCheckedChange={setPublished}
+                    disabled={isHomePage}
                   />
                 </div>
                 
                 <div>
                   <Label htmlFor="template">Template</Label>
-                  <Select value={template} onValueChange={setTemplate}>
+                  <Select 
+                    value={template} 
+                    onValueChange={setTemplate}
+                    disabled={isHomePage}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select template" />
                     </SelectTrigger>
@@ -263,6 +340,7 @@ const PageEditor = () => {
                     value={metaTitle}
                     onChange={(e) => setMetaTitle(e.target.value)}
                     placeholder="Meta title for SEO" 
+                    disabled={isHomePage}
                   />
                 </div>
                 
@@ -274,6 +352,7 @@ const PageEditor = () => {
                     onChange={(e) => setMetaDescription(e.target.value)}
                     placeholder="Meta description for SEO" 
                     rows={3}
+                    disabled={isHomePage}
                   />
                 </div>
               </div>

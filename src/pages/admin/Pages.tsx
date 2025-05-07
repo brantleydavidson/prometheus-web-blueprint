@@ -61,6 +61,19 @@ const Pages = () => {
   };
 
   const handleEdit = (pageId: string) => {
+    // Find the page
+    const page = pages.find(p => p.id === pageId);
+    
+    // Check if this is the home page
+    if (page && page.slug === '') {
+      // Show a message that home page is managed through code
+      toast({
+        title: 'Home Page Management',
+        description: 'The home page is managed through code for advanced functionality. Please contact your developer for changes.',
+      });
+      return;
+    }
+    
     console.log('Edit clicked for page:', pageId);
     navigate(`/admin/pages/edit/${pageId}`);
   };
@@ -73,6 +86,15 @@ const Pages = () => {
   };
   
   const confirmDelete = (page: Page) => {
+    // Prevent deletion of home page
+    if (page.slug === '') {
+      toast({
+        title: 'Cannot Delete',
+        description: 'The home page cannot be deleted as it is managed through code.',
+      });
+      return;
+    }
+    
     console.log('Delete clicked for page:', page);
     setPageToDelete(page);
     setIsDeleteDialogOpen(true);
