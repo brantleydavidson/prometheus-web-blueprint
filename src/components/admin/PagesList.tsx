@@ -27,26 +27,6 @@ interface PagesListProps {
 }
 
 export const PagesList = ({ pages, onEdit, onDelete, onView }: PagesListProps) => {
-  const handleView = (e: React.MouseEvent, slug: string) => {
-    e.preventDefault();
-    onView(slug);
-  };
-
-  const handleEdit = (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    onEdit(id);
-  };
-
-  const handleDelete = (e: React.MouseEvent, page: Page) => {
-    e.preventDefault();
-    onDelete(page);
-  };
-
-  const handleOpenNewTab = (e: React.MouseEvent, slug: string) => {
-    e.preventDefault();
-    window.open(`/${slug}`, '_blank');
-  };
-
   return (
     <div className="bg-white rounded-md shadow overflow-hidden">
       <Table>
@@ -83,7 +63,7 @@ export const PagesList = ({ pages, onEdit, onDelete, onView }: PagesListProps) =
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      onClick={(e) => handleView(e, page.slug)}
+                      onClick={() => onView(page.slug)}
                       title="View page"
                     >
                       <Eye className="h-4 w-4" />
@@ -91,7 +71,7 @@ export const PagesList = ({ pages, onEdit, onDelete, onView }: PagesListProps) =
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={(e) => handleEdit(e, page.id)}
+                      onClick={() => onEdit(page.id)}
                       title="Edit page"
                     >
                       <Edit className="h-4 w-4" />
@@ -100,7 +80,7 @@ export const PagesList = ({ pages, onEdit, onDelete, onView }: PagesListProps) =
                       variant="ghost" 
                       size="sm" 
                       className="text-red-500 hover:text-red-700"
-                      onClick={(e) => handleDelete(e, page)}
+                      onClick={() => onDelete(page)}
                       title="Delete page"
                     >
                       <Trash className="h-4 w-4" />
@@ -110,7 +90,7 @@ export const PagesList = ({ pages, onEdit, onDelete, onView }: PagesListProps) =
                         variant="ghost" 
                         size="sm" 
                         className="text-blue-500 hover:text-blue-700"
-                        onClick={(e) => handleOpenNewTab(e, page.slug)}
+                        onClick={() => window.open(`/${page.slug}`, '_blank')}
                         title="Open in new tab"
                       >
                         <ExternalLink className="h-4 w-4" />

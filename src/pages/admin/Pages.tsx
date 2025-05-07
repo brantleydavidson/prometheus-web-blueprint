@@ -7,11 +7,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthProvider';
 import { PagesList } from '@/components/admin/PagesList';
+import { CreatePageDialog } from '@/components/admin/CreatePageDialog';
 import { DeletePageDialog } from '@/components/admin/DeletePageDialog';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Page {
   id: string;
@@ -25,15 +22,10 @@ interface Page {
 const Pages = () => {
   const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<Page | null>(null);
-  const [newPage, setNewPage] = useState({
-    title: '',
-    slug: '',
-    template: 'default',
-    published: false
-  });
+  
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -65,75 +57,20 @@ const Pages = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewPage({ ...newPage, [name]: value });
-    
-    // Auto-generate slug from title if slug is empty
-    if (name === 'title' && !newPage.slug) {
-      setNewPage({
-        ...newPage,
-        title: value,
-        slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-      });
-    }
-  };
-
-  const handleTemplateChange = (value: string) => {
-    setNewPage({ ...newPage, template: value });
-  };
-
-  const createPage = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('pages')
-        .insert({
-          title: newPage.title,
-          slug: newPage.slug,
-          template: newPage.template,
-          published: newPage.published,
-          content: {},
-          created_by: user?.id
-        })
-        .select();
-
-      if (error) throw error;
-
-      toast({
-        title: 'Success',
-        description: 'Page created successfully'
-      });
-      
-      setIsDialogOpen(false);
-      setNewPage({
-        title: '',
-        slug: '',
-        template: 'default',
-        published: false
-      });
-      
-      fetchPages();
-    } catch (error: any) {
-      console.error('Error creating page:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message || 'Failed to create page'
-      });
-    }
-  };
-
   const handleEdit = (pageId: string) => {
+    console.log('Edit clicked for page:', pageId);
     navigate(`/admin/pages/edit/${pageId}`);
   };
 
   const handleView = (pageSlug: string) => {
+    console.log('View clicked for page:', pageSlug);
     // For the home page (empty slug), just open the root URL
     const url = pageSlug === '' ? '/' : `/${pageSlug}`;
     window.open(url, '_blank');
   };
   
   const confirmDelete = (page: Page) => {
+    console.log('Delete clicked for page:', page);
     setPageToDelete(page);
     setIsDeleteDialogOpen(true);
   };
@@ -175,7 +112,7 @@ const Pages = () => {
           <h2 className="text-2xl font-semibold text-prometheus-navy">Pages</h2>
           <p className="text-gray-500">Manage website pages</p>
         </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Create Page
         </Button>
@@ -193,65 +130,13 @@ const Pages = () => {
           onView={handleView}
         />
       )}
-
+      
       {/* Create Page Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Create New Page</DialogTitle>
-            <DialogDescription>
-              Enter the details for your new page.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Title</Label>
-              <Input 
-                id="title" 
-                name="title" 
-                value={newPage.title} 
-                onChange={handleInputChange} 
-                placeholder="Page Title"
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="slug">URL Slug</Label>
-              <Input 
-                id="slug" 
-                name="slug" 
-                value={newPage.slug} 
-                onChange={handleInputChange} 
-                placeholder="page-url-slug"
-              />
-              <p className="text-xs text-gray-500">The URL will be: yourdomain.com/{newPage.slug || 'page-slug'}</p>
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="template">Template</Label>
-              <Select 
-                value={newPage.template} 
-                onValueChange={handleTemplateChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Template" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="default">Default</SelectItem>
-                  <SelectItem value="landing">Landing Page</SelectItem>
-                  <SelectItem value="contact">Contact Page</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-            <Button onClick={createPage}>Create Page</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CreatePageDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSuccess={fetchPages}
+      />
       
       {/* Delete Confirmation Dialog */}
       <DeletePageDialog
