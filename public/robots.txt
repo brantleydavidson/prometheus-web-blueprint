@@ -31,7 +31,7 @@ Allow: /
 User-agent: Twitterbot
 Allow: /
 
-# Sitemap location (update with your actual domain when ready)
-Sitemap: https://yourdomain.com/sitemap.xml
+# Sitemap location
+Sitemap: https://prometheusagency.com/sitemap.xml
 
 # No crawl-delay specified to ensure immediate crawling
