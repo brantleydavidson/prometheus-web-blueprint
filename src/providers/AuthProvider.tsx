@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,6 +39,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
+        console.log('Auth state change event:', event);
         setSession(newSession);
         setUser(newSession?.user ?? null);
         
@@ -120,31 +120,21 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       
-      // Get the current host - works for both development and production
-      const currentHost = window.location.host;
+      // For Google authentication, we'll use a more robust approach
+      // Always use the Supabase callback URL which is guaranteed to work
+      const callbackUrl = `https://dxufdcvoupjqvxnwnost.supabase.co/auth/v1/callback`;
       
-      // Determine if we're in a localhost environment
-      const isLocalhost = currentHost.includes('localhost') || currentHost.includes('127.0.0.1');
-      
-      // Set the redirect URL based on environment
-      // For production, use the Supabase site URL to avoid localhost redirects
-      const redirectUrl = isLocalhost 
-        ? `${window.location.origin}/admin`
-        : `https://dxufdcvoupjqvxnwnost.supabase.co/auth/v1/callback`;
-      
-      console.log(`Google Auth - Using redirect URL: ${redirectUrl}`);
-      console.log(`Google Auth - Current host: ${currentHost}`);
-      console.log(`Google Auth - Is localhost: ${isLocalhost}`);
-      console.log(`Google Auth - Current location: ${window.location.href}`);
+      console.log(`Google Auth - Starting authentication flow`);
+      console.log(`Google Auth - Using callback URL: ${callbackUrl}`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
-          },
-          redirectTo: redirectUrl
+          }
         }
       });
 
@@ -154,7 +144,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       }
       
       console.log('Google Auth - Success, redirecting to:', data?.url);
-      // No toast needed here as the user will be redirected to Google's auth page
+      // The user will be redirected to Google's auth page
     } catch (error: any) {
       console.error('Google Auth - Exception:', error);
       toast({
