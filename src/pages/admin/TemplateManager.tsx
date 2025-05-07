@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,47 +7,43 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { PlusCircle, FileText, Copy, Edit, Trash } from 'lucide-react';
 
+// Define template type for proper typing
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  type: 'page' | 'section' | 'email';
+}
+
 const TemplateManager = () => {
-  const [templates, setTemplates] = useState([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchTemplates();
+    // Temporary mock data until we create a templates table
+    const mockTemplates: Template[] = [
+      { id: '1', name: 'Blog Post', description: 'Standard blog post template', type: 'page' },
+      { id: '2', name: 'Landing Page', description: 'Marketing landing page', type: 'page' },
+      { id: '3', name: 'Contact Form', description: 'Contact form section', type: 'section' },
+      { id: '4', name: 'Hero Banner', description: 'Large hero banner with CTA', type: 'section' },
+      { id: '5', name: 'Welcome Email', description: 'New user welcome email', type: 'email' },
+      { id: '6', name: 'Newsletter', description: 'Monthly newsletter template', type: 'email' },
+    ];
+    
+    setTemplates(mockTemplates);
+    setLoading(false);
   }, []);
 
-  const fetchTemplates = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('templates')
-        .select('*')
-        .order('name');
-      
-      if (error) throw error;
-      
-      setTemplates(data || []);
-    } catch (error) {
-      console.error('Error fetching templates:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to load templates'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredTemplates = templates.filter((template: any) => {
+  const filteredTemplates = templates.filter((template) => {
     return template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
            template.description.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  const pageTemplates = filteredTemplates.filter((template: any) => template.type === 'page');
-  const sectionTemplates = filteredTemplates.filter((template: any) => template.type === 'section');
-  const emailTemplates = filteredTemplates.filter((template: any) => template.type === 'email');
+  const pageTemplates = filteredTemplates.filter((template) => template.type === 'page');
+  const sectionTemplates = filteredTemplates.filter((template) => template.type === 'section');
+  const emailTemplates = filteredTemplates.filter((template) => template.type === 'email');
 
   const renderTemplateGrid = (templateList: any[]) => {
     if (templateList.length === 0) {

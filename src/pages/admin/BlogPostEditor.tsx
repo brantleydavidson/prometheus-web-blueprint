@@ -72,7 +72,7 @@ const BlogPostEditor = () => {
       if (data) {
         setTitle(data.title || '');
         setSlug(data.slug || '');
-        setContent(data.content || '');
+        setContent(data.content?.toString() || '');
         setExcerpt(data.excerpt || '');
         setPublished(data.published || false);
         setFeaturedImage(data.featured_image || '');
@@ -127,9 +127,13 @@ const BlogPostEditor = () => {
           description: 'Post updated successfully'
         });
       } else {
+        // Fixed: Wrap the object in curly braces, not square brackets
         const { error } = await supabase
           .from('blog_posts')
-          .insert([{ ...postData, created_at: new Date() }]);
+          .insert({
+            ...postData,
+            created_at: new Date().toISOString() // Convert Date to string
+          });
           
         if (error) throw error;
         
