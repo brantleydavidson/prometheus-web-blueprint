@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import WhoWeHelp from "./pages/WhoWeHelp";
 import B2B from "./pages/B2B";
 import DTC from "./pages/DTC";
+import Manufacturing from "./pages/Manufacturing"; // Add import for the new page
 import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
 import Blueprint from "./pages/Blueprint";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/who-we-help" element={<WhoWeHelp />} />
               <Route path="/b2b" element={<B2B />} />
               <Route path="/dtc" element={<DTC />} />
+              <Route path="/b2b/manufacturing" element={<Manufacturing />} /> {/* Add the new route */}
               <Route path="/services" element={<Services />} />
               <Route path="/blueprint" element={<Blueprint />} />
               

@@ -19,10 +19,10 @@ const Navbar = () => {
   };
   
   const handleMouseLeave = () => {
-    // Set a timeout to close the dropdown
+    // Set a timeout to close the dropdown with a longer delay
     closeTimeout.current = setTimeout(() => {
       setWhoWeHelpOpen(false);
-    }, 300); // 300ms delay before closing
+    }, 600); // Increased from 300ms to 600ms for better user experience
   };
 
   return (
