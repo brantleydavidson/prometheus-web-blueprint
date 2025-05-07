@@ -29,8 +29,10 @@ const Index = () => {
       }
     };
     
-    // Trigger ready state after components have mounted
-    prerenderReady();
+    // Set a timeout to ensure content is fully loaded before marking ready
+    setTimeout(() => {
+      prerenderReady();
+    }, 1000);
     
     // Clean up
     return () => {
@@ -68,6 +70,11 @@ const Index = () => {
         />
       </main>
       <Footer />
+      
+      {/* Added visible marker for Prerender verification */}
+      <div id="prerender-marker" data-testid="prerender-verification" style={{position: 'absolute', bottom: 0, right: 0, opacity: 0.1}}>
+        Prerender Verification: dKzffLw7ttkED8XRG9R1
+      </div>
     </div>
   );
 };

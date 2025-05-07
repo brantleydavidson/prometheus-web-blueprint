@@ -5,7 +5,7 @@
  */
 
 // List of crawler user agents that should receive pre-rendered pages
-const crawlerUserAgents = [
+const crawlerUserAgents: string[] = [
   'googlebot',
   'yahoo',
   'bingbot',
@@ -34,7 +34,7 @@ const crawlerUserAgents = [
  * @param {string} userAgent - The user agent string from the request
  * @returns {boolean} - True if the request is from a crawler, false otherwise
  */
-export const shouldPrerender = (userAgent) => {
+export const shouldPrerender = (userAgent: string): boolean => {
   if (!userAgent) return false;
   
   // Convert to lowercase for comparison
@@ -61,7 +61,7 @@ export const shouldPrerender = (userAgent) => {
  * @param {string} prerenderToken - Your Prerender.io token
  * @returns {string} - The URL to fetch the prerendered version from
  */
-export const getPrerenderUrl = (path, prerenderToken) => {
+export const getPrerenderUrl = (path: string, prerenderToken: string): string => {
   // Clean up the path and ensure it starts with a slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
