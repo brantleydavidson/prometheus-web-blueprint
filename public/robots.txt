@@ -31,7 +31,7 @@ Allow: /
 User-agent: Twitterbot
 Allow: /
 
-# Sitemap location (uncomment and update when you have a sitemap)
-# Sitemap: https://yoursite.com/sitemap.xml
+# Sitemap location (update with your actual domain when ready)
+Sitemap: https://yourdomain.com/sitemap.xml
 
 # No crawl-delay specified to ensure immediate crawling
