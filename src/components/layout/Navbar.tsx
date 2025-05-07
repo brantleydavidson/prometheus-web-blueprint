@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
@@ -10,8 +11,12 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-prometheus-navy">Prometheus</span>
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/admin/uploads/prometheus-logo.png" 
+              alt="Prometheus Agency" 
+              className="h-10"
+            />
           </Link>
           
           <nav className="hidden md:flex gap-6">
@@ -87,10 +92,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-// Since we can't modify the Navbar component directly, let's add a note for the user
-// To access the CMS, they should visit /admin or click a "CMS Login" link that would need
-// to be added to their Navbar component. They can either manually add this link to their
-// existing Navbar, or we could provide them with code to do so.
-
-// The CMS is accessible at /login and /admin routes
