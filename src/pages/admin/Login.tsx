@@ -10,6 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Info } from 'lucide-react';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -19,6 +26,7 @@ const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
+  const [showDebugDialog, setShowDebugDialog] = useState(false);
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
@@ -101,8 +109,15 @@ const Login = () => {
           
           <Alert variant="default" className="mx-6 mt-6 bg-blue-50 border-blue-200">
             <Info className="h-4 w-4 text-blue-500" />
-            <AlertDescription className="text-blue-700">
-              Make sure Redirect URLs are properly configured in Supabase Dashboard and Google Cloud Console.
+            <AlertDescription className="text-blue-700 flex flex-col">
+              <span>Make sure Redirect URLs are properly configured in Supabase Dashboard and Google Cloud Console.</span>
+              <Button 
+                variant="link" 
+                className="p-0 h-auto text-blue-700 justify-start" 
+                onClick={() => setShowDebugDialog(true)}
+              >
+                Show Configuration Debug
+              </Button>
             </AlertDescription>
           </Alert>
         
@@ -262,6 +277,46 @@ const Login = () => {
             </TabsContent>
           </Tabs>
         </Card>
+        
+        <Dialog open={showDebugDialog} onOpenChange={setShowDebugDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Auth Configuration Debug</DialogTitle>
+              <DialogDescription>Configuration settings being used for Google authentication</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 text-sm">
+              <div>
+                <h3 className="font-medium">Supabase Settings:</h3>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Site URL: {window.location.origin}</li>
+                  <li>Redirect URLs:</li>
+                  <ul className="list-circle ml-6 space-y-1">
+                    <li>{window.location.origin}/admin</li>
+                    <li>{window.location.origin}/login</li>
+                    <li>https://dxufdcvoupjqvxnwnost.supabase.co/auth/v1/callback</li>
+                  </ul>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium">Browser Information:</h3>
+                <ul className="list-disc ml-6 space-y-1">
+                  <li>Current URL: {window.location.href}</li>
+                  <li>Origin: {window.location.origin}</li>
+                  <li>Port: {window.location.port || "default"}</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium">Troubleshooting Steps:</h3>
+                <ol className="list-decimal ml-6 space-y-1">
+                  <li>Verify client ID in Supabase dashboard</li>
+                  <li>Check "Authorized JavaScript origins" in Google Console</li>
+                  <li>Verify all redirect URLs are set in both Supabase and Google</li>
+                  <li>Try clearing browser cookies and cache</li>
+                </ol>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

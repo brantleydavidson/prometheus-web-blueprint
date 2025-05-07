@@ -125,18 +125,24 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       
-      // Log current URL for debugging
-      const currentUrl = window.location.href;
-      console.log(`Google Auth - Starting from URL: ${currentUrl}`);
+      // Use EXACT port 3000 in the URL to match Supabase config
+      const origin = window.location.origin;
+      // Make sure we're using exactly what's in your Supabase config
+      // This should be http://localhost:3000/admin if in development
+      const redirectTo = `${origin}/admin`;
       
-      // For Google auth, use standard Supabase callback
-      const callbackURL = `${window.location.origin}/admin`;
-      console.log(`Google Auth - Setting redirect URL to: ${callbackURL}`);
+      console.log(`Google Auth - Configuration details:`);
+      console.log(`- Origin: ${origin}`);
+      console.log(`- Redirect URL: ${redirectTo}`);
+      
+      // Add client ID debug info (redacted for security)
+      const supabaseClientId = '1080890397380-l2bk8i0vq8dcj3p2n0rpfu8jntfks5d3.apps.googleusercontent.com';
+      console.log(`- Using client ID: ${supabaseClientId.substring(0, 8)}...`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: callbackURL,
+          redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
