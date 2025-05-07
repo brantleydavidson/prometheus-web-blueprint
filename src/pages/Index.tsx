@@ -24,7 +24,12 @@ const Index = () => {
         <WhoWeHelp />
         <ProcessStrip />
         <ClientReviews />
-        <CTABanner />
+        <CTABanner 
+          title="Stop Drowning in Disconnected Tools"
+          description="Ready to transform your tech chaos into controlled growth? Book a Growth Audit and discover how our team can help."
+          buttonText="Book Your Growth Audit Today"
+          buttonLink="/book-audit"
+        />
       </main>
       <Footer />
     </div>

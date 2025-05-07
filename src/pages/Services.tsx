@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -135,7 +134,12 @@ const Services = () => {
           </div>
         </div>
         
-        <CTABanner />
+        <CTABanner 
+          title="Ready to Transform Your Marketing Technology?"
+          description="Book a consultation to discuss how our services can help you tame your tech and unleash growth."
+          buttonText="Book a Consultation"
+          buttonLink="/book-audit"
+        />
       </main>
       <Footer />
     </div>

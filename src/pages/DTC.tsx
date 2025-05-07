@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -106,7 +105,12 @@ const DTC = () => {
           </div>
         </div>
         
-        <CTABanner />
+        <CTABanner 
+          title="Ready to Increase Your Direct Sales?"
+          description="Book a free UX/Website audit to discover how we can transform your customer journey into a conversion machine."
+          buttonText="Book Free UX Audit"
+          buttonLink="/book-audit"
+        />
       </main>
       <Footer />
     </div>

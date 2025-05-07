@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -212,7 +211,12 @@ const WhoWeHelp = () => {
           </div>
         </div>
         
-        <CTABanner />
+        <CTABanner 
+          title="Find the Right Solution for Your Business"
+          description="Explore our industry-specific approaches and discover how we can help you achieve measurable growth."
+          buttonText="Book Your Growth Audit"
+          buttonLink="/book-audit"
+        />
       </main>
       <Footer />
     </div>
