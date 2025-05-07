@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, Edit, Trash, Eye, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { Link, useNavigate } from 'react-router-dom';
 
 const BlogPosts = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPosts();
@@ -37,6 +39,33 @@ const BlogPosts = () => {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: 'Success',
+        description: 'Post deleted successfully'
+      });
+      
+      fetchPosts();
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to delete post'
+      });
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -44,7 +73,7 @@ const BlogPosts = () => {
           <h2 className="text-2xl font-semibold text-prometheus-navy">Blog Posts</h2>
           <p className="text-gray-500">Manage blog content</p>
         </div>
-        <Button>
+        <Button onClick={() => navigate('/admin/blog-posts/new')}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Create Post
         </Button>
@@ -92,10 +121,19 @@ const BlogPosts = () => {
                         <Button variant="ghost" size="sm">
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => navigate(`/admin/blog-posts/edit/${post.id}`)}
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => handleDelete(post.id)}
+                        >
                           <Trash className="h-4 w-4" />
                         </Button>
                         {post.published && (

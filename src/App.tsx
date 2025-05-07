@@ -16,8 +16,11 @@ import Login from "./pages/admin/Login";
 import Dashboard from "./pages/admin/Dashboard";
 import Pages from "./pages/admin/Pages";
 import BlogPosts from "./pages/admin/BlogPosts";
+import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import Categories from "./pages/admin/Categories";
 import Assets from "./pages/admin/Assets";
+import TemplateManager from "./pages/admin/TemplateManager";
+import AccountSettings from "./pages/admin/AccountSettings";
 import AuthProvider from "./providers/AuthProvider";
 
 const queryClient = new QueryClient();
@@ -42,8 +45,12 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="pages" element={<Pages />} />
               <Route path="blog-posts" element={<BlogPosts />} />
+              <Route path="blog-posts/new" element={<BlogPostEditor />} />
+              <Route path="blog-posts/edit/:id" element={<BlogPostEditor />} />
               <Route path="categories" element={<Categories />} />
               <Route path="assets" element={<Assets />} />
+              <Route path="templates" element={<TemplateManager />} />
+              <Route path="settings" element={<AccountSettings />} />
             </Route>
             <Route path="/login" element={<Login />} />
             
