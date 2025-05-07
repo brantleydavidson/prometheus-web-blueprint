@@ -119,9 +119,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const signInWithGoogle = async (): Promise<void> => {
     try {
       setLoading(true);
+      
       // Use the current window origin to determine the redirect URL
       const redirectUrl = `${window.location.origin}/admin`;
-      console.log(`Using redirect URL: ${redirectUrl}`);
+      
+      console.log(`Google Auth - Using redirect URL: ${redirectUrl}`);
+      console.log(`Google Auth - Current location: ${window.location.href}`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -134,10 +137,15 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Google Auth Error:', error);
+        throw error;
+      }
       
+      console.log('Google Auth - Success, redirecting to:', data?.url);
       // No toast needed here as the user will be redirected to Google's auth page
     } catch (error: any) {
+      console.error('Google Auth - Exception:', error);
       toast({
         variant: "destructive",
         title: "Google login failed",
