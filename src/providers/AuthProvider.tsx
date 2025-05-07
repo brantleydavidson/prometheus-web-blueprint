@@ -37,6 +37,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('Auth Provider initialized');
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
@@ -57,6 +59,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      console.log('Initial session check:', initialSession ? 'Session found' : 'No session found');
       setSession(initialSession);
       setUser(initialSession?.user ?? null);
       
@@ -85,6 +88,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
       
+      console.log('Profile fetched successfully:', data);
       setProfile(data);
     } catch (error) {
       console.error('Error in fetchProfile:', error);
@@ -121,20 +125,18 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       
-      // Get current URL for better debugging
+      // Log current URL for debugging
       const currentUrl = window.location.href;
       console.log(`Google Auth - Starting from URL: ${currentUrl}`);
       
-      // Use the current origin as the redirect URL
-      const redirectTo = `${window.location.origin}/admin`;
-      
-      console.log(`Google Auth - Starting authentication flow`);
-      console.log(`Google Auth - Using redirect URL: ${redirectTo}`);
+      // For Google auth, use standard Supabase callback
+      const callbackURL = `${window.location.origin}/admin`;
+      console.log(`Google Auth - Setting redirect URL to: ${callbackURL}`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo,
+          redirectTo: callbackURL,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

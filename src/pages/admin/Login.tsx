@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,6 +18,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
@@ -27,15 +28,14 @@ const Login = () => {
     }
     
     // Check if there's an error in the URL parameters (from Google redirect)
-    const urlParams = new URLSearchParams(window.location.search);
-    const errorParam = urlParams.get('error');
-    const errorDescription = urlParams.get('error_description');
+    const errorParam = searchParams.get('error');
+    const errorDescription = searchParams.get('error_description');
     
     if (errorParam) {
       console.error('Auth Error from URL:', errorParam, errorDescription);
       setError(errorDescription || `Authentication error: ${errorParam}`);
     }
-  }, [user, navigate]);
+  }, [user, navigate, searchParams]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +98,13 @@ const Login = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+          
+          <Alert variant="default" className="mx-6 mt-6 bg-blue-50 border-blue-200">
+            <Info className="h-4 w-4 text-blue-500" />
+            <AlertDescription className="text-blue-700">
+              Make sure Redirect URLs are properly configured in Supabase Dashboard and Google Cloud Console.
+            </AlertDescription>
+          </Alert>
         
           <Tabs defaultValue="signin">
             <TabsList className="grid w-full grid-cols-2 mb-4">
