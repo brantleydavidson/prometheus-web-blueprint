@@ -7,8 +7,8 @@ import { shouldPrerender, getPrerenderUrl } from './middleware/prerenderMiddlewa
 // Check if the current request is from a crawler that should receive pre-rendered content
 const userAgent = navigator.userAgent;
 
-// Add Prerender.io token (replace this with your actual token from Prerender.io)
-const PRERENDER_TOKEN = 'your-prerender-token';
+// Add your Prerender.io token
+const PRERENDER_TOKEN = 'dKzffLw7ttkED8XRG9R1';
 
 // If this is a crawler, fetch the pre-rendered version
 if (shouldPrerender(userAgent)) {
