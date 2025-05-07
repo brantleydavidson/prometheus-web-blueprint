@@ -125,19 +125,19 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     try {
       setLoading(true);
       
-      // Use EXACT port 3000 in the URL to match Supabase config
-      const origin = window.location.origin;
-      // Make sure we're using exactly what's in your Supabase config
-      // This should be http://localhost:3000/admin if in development
+      // Get current hostname - will work in both development and production
+      const hostname = window.location.hostname;
+      const protocol = window.location.protocol;
+      const port = window.location.port ? `:${window.location.port}` : '';
+      
+      // Build the redirect URL using current origin
+      const origin = `${protocol}//${hostname}${port}`;
       const redirectTo = `${origin}/admin`;
       
-      console.log(`Google Auth - Configuration details:`);
+      console.log(`Google Auth - Attempted sign-in with following settings:`);
+      console.log(`- Current URL: ${window.location.href}`);
       console.log(`- Origin: ${origin}`);
       console.log(`- Redirect URL: ${redirectTo}`);
-      
-      // Add client ID debug info (redacted for security)
-      const supabaseClientId = '1080890397380-l2bk8i0vq8dcj3p2n0rpfu8jntfks5d3.apps.googleusercontent.com';
-      console.log(`- Using client ID: ${supabaseClientId.substring(0, 8)}...`);
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -156,7 +156,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       }
       
       console.log('Google Auth - Success, redirecting to:', data?.url);
-      // The user will be redirected to Google's auth page
+      // User will be redirected to Google's auth page
     } catch (error: any) {
       console.error('Google Auth - Exception:', error);
       toast({
