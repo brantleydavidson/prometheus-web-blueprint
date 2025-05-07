@@ -30,53 +30,60 @@ import Assets from "./pages/admin/Assets";
 import TemplateManager from "./pages/admin/TemplateManager";
 import AccountSettings from "./pages/admin/AccountSettings";
 import AuthProvider from "./providers/AuthProvider";
+import HubSpotProvider from "./integrations/hubspot/HubSpotProvider";
+import ContactUs from "./pages/ContactUs";
+import BookAudit from "./pages/BookAudit";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <HelmetProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/who-we-help" element={<WhoWeHelp />} />
-              <Route path="/b2b" element={<B2B />} />
-              <Route path="/dtc" element={<DTC />} />
-              <Route path="/b2b/manufacturing" element={<Manufacturing />} />
-              <Route path="/dtc/restoration" element={<Restoration />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/services/ai-enablement" element={<AIEnablement />} />
-              <Route path="/services/consulting-gtm" element={<GTMStrategy />} />
-              <Route path="/services/crm-implementation" element={<CRMImplementation />} />
-              <Route path="/services/customer-journey" element={<CustomerJourney />} />
-              <Route path="/blueprint" element={<Blueprint />} />
-              
-              {/* Admin Routes */}
-              <Route path="/admin" element={<Admin />}>
-                <Route index element={<Dashboard />} />
-                <Route path="pages" element={<Pages />} />
-                <Route path="pages/new" element={<PageEditor />} />
-                <Route path="pages/edit/:id" element={<PageEditor />} />
-                <Route path="blog-posts" element={<BlogPosts />} />
-                <Route path="blog-posts/new" element={<BlogPostEditor />} />
-                <Route path="blog-posts/edit/:id" element={<BlogPostEditor />} />
-                <Route path="categories" element={<Categories />} />
-                <Route path="assets" element={<Assets />} />
-                <Route path="templates" element={<TemplateManager />} />
-                <Route path="settings" element={<AccountSettings />} />
-              </Route>
-              <Route path="/login" element={<Login />} />
-              
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </HelmetProvider>
-      </TooltipProvider>
+      <HubSpotProvider>
+        <TooltipProvider>
+          <HelmetProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/who-we-help" element={<WhoWeHelp />} />
+                <Route path="/b2b" element={<B2B />} />
+                <Route path="/dtc" element={<DTC />} />
+                <Route path="/b2b/manufacturing" element={<Manufacturing />} />
+                <Route path="/dtc/restoration" element={<Restoration />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/services/ai-enablement" element={<AIEnablement />} />
+                <Route path="/services/consulting-gtm" element={<GTMStrategy />} />
+                <Route path="/services/crm-implementation" element={<CRMImplementation />} />
+                <Route path="/services/customer-journey" element={<CustomerJourney />} />
+                <Route path="/blueprint" element={<Blueprint />} />
+                <Route path="/contact-us" element={<ContactUs />} />
+                <Route path="/book-audit" element={<BookAudit />} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin" element={<Admin />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="pages" element={<Pages />} />
+                  <Route path="pages/new" element={<PageEditor />} />
+                  <Route path="pages/edit/:id" element={<PageEditor />} />
+                  <Route path="blog-posts" element={<BlogPosts />} />
+                  <Route path="blog-posts/new" element={<BlogPostEditor />} />
+                  <Route path="blog-posts/edit/:id" element={<BlogPostEditor />} />
+                  <Route path="categories" element={<Categories />} />
+                  <Route path="assets" element={<Assets />} />
+                  <Route path="templates" element={<TemplateManager />} />
+                  <Route path="settings" element={<AccountSettings />} />
+                </Route>
+                <Route path="/login" element={<Login />} />
+                
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </HelmetProvider>
+        </TooltipProvider>
+      </HubSpotProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

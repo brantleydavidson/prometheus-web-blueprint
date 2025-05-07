@@ -4,11 +4,14 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import CTABanner from '@/components/shared/CTABanner';
+import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Clock, Map, Award } from 'lucide-react';
 
 const Restoration = () => {
+  // Replace with your actual HubSpot Form ID for the restoration vertical
+  const RESTORATION_FORM_ID = "your-restoration-form-id";
+
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
@@ -124,11 +127,12 @@ const Restoration = () => {
           </div>
         </div>
         
-        <CTABanner 
+        <EnhancedCTABanner 
           title="Ready to Surface Every Lost Job Lead?"
           description="Book a Growth Audit specifically tailored for restoration companies. We'll identify opportunities to capture more emergency leads and optimize your dispatch and follow-up processes."
           buttonText="Book Your Restoration Growth Audit"
           buttonLink="/book-audit"
+          hubspotFormId={RESTORATION_FORM_ID}
         />
       </main>
       <Footer />

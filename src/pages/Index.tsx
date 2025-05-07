@@ -8,7 +8,7 @@ import ProofRibbon from '@/components/home/ProofRibbon';
 import WhoWeHelp from '@/components/home/WhoWeHelp';
 import ProcessStrip from '@/components/home/ProcessStrip';
 import ClientReviews from '@/components/home/ClientReviews';
-import CTABanner from '@/components/shared/CTABanner';
+import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
 
 const Index = () => {
   return (
@@ -24,7 +24,7 @@ const Index = () => {
         <WhoWeHelp />
         <ProcessStrip />
         <ClientReviews />
-        <CTABanner 
+        <EnhancedCTABanner 
           title="Stop Drowning in Disconnected Tools"
           description="Ready to transform your tech chaos into controlled growth? Book a Growth Audit and discover how our team can help."
           buttonText="Book Your Growth Audit Today"
