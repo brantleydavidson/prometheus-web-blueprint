@@ -31,7 +31,11 @@ Allow: /
 User-agent: Twitterbot
 Allow: /
 
+# Explicitly allow Prerender's crawler
+User-agent: Prerender
+Allow: /
+
 # Sitemap location
-Sitemap: https://www.teamprometheus.io/sitemap.xml
+Sitemap: https://teamprometheus.io/sitemap.xml
 
 # No crawl-delay specified to ensure immediate crawling

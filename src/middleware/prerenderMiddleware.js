@@ -23,7 +23,8 @@ const crawlerUserAgents = [
   'vkShare',
   'W3C_Validator',
   'yandex',
-  'duckduckbot'
+  'duckduckbot',
+  'prerender'
 ];
 
 /**
@@ -48,8 +49,16 @@ export const shouldPrerender = (userAgent) => {
  * @returns {string} - The URL to fetch the prerendered version from
  */
 export const getPrerenderUrl = (path, prerenderToken) => {
-  // Use www.teamprometheus.io as the domain
-  // Format the URL according to Prerender.io's documentation
-  // The format should be: https://service.prerender.io/https://www.teamprometheus.io/path?token=token
-  return `https://service.prerender.io/https://www.teamprometheus.io${path}?token=${prerenderToken}`;
+  // Clean up the path and ensure it starts with a slash
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  
+  // Format: https://service.prerender.io/https://www.teamprometheus.io/path?token=token
+  const prerenderUrl = `https://service.prerender.io/https://teamprometheus.io${cleanPath}`;
+  
+  // Append token as a query parameter
+  const urlWithToken = `${prerenderUrl}${prerenderUrl.includes('?') ? '&' : '?'}token=${prerenderToken}`;
+  
+  console.log('Prerender URL:', urlWithToken);
+  
+  return urlWithToken;
 };
