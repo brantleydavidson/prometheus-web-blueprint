@@ -48,35 +48,23 @@ const Hero = () => {
           </div>
         </div>
         
-        <div className="relative snap-into-place">
-          {/* Titan image as subtle background */}
-          <div className="absolute inset-0 -m-4 opacity-10 z-0">
-            <img 
-              src="https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/i11jv0n1y7.png" 
-              alt="" 
-              className="w-full h-full object-cover object-center rounded-lg"
-            />
+        <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-100 flex flex-col items-center md:items-start snap-into-place">
+          <div className="mb-8 w-full bg-gray-50 p-6 rounded-lg">
+            <h3 className="text-xl font-semibold text-prometheus-navy mb-2">Before Prometheus</h3>
+            <div className="flex flex-col gap-3">
+              <div className="w-full h-3 bg-red-100 rounded"></div>
+              <div className="w-3/4 h-3 bg-red-100 rounded"></div>
+              <div className="w-1/2 h-3 bg-red-100 rounded"></div>
+            </div>
           </div>
           
-          {/* Before/After module with the titan image as background */}
-          <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-100 flex flex-col items-center md:items-start relative z-10 backdrop-blur-sm bg-white/80">
-            <div className="mb-8 w-full bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold text-prometheus-navy mb-2">Before Prometheus</h3>
-              <div className="flex flex-col gap-3">
-                <div className="w-full h-3 bg-red-100 rounded"></div>
-                <div className="w-3/4 h-3 bg-red-100 rounded"></div>
-                <div className="w-1/2 h-3 bg-red-100 rounded"></div>
-              </div>
-            </div>
-            
-            <div className="w-full bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold text-prometheus-navy mb-2">After Prometheus</h3>
-              <div className="flex items-center gap-4">
-                <span className="text-5xl font-bold text-prometheus-orange animate-counter">+{animatedKPI}%</span>
-                <div className="text-sm text-gray-600">
-                  <p>Average</p>
-                  <p>Revenue Growth</p>
-                </div>
+          <div className="w-full bg-gray-50 p-6 rounded-lg">
+            <h3 className="text-xl font-semibold text-prometheus-navy mb-2">After Prometheus</h3>
+            <div className="flex items-center gap-4">
+              <span className="text-5xl font-bold text-prometheus-orange animate-counter">+{animatedKPI}%</span>
+              <div className="text-sm text-gray-600">
+                <p>Average</p>
+                <p>Revenue Growth</p>
               </div>
             </div>
           </div>
