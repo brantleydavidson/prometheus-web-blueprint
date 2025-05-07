@@ -7,6 +7,7 @@ import Hero from '@/components/home/Hero';
 import ProofRibbon from '@/components/home/ProofRibbon';
 import WhoWeHelp from '@/components/home/WhoWeHelp';
 import ProcessStrip from '@/components/home/ProcessStrip';
+import ClientReviews from '@/components/home/ClientReviews';
 import CTABanner from '@/components/shared/CTABanner';
 
 const Index = () => {
@@ -22,6 +23,7 @@ const Index = () => {
         <ProofRibbon />
         <WhoWeHelp />
         <ProcessStrip />
+        <ClientReviews />
         <CTABanner />
       </main>
       <Footer />

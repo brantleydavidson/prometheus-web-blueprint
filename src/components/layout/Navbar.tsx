@@ -26,10 +26,10 @@ const Navbar = () => {
               onMouseEnter={() => setWhoWeHelpOpen(true)}
               onMouseLeave={() => setWhoWeHelpOpen(false)}
             >
-              <button className="flex items-center gap-1 text-base font-medium hover:text-prometheus-orange">
+              <Link to="/who-we-help" className="flex items-center gap-1 text-base font-medium hover:text-prometheus-orange">
                 Who We Help
                 <ChevronDown className="h-4 w-4" />
-              </button>
+              </Link>
               
               {whoWeHelpOpen && (
                 <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-md shadow-lg p-4 hover-card-fade">
