@@ -48,8 +48,8 @@ export const shouldPrerender = (userAgent) => {
  * @returns {string} - The URL to fetch the prerendered version from
  */
 export const getPrerenderUrl = (path, prerenderToken) => {
-  // Use teamprometheus.io as the domain
+  // Use www.teamprometheus.io as the domain
   // Format the URL according to Prerender.io's documentation
-  // The format should be: https://service.prerender.io/https://teamprometheus.io/path?token=token
-  return `https://service.prerender.io/https://teamprometheus.io${path}?token=${prerenderToken}`;
+  // The format should be: https://service.prerender.io/https://www.teamprometheus.io/path?token=token
+  return `https://service.prerender.io/https://www.teamprometheus.io${path}?token=${prerenderToken}`;
 };

@@ -12,7 +12,7 @@ const PRERENDER_TOKEN = 'dKzffLw7ttkED8XRG9R1';
 
 // If this is a crawler, fetch the pre-rendered version
 if (shouldPrerender(userAgent)) {
-  console.log('Crawler detected: Redirecting to Prerender.io service for teamprometheus.io');
+  console.log('Crawler detected: Redirecting to Prerender.io service for www.teamprometheus.io');
   
   // Get full path including query string
   const fullPath = window.location.pathname + window.location.search;

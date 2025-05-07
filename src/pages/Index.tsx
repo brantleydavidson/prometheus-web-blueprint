@@ -16,6 +16,7 @@ const Index = () => {
       <Helmet>
         <title>Prometheus Agency | Tame Your Tech. Unleash Growth. | CRM & Marketing Experts</title>
         <meta name="description" content="Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies." />
+        <link rel="canonical" href="https://www.teamprometheus.io/" />
       </Helmet>
       <Navbar />
       <main className="flex-grow">

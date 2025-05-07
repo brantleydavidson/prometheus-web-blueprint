@@ -32,6 +32,6 @@ User-agent: Twitterbot
 Allow: /
 
 # Sitemap location
-Sitemap: https://prometheusagency.com/sitemap.xml
+Sitemap: https://www.teamprometheus.io/sitemap.xml
 
 # No crawl-delay specified to ensure immediate crawling
