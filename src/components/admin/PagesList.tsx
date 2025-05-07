@@ -1,8 +1,6 @@
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash, Eye, ExternalLink } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -29,8 +27,6 @@ interface PagesListProps {
 }
 
 export const PagesList = ({ pages, onEdit, onDelete, onView }: PagesListProps) => {
-  const navigate = useNavigate();
-  
   return (
     <div className="bg-white rounded-md shadow overflow-hidden">
       <Table>

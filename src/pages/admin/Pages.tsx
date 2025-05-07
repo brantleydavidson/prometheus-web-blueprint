@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -5,28 +6,28 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthProvider';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { PagesList } from '@/components/admin/PagesList';
+import { DeletePageDialog } from '@/components/admin/DeletePageDialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Edit, Trash, Eye, ExternalLink } from 'lucide-react';
+
+interface Page {
+  id: string;
+  title: string;
+  slug: string;
+  template: string;
+  published: boolean;
+  updated_at: string;
+}
 
 const Pages = () => {
-  const [pages, setPages] = useState([]);
+  const [pages, setPages] = useState<Page[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [pageToDelete, setPageToDelete] = useState(null);
+  const [pageToDelete, setPageToDelete] = useState<Page | null>(null);
   const [newPage, setNewPage] = useState({
     title: '',
     slug: '',
@@ -64,7 +65,7 @@ const Pages = () => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewPage({ ...newPage, [name]: value });
     
@@ -78,7 +79,7 @@ const Pages = () => {
     }
   };
 
-  const handleTemplateChange = (value) => {
+  const handleTemplateChange = (value: string) => {
     setNewPage({ ...newPage, template: value });
   };
 
@@ -112,7 +113,7 @@ const Pages = () => {
       });
       
       fetchPages();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating page:', error);
       toast({
         variant: 'destructive',
@@ -122,17 +123,17 @@ const Pages = () => {
     }
   };
 
-  const handleEdit = (pageId) => {
+  const handleEdit = (pageId: string) => {
     navigate(`/admin/pages/edit/${pageId}`);
   };
 
-  const handleView = (pageSlug) => {
+  const handleView = (pageSlug: string) => {
     // For the home page (empty slug), just open the root URL
     const url = pageSlug === '' ? '/' : `/${pageSlug}`;
     window.open(url, '_blank');
   };
   
-  const confirmDelete = (page) => {
+  const confirmDelete = (page: Page) => {
     setPageToDelete(page);
     setIsDeleteDialogOpen(true);
   };
@@ -154,7 +155,7 @@ const Pages = () => {
       });
       
       fetchPages();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting page:', error);
       toast({
         variant: 'destructive',
@@ -185,88 +186,12 @@ const Pages = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-prometheus-orange"></div>
         </div>
       ) : (
-        <div className="bg-white rounded-md shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Template</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {pages.length > 0 ? (
-                pages.map((page: any) => (
-                  <tr key={page.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">{page.title}</div>
-                      <div className="text-sm text-gray-500">/{page.slug}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{page.template}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        page.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {page.published ? 'Published' : 'Draft'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(page.updated_at).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleView(page.slug)}
-                          title="View page"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEdit(page.id)}
-                          title="Edit page"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => confirmDelete(page)}
-                          title="Delete page"
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                        {page.published && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-blue-500 hover:text-blue-700"
-                            onClick={() => handleView(page.slug)}
-                            title="Open in new tab"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
-                    No pages found. Create your first page to get started.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <PagesList 
+          pages={pages}
+          onEdit={handleEdit}
+          onDelete={confirmDelete}
+          onView={handleView}
+        />
       )}
 
       {/* Create Page Dialog */}
@@ -329,23 +254,12 @@ const Pages = () => {
       </Dialog>
       
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the page "{pageToDelete?.title}". 
-              This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeletePageDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        pageName={pageToDelete?.title}
+      />
     </div>
   );
 };
