@@ -10,11 +10,23 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/providers/AuthProvider';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Pages = () => {
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [pageToDelete, setPageToDelete] = useState(null);
   const [newPage, setNewPage] = useState({
     title: '',
     slug: '',
@@ -119,8 +131,44 @@ const Pages = () => {
   };
 
   const handleView = (pageSlug) => {
-    // Open the page in a new tab
-    window.open(`/${pageSlug}`, '_blank');
+    // For the home page (empty slug), just open the root URL
+    const url = pageSlug === '' ? '/' : `/${pageSlug}`;
+    window.open(url, '_blank');
+  };
+  
+  const confirmDelete = (page) => {
+    setPageToDelete(page);
+    setIsDeleteDialogOpen(true);
+  };
+  
+  const handleDelete = async () => {
+    if (!pageToDelete) return;
+    
+    try {
+      const { error } = await supabase
+        .from('pages')
+        .delete()
+        .eq('id', pageToDelete.id);
+        
+      if (error) throw error;
+      
+      toast({
+        title: 'Success',
+        description: 'Page deleted successfully'
+      });
+      
+      fetchPages();
+    } catch (error) {
+      console.error('Error deleting page:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error.message || 'Failed to delete page'
+      });
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setPageToDelete(null);
+    }
   };
 
   return (
@@ -177,6 +225,7 @@ const Pages = () => {
                           variant="ghost" 
                           size="sm" 
                           onClick={() => handleView(page.slug)}
+                          title="View page"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -184,10 +233,17 @@ const Pages = () => {
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleEdit(page.id)}
+                          title="Edit page"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => confirmDelete(page)}
+                          title="Delete page"
+                        >
                           <Trash className="h-4 w-4" />
                         </Button>
                         {page.published && (
@@ -195,7 +251,8 @@ const Pages = () => {
                             variant="ghost" 
                             size="sm" 
                             className="text-blue-500 hover:text-blue-700"
-                            onClick={() => window.open(`/${page.slug}`, '_blank')}
+                            onClick={() => handleView(page.slug)}
+                            title="Open in new tab"
                           >
                             <ExternalLink className="h-4 w-4" />
                           </Button>
@@ -274,6 +331,25 @@ const Pages = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the page "{pageToDelete?.title}". 
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
