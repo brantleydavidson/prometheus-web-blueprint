@@ -30,7 +30,9 @@ const Pages = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  // Fetch pages on component mount
   useEffect(() => {
+    console.log("Fetching pages from Supabase");
     fetchPages();
   }, []);
 
@@ -44,6 +46,7 @@ const Pages = () => {
       
       if (error) throw error;
       
+      console.log("Pages fetched:", data);
       setPages(data || []);
     } catch (error) {
       console.error('Error fetching pages:', error);
