@@ -6,6 +6,24 @@ import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [whoWeHelpOpen, setWhoWeHelpOpen] = useState(false);
+  
+  // Adding a delay before closing the dropdown
+  const closeTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  
+  const handleMouseEnter = () => {
+    if (closeTimeout.current) {
+      clearTimeout(closeTimeout.current);
+      closeTimeout.current = null;
+    }
+    setWhoWeHelpOpen(true);
+  };
+  
+  const handleMouseLeave = () => {
+    // Set a timeout to close the dropdown
+    closeTimeout.current = setTimeout(() => {
+      setWhoWeHelpOpen(false);
+    }, 300); // 300ms delay before closing
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -23,8 +41,8 @@ const Navbar = () => {
             {/* Who We Help with hover card */}
             <div 
               className="relative"
-              onMouseEnter={() => setWhoWeHelpOpen(true)}
-              onMouseLeave={() => setWhoWeHelpOpen(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <Link to="/who-we-help" className="flex items-center gap-1 text-base font-medium hover:text-prometheus-orange">
                 Who We Help
@@ -32,7 +50,11 @@ const Navbar = () => {
               </Link>
               
               {whoWeHelpOpen && (
-                <div className="absolute top-full left-0 mt-2 w-96 bg-white rounded-md shadow-lg p-4 hover-card-fade">
+                <div 
+                  className="absolute top-full left-0 mt-2 w-96 bg-white rounded-md shadow-lg p-4 hover-card-fade"
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
                   <div className="border-b border-gray-100 pb-4 mb-2">
                     <h3 className="text-sm font-bold text-gray-500 mb-2">Who We Help</h3>
                   </div>
