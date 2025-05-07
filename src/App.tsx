@@ -9,8 +9,13 @@ import Index from "./pages/Index";
 import WhoWeHelp from "./pages/WhoWeHelp";
 import B2B from "./pages/B2B";
 import DTC from "./pages/DTC";
-import Manufacturing from "./pages/Manufacturing"; // Add import for the new page
+import Manufacturing from "./pages/Manufacturing";
+import Restoration from "./pages/dtc/Restoration";
 import Services from "./pages/Services";
+import AIEnablement from "./pages/services/AIEnablement";
+import GTMStrategy from "./pages/services/GTMStrategy";
+import CRMImplementation from "./pages/services/CRMImplementation";
+import CustomerJourney from "./pages/services/CustomerJourney";
 import NotFound from "./pages/NotFound";
 import Blueprint from "./pages/Blueprint";
 import Admin from "./pages/admin/Admin";
@@ -41,8 +46,13 @@ const App = () => (
               <Route path="/who-we-help" element={<WhoWeHelp />} />
               <Route path="/b2b" element={<B2B />} />
               <Route path="/dtc" element={<DTC />} />
-              <Route path="/b2b/manufacturing" element={<Manufacturing />} /> {/* Add the new route */}
+              <Route path="/b2b/manufacturing" element={<Manufacturing />} />
+              <Route path="/dtc/restoration" element={<Restoration />} />
               <Route path="/services" element={<Services />} />
+              <Route path="/services/ai-enablement" element={<AIEnablement />} />
+              <Route path="/services/consulting-gtm" element={<GTMStrategy />} />
+              <Route path="/services/crm-implementation" element={<CRMImplementation />} />
+              <Route path="/services/customer-journey" element={<CustomerJourney />} />
               <Route path="/blueprint" element={<Blueprint />} />
               
               {/* Admin Routes */}
