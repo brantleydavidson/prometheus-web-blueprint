@@ -10,6 +10,7 @@ import B2B from "./pages/B2B";
 import DTC from "./pages/DTC";
 import Services from "./pages/Services";
 import NotFound from "./pages/NotFound";
+import Blueprint from "./pages/Blueprint";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/b2b" element={<B2B />} />
           <Route path="/dtc" element={<DTC />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/blueprint" element={<Blueprint />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
