@@ -2,80 +2,80 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Main Pages -->
   <url>
-    <loc>https://prometheusagency.com/</loc>
+    <loc>https://teamprometheus.io/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/who-we-help</loc>
+    <loc>https://teamprometheus.io/who-we-help</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- B2B Pages -->
   <url>
-    <loc>https://prometheusagency.com/b2b</loc>
+    <loc>https://teamprometheus.io/b2b</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/b2b/manufacturing</loc>
+    <loc>https://teamprometheus.io/b2b/manufacturing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- DTC Pages -->
   <url>
-    <loc>https://prometheusagency.com/dtc</loc>
+    <loc>https://teamprometheus.io/dtc</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/dtc/restoration</loc>
+    <loc>https://teamprometheus.io/dtc/restoration</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Services Pages -->
   <url>
-    <loc>https://prometheusagency.com/services</loc>
+    <loc>https://teamprometheus.io/services</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/services/ai-enablement</loc>
+    <loc>https://teamprometheus.io/services/ai-enablement</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/services/consulting-gtm</loc>
+    <loc>https://teamprometheus.io/services/consulting-gtm</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/services/crm-implementation</loc>
+    <loc>https://teamprometheus.io/services/crm-implementation</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/services/customer-journey</loc>
+    <loc>https://teamprometheus.io/services/customer-journey</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Other Important Pages -->
   <url>
-    <loc>https://prometheusagency.com/blueprint</loc>
+    <loc>https://teamprometheus.io/blueprint</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/contact-us</loc>
+    <loc>https://teamprometheus.io/contact-us</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://prometheusagency.com/book-audit</loc>
+    <loc>https://teamprometheus.io/book-audit</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
