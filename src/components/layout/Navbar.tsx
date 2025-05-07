@@ -13,7 +13,7 @@ const Navbar = () => {
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center">
             <img 
-              src="/admin/uploads/prometheus-logo.png" 
+              src="https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/mwe5d71dr4.png" 
               alt="Prometheus Agency" 
               className="h-10"
             />
