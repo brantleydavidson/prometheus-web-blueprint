@@ -89,10 +89,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<void> => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -103,8 +103,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         title: "Welcome back!",
         description: "You've successfully logged in",
       });
-      
-      return data;
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -117,10 +115,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string): Promise<void> => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -136,8 +134,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         title: "Registration successful",
         description: "Please check your email to confirm your account",
       });
-      
-      return data;
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -150,7 +146,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signOut = async () => {
+  const signOut = async (): Promise<void> => {
     try {
       setLoading(true);
       await supabase.auth.signOut();
