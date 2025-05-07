@@ -17,6 +17,9 @@ const Index = () => {
         <title>Prometheus Agency | Tame Your Tech. Unleash Growth. | CRM & Marketing Experts</title>
         <meta name="description" content="Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies." />
         <link rel="canonical" href="https://www.teamprometheus.io/" />
+        {/* Additional meta tags for Prerender verification */}
+        <meta name="prerender-status-code" content="200" />
+        <meta name="prerender-token" content="dKzffLw7ttkED8XRG9R1" />
       </Helmet>
       <Navbar />
       <main className="flex-grow">

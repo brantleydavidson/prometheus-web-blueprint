@@ -38,8 +38,13 @@ export const shouldPrerender = (userAgent) => {
   // Convert to lowercase for comparison
   const userAgentLC = userAgent.toLowerCase();
   
+  console.log('Checking user agent for prerender:', userAgentLC);
+  
   // Check if user agent matches any crawler patterns
-  return crawlerUserAgents.some(crawler => userAgentLC.includes(crawler));
+  const isBot = crawlerUserAgents.some(crawler => userAgentLC.includes(crawler));
+  
+  console.log('Is bot detection result:', isBot);
+  return isBot;
 };
 
 /**
@@ -52,13 +57,13 @@ export const getPrerenderUrl = (path, prerenderToken) => {
   // Clean up the path and ensure it starts with a slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
-  // Format: https://service.prerender.io/https://www.teamprometheus.io/path?token=token
-  const prerenderUrl = `https://service.prerender.io/https://teamprometheus.io${cleanPath}`;
+  // Format: https://service.prerender.io/https://www.teamprometheus.io/path
+  const prerenderUrl = `https://service.prerender.io/https://www.teamprometheus.io${cleanPath}`;
   
   // Append token as a query parameter
   const urlWithToken = `${prerenderUrl}${prerenderUrl.includes('?') ? '&' : '?'}token=${prerenderToken}`;
   
-  console.log('Prerender URL:', urlWithToken);
+  console.log('Generated prerender URL:', urlWithToken);
   
   return urlWithToken;
 };
