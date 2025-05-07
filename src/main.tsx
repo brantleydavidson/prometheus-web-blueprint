@@ -7,7 +7,7 @@ import { shouldPrerender, getPrerenderUrl } from './middleware/prerenderMiddlewa
 // Check if the current request is from a crawler that should receive pre-rendered content
 const userAgent = navigator.userAgent;
 
-// Add your Prerender.io token
+// Add your Prerender.io token - this should match your Prerender.io account token
 const PRERENDER_TOKEN = 'dKzffLw7ttkED8XRG9R1';
 
 console.log('User Agent:', userAgent);
@@ -20,11 +20,23 @@ if (shouldPrerender(userAgent)) {
   const fullPath = window.location.pathname + window.location.search;
   console.log('Full path for prerendering:', fullPath);
   
+  // Log detection for debugging
+  console.log('Prerender.io token used:', PRERENDER_TOKEN);
+  console.log('Prerender.io detection active');
+  
   // Redirect to Prerender.io service
   const prerenderUrl = getPrerenderUrl(fullPath, PRERENDER_TOKEN);
   console.log('Redirecting to:', prerenderUrl);
   
-  window.location.href = prerenderUrl;
+  // For Prerender verification specifically, we want to ensure it can capture our content
+  if (userAgent.toLowerCase().includes('prerender')) {
+    console.log('Verification agent detected, special handling enabled');
+    // Continue with normal rendering for verification
+    createRoot(document.getElementById("root")!).render(<App />);
+  } else {
+    // Regular bot handling
+    window.location.href = prerenderUrl;
+  }
 } else {
   // Normal rendering for regular users
   console.log('Regular user detected: Rendering normally');

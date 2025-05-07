@@ -31,8 +31,14 @@ Allow: /
 User-agent: Twitterbot
 Allow: /
 
-# Explicitly allow Prerender's crawler
+# Explicitly allow Prerender's crawler (multiple user agent formats)
 User-agent: Prerender
+Allow: /
+
+User-agent: prerendercloud
+Allow: /
+
+User-agent: PrerenderIO
 Allow: /
 
 # Sitemap location

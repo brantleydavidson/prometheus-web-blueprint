@@ -24,7 +24,9 @@ const crawlerUserAgents = [
   'W3C_Validator',
   'yandex',
   'duckduckbot',
-  'prerender'
+  'prerender',
+  'prerendercloud',
+  'headlessChrome'
 ];
 
 /**
@@ -39,6 +41,12 @@ export const shouldPrerender = (userAgent) => {
   const userAgentLC = userAgent.toLowerCase();
   
   console.log('Checking user agent for prerender:', userAgentLC);
+  
+  // Special case for Prerender verification
+  if (userAgentLC.includes('prerender')) {
+    console.log('Prerender verification detected');
+    return true;
+  }
   
   // Check if user agent matches any crawler patterns
   const isBot = crawlerUserAgents.some(crawler => userAgentLC.includes(crawler));
@@ -57,8 +65,11 @@ export const getPrerenderUrl = (path, prerenderToken) => {
   // Clean up the path and ensure it starts with a slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
+  // Base URL for the website
+  const baseUrl = 'https://www.teamprometheus.io';
+  
   // Format: https://service.prerender.io/https://www.teamprometheus.io/path
-  const prerenderUrl = `https://service.prerender.io/https://www.teamprometheus.io${cleanPath}`;
+  const prerenderUrl = `https://service.prerender.io/${baseUrl}${cleanPath}`;
   
   // Append token as a query parameter
   const urlWithToken = `${prerenderUrl}${prerenderUrl.includes('?') ? '&' : '?'}token=${prerenderToken}`;
