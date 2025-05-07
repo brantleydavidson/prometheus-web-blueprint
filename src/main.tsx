@@ -12,8 +12,13 @@ const PRERENDER_TOKEN = 'dKzffLw7ttkED8XRG9R1';
 
 // If this is a crawler, fetch the pre-rendered version
 if (shouldPrerender(userAgent)) {
+  console.log('Crawler detected: Redirecting to Prerender.io service');
+  
+  // Get full path including query string
+  const fullPath = window.location.pathname + window.location.search;
+  
   // Redirect to Prerender.io service
-  window.location.href = getPrerenderUrl(window.location.pathname + window.location.search, PRERENDER_TOKEN);
+  window.location.href = getPrerenderUrl(fullPath, PRERENDER_TOKEN);
 } else {
   // Normal rendering for regular users
   createRoot(document.getElementById("root")!).render(<App />);

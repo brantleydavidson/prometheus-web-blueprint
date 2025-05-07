@@ -48,10 +48,10 @@ export const shouldPrerender = (userAgent) => {
  * @returns {string} - The URL to fetch the prerendered version from
  */
 export const getPrerenderUrl = (path, prerenderToken) => {
-  // Construct the full URL to the current page
-  const currentUrl = `${window.location.protocol}//${window.location.host}${path}`;
+  // Get the current full URL
+  const currentFullUrl = `${window.location.protocol}//${window.location.host}${path}`;
   
-  // Construct the Prerender.io URL with your token
-  // Format: https://service.prerender.io/https://yoursite.com
-  return `https://service.prerender.io/${currentUrl}?token=${prerenderToken}`;
+  // Format the URL according to Prerender.io's documentation
+  // The format should be: https://service.prerender.io/[full-url]?token=[token]
+  return `https://service.prerender.io/${currentFullUrl}?token=${prerenderToken}`;
 };
