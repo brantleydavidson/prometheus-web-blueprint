@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/providers/AuthProvider';
@@ -51,10 +51,13 @@ const Login = () => {
 
   const handleGoogleSignIn = async () => {
     try {
+      setIsLoading(true);
       await signInWithGoogle();
-      // Redirect is handled by the OAuth flow
+      // Redirection is handled by the OAuth flow
     } catch (error) {
       console.error('Error signing in with Google:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -83,8 +86,9 @@ const Login = () => {
                   variant="outline" 
                   className="w-full flex items-center justify-center gap-2"
                   onClick={handleGoogleSignIn}
+                  disabled={isLoading}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 186.69 190.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 186.69 190.5">
                     <g transform="translate(1184.583 765.171)">
                       <path fill="#4285f4" d="M-1089.333-687.239v36.888h51.262c-2.251 11.863-9.006 21.908-19.137 28.662l30.913 23.986c18.011-16.625 28.402-41.044 28.402-70.052 0-6.754-.606-13.249-1.732-19.483z"/>
                       <path fill="#34a853" d="M-1142.714-651.791l-6.972 5.337-24.679 19.223h0c15.673 31.086 47.796 52.561 85.03 52.561 25.717 0 47.278-8.486 63.038-23.033l-30.913-23.986c-8.486 5.715-19.31 9.179-32.125 9.179-24.765 0-45.806-16.712-53.34-39.226z"/>
@@ -92,7 +96,7 @@ const Login = () => {
                       <path fill="#ea4335" d="M-1089.333-727.244c14.028 0 26.497 4.849 36.455 14.201l27.276-27.276c-16.539-15.413-38.013-24.852-63.731-24.852-37.234 0-69.359 21.388-85.032 52.561l31.693 24.592c7.533-22.514 28.575-39.226 53.339-39.226z"/>
                     </g>
                   </svg>
-                  Sign in with Google
+                  {isLoading ? "Connecting..." : "Sign in with Google"}
                 </Button>
                 
                 <div className="relative">
@@ -151,8 +155,9 @@ const Login = () => {
                   variant="outline" 
                   className="w-full flex items-center justify-center gap-2"
                   onClick={handleGoogleSignIn}
+                  disabled={isLoading}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 186.69 190.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 186.69 190.5">
                     <g transform="translate(1184.583 765.171)">
                       <path fill="#4285f4" d="M-1089.333-687.239v36.888h51.262c-2.251 11.863-9.006 21.908-19.137 28.662l30.913 23.986c18.011-16.625 28.402-41.044 28.402-70.052 0-6.754-.606-13.249-1.732-19.483z"/>
                       <path fill="#34a853" d="M-1142.714-651.791l-6.972 5.337-24.679 19.223h0c15.673 31.086 47.796 52.561 85.03 52.561 25.717 0 47.278-8.486 63.038-23.033l-30.913-23.986c-8.486 5.715-19.31 9.179-32.125 9.179-24.765 0-45.806-16.712-53.34-39.226z"/>
@@ -160,7 +165,7 @@ const Login = () => {
                       <path fill="#ea4335" d="M-1089.333-727.244c14.028 0 26.497 4.849 36.455 14.201l27.276-27.276c-16.539-15.413-38.013-24.852-63.731-24.852-37.234 0-69.359 21.388-85.032 52.561l31.693 24.592c7.533-22.514 28.575-39.226 53.339-39.226z"/>
                     </g>
                   </svg>
-                  Sign up with Google
+                  {isLoading ? "Connecting..." : "Sign up with Google"}
                 </Button>
                 
                 <div className="relative">

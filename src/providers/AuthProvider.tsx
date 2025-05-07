@@ -119,18 +119,20 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const signInWithGoogle = async (): Promise<void> => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/admin`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
-          }
+          },
+          redirectTo: `${window.location.origin}/admin`
         }
       });
 
       if (error) throw error;
+      
+      // No toast needed here as the user will be redirected to Google's auth page
     } catch (error: any) {
       toast({
         variant: "destructive",
