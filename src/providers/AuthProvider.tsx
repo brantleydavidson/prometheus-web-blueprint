@@ -12,6 +12,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -115,6 +116,33 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const signInWithGoogle = async (): Promise<void> => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/admin`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Google login failed",
+        description: error.message || "Failed to sign in with Google",
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signUp = async (email: string, password: string, fullName: string): Promise<void> => {
     try {
       setLoading(true);
@@ -173,6 +201,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     signIn,
     signOut,
     signUp,
+    signInWithGoogle,
   };
 
   return (
