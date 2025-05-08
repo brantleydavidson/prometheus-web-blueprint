@@ -21,9 +21,9 @@ const EnhancedCTABanner = ({
   hubspotFormId,
   showInlineForm = false
 }: EnhancedCTABannerProps) => {
-  // Use a default portal ID if environment variable is not available
-  // This prevents errors when the environment variable is not set
-  const HUBSPOT_PORTAL_ID = process.env.HUBSPOT_PORTAL_ID || "12345678"; // Using a placeholder value
+  // In Vite, environment variables need to be accessed via import.meta.env
+  // Using a default placeholder value
+  const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID || "12345678";
   
   return (
     <section className="py-16 bg-prometheus-navy text-white">

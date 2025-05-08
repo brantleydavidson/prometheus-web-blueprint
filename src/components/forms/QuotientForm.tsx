@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -20,9 +19,9 @@ const QuotientForm = () => {
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Use placeholders for HubSpot IDs - these would be replaced with real values in production
-  const HUBSPOT_PORTAL_ID = process.env.HUBSPOT_PORTAL_ID || "12345678";
-  const HUBSPOT_FORM_ID = process.env.HUBSPOT_FORM_ID || "abcdef12-3456-7890-abcd-ef1234567890";
+  // Using Vite's import.meta.env for environment variables
+  const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID || "12345678";
+  const HUBSPOT_FORM_ID = import.meta.env.VITE_HUBSPOT_FORM_ID || "abcdef12-3456-7890-abcd-ef1234567890";
   
   const form = useForm({
     defaultValues: {
