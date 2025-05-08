@@ -23,29 +23,32 @@ const SubmitResultsForm = ({
   userInfo, 
   onSubmit 
 }: SubmitResultsFormProps) => {
-  const { portalId, apiKey, formId, region } = useHubSpot();
+  const { portalId, apiKey, formId, region, submissionDelay } = useHubSpot();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitAttempts, setSubmitAttempts] = useState(0);
   const { toast } = useToast();
-  
-  // Create data object for HubSpot with multiple formats to increase chances of success
+
+  // Using "ai_quotient" as the primary field name format
+  // + several variations to increase chances of success
   const hubspotCustomData = {
     ...userInfo,
-    // Try every possible field name variation
-    aitest_score: String(score),
+    ai_quotient: String(score),
+    aiQuotient: String(score),
+    ai_quotient_score: String(score),
+    aiQuotientScore: String(score),
+    hs_ai_quotient_score: String(score),
     ai_test_score: String(score),
-    aitestscore: String(score),
-    "ai test score": String(score),
-    "ai_quotient_score": String(score),
-    "ai quotient score": String(score),
-    "aiquotientscore": String(score),
-    // Try numeric versions too
-    aitest_score_numeric: score,
-    ai_test_score_numeric: score,
-    // Include as properties as well
+    aitest_score: String(score),
+    score: String(score),
+    // Also pass as a number format
+    ai_quotient_numeric: score,
+    // Include as properties as well for API calls
     properties: {
-      aitest_score: String(score),
+      ai_quotient: String(score),
+      ai_quotient_score: String(score),
+      aiQuotientScore: String(score),
+      hs_ai_quotient_score: String(score),
       ai_test_score: String(score)
     }
   };
@@ -54,7 +57,8 @@ const SubmitResultsForm = ({
   useEffect(() => {
     console.log('HubSpot data prepared:', hubspotCustomData);
     console.log('Using HubSpot region:', region || 'na1');
-  }, [hubspotCustomData, region]);
+    console.log('Using submission delay:', submissionDelay || 2000, 'ms');
+  }, [hubspotCustomData, region, submissionDelay]);
 
   // Submit via embedded form script first to see if that works
   const submitViaEmbeddedScript = () => {
@@ -64,7 +68,7 @@ const SubmitResultsForm = ({
     }
     
     try {
-      console.log("Attempting submission via embedded script");
+      console.log("Submitting via embedded script with delay");
       
       // Create a hidden div to host the form
       const formContainerId = `hidden-form-${Date.now()}`;
@@ -73,41 +77,69 @@ const SubmitResultsForm = ({
       formContainer.style.display = 'none';
       document.body.appendChild(formContainer);
       
-      // Create the form and submit it programmatically
-      (window as any).hbspt.forms.create({
-        region: region || 'na1',
-        portalId: portalId,
-        formId: formId,
-        target: `#${formContainerId}`,
-        inlineMessage: "Form submitted via script",
-        onFormSubmit: () => {
-          console.log("Embedded form submitted successfully");
-          document.body.removeChild(formContainer);
-          return true;
-        },
-        onFormReady: ($form) => {
-          // Fill in form fields
-          Object.entries(userInfo).forEach(([key, value]) => {
-            const field = $form.find(`[name="${key}"]`);
-            if (field.length) {
-              field.val(value);
-            }
-          });
-          
-          // Add custom score field if it exists
-          ['aitest_score', 'ai_test_score', 'aitestscore', 'ai quotient score'].forEach(fieldName => {
-            const field = $form.find(`[name="${fieldName}"]`);
-            if (field.length) {
-              field.val(String(score));
-            }
-          });
-          
-          // Submit the form
-          setTimeout(() => {
-            $form.submit();
-          }, 500);
-        }
-      });
+      // Create the form with delay to ensure proper synchronization
+      setTimeout(() => {
+        console.log("Creating embedded form after delay");
+        (window as any).hbspt.forms.create({
+          region: region || 'na1',
+          portalId: portalId,
+          formId: formId,
+          target: `#${formContainerId}`,
+          inlineMessage: "Form submitted via script",
+          onFormSubmit: () => {
+            console.log("Embedded form submitted successfully");
+            setTimeout(() => {
+              if (formContainer.parentNode) {
+                document.body.removeChild(formContainer);
+              }
+              setIsSubmitted(true);
+              onSubmit();
+            }, 1000);
+            return true;
+          },
+          onFormReady: ($form) => {
+            console.log("Form is ready, filling fields with data");
+            // Fill in form fields with a delay to ensure proper state
+            setTimeout(() => {
+              try {
+                // Standard fields
+                Object.entries(userInfo).forEach(([key, value]) => {
+                  const field = $form.find(`[name="${key}"]`);
+                  if (field.length) {
+                    console.log(`Setting field ${key} to ${value}`);
+                    field.val(value);
+                  } else {
+                    console.log(`Field ${key} not found in form`);
+                  }
+                });
+                
+                // Try all possible score field names
+                [
+                  'ai_quotient', 
+                  'ai_quotient_score', 
+                  'aiQuotientScore', 
+                  'hs_ai_quotient_score',
+                  'ai_test_score',
+                  'aitest_score',
+                  'score'
+                ].forEach(fieldName => {
+                  const field = $form.find(`[name="${fieldName}"]`);
+                  if (field.length) {
+                    console.log(`Found score field: ${fieldName}, setting to ${score}`);
+                    field.val(String(score));
+                  }
+                });
+                
+                // Submit the form with a slight delay
+                console.log("Submitting form now...");
+                $form.submit();
+              } catch (error) {
+                console.error("Error filling or submitting embedded form:", error);
+              }
+            }, 1000);
+          }
+        });
+      }, submissionDelay || 2000);
       
       return true;
     } catch (error) {
@@ -120,16 +152,19 @@ const SubmitResultsForm = ({
   const submitDirectlyToHubSpot = async () => {
     if (!apiKey) {
       console.error('No HubSpot API key found');
-      return;
+      return false;
     }
     
     try {
       setIsSubmitting(true);
       console.log('Starting HubSpot API submission with data:', hubspotCustomData);
       
+      // Wait a bit to ensure HubSpot is ready to receive the data
+      await new Promise(resolve => setTimeout(resolve, submissionDelay || 2000));
+      
       // Format data for HubSpot API
       const fields = Object.entries(hubspotCustomData)
-        .filter(([key]) => key !== 'properties') // Skip the properties field as we'll handle it separately
+        .filter(([key]) => key !== 'properties') // Skip properties field
         .map(([name, value]) => ({
           name,
           value: typeof value === 'object' ? JSON.stringify(value) : String(value)
@@ -174,15 +209,6 @@ const SubmitResultsForm = ({
       }
       
       console.log('HubSpot submission successful:', responseData);
-      
-      // Try to update the contact directly with the properties as well
-      try {
-        await updateContactDirectly();
-      } catch (contactUpdateError) {
-        console.error('Error updating contact directly:', contactUpdateError);
-        // Don't throw here, we still consider the form submission successful
-      }
-      
       setIsSubmitted(true);
       toast({
         title: "Success!",
@@ -212,69 +238,85 @@ const SubmitResultsForm = ({
     return hubspotCookie ? hubspotCookie.trim().substring(11) : undefined;
   };
   
-  // Update contact directly via CRM API
-  const updateContactDirectly = async () => {
-    if (!apiKey || !userInfo.email) return;
+  // Try a third method: using a synchronized form
+  const trySynchronizedFormSubmission = () => {
+    console.log("Attempting synchronized form submission");
     
-    console.log('Attempting to update contact directly via email:', userInfo.email);
-    
-    // First get the contact by email to get the ID
-    const contactSearchUrl = `https://api.hubapi.com/crm/v3/objects/contacts/search`;
-    const searchResponse = await fetch(contactSearchUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        filterGroups: [
-          {
-            filters: [
-              {
-                propertyName: "email",
-                operator: "EQ",
-                value: userInfo.email
-              }
-            ]
-          }
-        ]
-      })
-    });
-    
-    const searchData = await searchResponse.json();
-    console.log('Contact search response:', searchData);
-    
-    if (searchData.results && searchData.results.length > 0) {
-      const contactId = searchData.results[0].id;
-      console.log('Found contact ID:', contactId);
-      
-      // Try multiple field names when updating the contact
-      const updateUrl = `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`;
-      const updateResponse = await fetch(updateUrl, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          properties: {
-            aitest_score: String(score),
-            ai_test_score: String(score),
-            aitestscore: String(score),
-            "ai_quotient_score": String(score)
-          }
-        })
-      });
-      
-      const updateData = await updateResponse.json();
-      console.log('Contact update response:', updateData);
-      return updateData;
+    if (!(window as any).hbspt) {
+      console.error("HubSpot script not loaded");
+      return false;
     }
     
-    return null;
+    try {
+      // Create a pre-filled form using hidden inputs in the DOM
+      const formDiv = document.createElement('div');
+      formDiv.style.position = 'absolute';
+      formDiv.style.left = '-9999px'; // Hide off-screen
+      document.body.appendChild(formDiv);
+      
+      const form = document.createElement('form');
+      form.id = `hubspot-sync-form-${Date.now()}`;
+      formDiv.appendChild(form);
+      
+      // Add all user fields
+      Object.entries(userInfo).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      });
+      
+      // Add score field with all possible names
+      [
+        'ai_quotient', 
+        'ai_quotient_score', 
+        'aiQuotientScore', 
+        'hs_ai_quotient_score', 
+        'ai_test_score',
+        'aitest_score',
+        'score'
+      ].forEach(fieldName => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = fieldName;
+        input.value = String(score);
+        form.appendChild(input);
+      });
+      
+      // Submit synchronously with the HubSpot API
+      const submitUrl = `https://forms.hsforms.com/submissions/v3/public/submit/formsnext/multipart/${portalId}/${formId}`;
+      const formData = new FormData(form);
+      
+      console.log("Submitting synchronized form with data:", Object.fromEntries(formData));
+      
+      fetch(submitUrl, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors' // This allows cross-origin submission without CORS issues
+      })
+      .then(() => {
+        console.log("Synchronized form submitted (no-cors mode)");
+        setTimeout(() => {
+          document.body.removeChild(formDiv);
+          setIsSubmitted(true);
+          onSubmit();
+        }, 1000);
+      })
+      .catch(err => {
+        console.error("Error with synchronized form submission:", err);
+        document.body.removeChild(formDiv);
+        return false;
+      });
+      
+      return true;
+    } catch (error) {
+      console.error("Error setting up synchronized form:", error);
+      return false;
+    }
   };
 
-  // Submit data automatically with retry logic
+  // Submit data automatically with improved retry logic
   useEffect(() => {
     const attemptSubmission = async () => {
       if (isSubmitted || isSubmitting || submitAttempts >= 3) return;
@@ -284,32 +326,53 @@ const SubmitResultsForm = ({
       
       console.log(`Submission attempt ${submitAttempts + 1}`);
       
-      // Try embedded form script first
-      let success = submitViaEmbeddedScript();
-      
-      // If that fails, try API submission
-      if (!success) {
+      // For first attempt, try both methods with delay between them
+      if (submitAttempts === 0) {
+        // First try the embedded script method
+        const scriptSuccess = submitViaEmbeddedScript();
+        
+        // If that doesn't work, try the API method after a delay
+        if (!scriptSuccess) {
+          setTimeout(async () => {
+            const apiSuccess = await submitDirectlyToHubSpot();
+            
+            // If API method also fails, try synchronized form method
+            if (!apiSuccess) {
+              setTimeout(() => {
+                trySynchronizedFormSubmission();
+              }, 1000);
+            }
+          }, submissionDelay || 2000);
+        }
+      } 
+      // For second attempt, try API submission if not already submitted
+      else if (submitAttempts === 1 && !isSubmitted) {
         setTimeout(async () => {
-          success = await submitDirectlyToHubSpot();
+          const success = await submitDirectlyToHubSpot();
           
-          if (!success && submitAttempts < 2) {
-            // Wait and try again later
-            setTimeout(attemptSubmission, 3000);
+          if (!success) {
+            setTimeout(() => {
+              trySynchronizedFormSubmission();
+            }, 1000);
           }
+        }, submissionDelay || 2000);
+      }
+      // For third attempt, try synchronized form submission
+      else if (submitAttempts === 2 && !isSubmitted) {
+        setTimeout(() => {
+          trySynchronizedFormSubmission();
         }, 1000);
-      } else {
-        setIsSubmitted(true);
-        toast({
-          title: "Success!",
-          description: "Your assessment has been submitted successfully.",
-        });
-        onSubmit();
       }
       
       setIsSubmitting(false);
     };
     
-    attemptSubmission();
+    // Don't auto-submit immediately - wait a bit to ensure everything is ready
+    const timer = setTimeout(() => {
+      attemptSubmission();
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [submitAttempts]);
 
   return (
