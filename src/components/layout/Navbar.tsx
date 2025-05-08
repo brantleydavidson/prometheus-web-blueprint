@@ -8,10 +8,12 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const [whoWeHelpOpen, setWhoWeHelpOpen] = useState(false);
+  const [insightsOpen, setInsightsOpen] = useState(false);
   const isMobile = useIsMobile();
   
   // Adding a delay before closing the dropdown
   const closeTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const insightsCloseTimeout = React.useRef<NodeJS.Timeout | null>(null);
   
   const handleMouseEnter = () => {
     if (closeTimeout.current) {
@@ -26,6 +28,21 @@ const Navbar = () => {
     closeTimeout.current = setTimeout(() => {
       setWhoWeHelpOpen(false);
     }, 600); // Increased from 300ms to 600ms for better user experience
+  };
+
+  const handleInsightsMouseEnter = () => {
+    if (insightsCloseTimeout.current) {
+      clearTimeout(insightsCloseTimeout.current);
+      insightsCloseTimeout.current = null;
+    }
+    setInsightsOpen(true);
+  };
+  
+  const handleInsightsMouseLeave = () => {
+    // Set a timeout to close the dropdown with a longer delay
+    insightsCloseTimeout.current = setTimeout(() => {
+      setInsightsOpen(false);
+    }, 600);
   };
 
   const MobileNavLinks = () => (
@@ -68,6 +85,12 @@ const Navbar = () => {
       </div>
       
       <Link to="/insights" className="text-lg font-medium hover:text-prometheus-orange">Insights & Playbooks</Link>
+      <div className="pl-4 flex flex-col space-y-3">
+        <Link to="/ai-quotient" className="text-md text-gray-600 pl-2 hover:text-prometheus-orange">
+          AI Quotient Assessment
+        </Link>
+      </div>
+      
       <Link to="/about" className="text-lg font-medium hover:text-prometheus-orange">About</Link>
       
       <div className="pt-4">
@@ -153,7 +176,40 @@ const Navbar = () => {
             </div>
             
             <Link to="/services" className="text-base font-medium hover:text-prometheus-orange">Services</Link>
-            <Link to="/insights" className="text-base font-medium hover:text-prometheus-orange">Insights & Playbooks</Link>
+            
+            {/* Insights & Playbooks with hover card */}
+            <div 
+              className="relative"
+              onMouseEnter={handleInsightsMouseEnter}
+              onMouseLeave={handleInsightsMouseLeave}
+            >
+              <Link to="/insights" className="flex items-center gap-1 text-base font-medium hover:text-prometheus-orange">
+                Insights & Playbooks
+                <ChevronDown className="h-4 w-4" />
+              </Link>
+              
+              {insightsOpen && (
+                <div 
+                  className="absolute top-full left-0 mt-2 w-72 bg-white rounded-md shadow-lg p-4 hover-card-fade"
+                  onMouseEnter={handleInsightsMouseEnter}
+                  onMouseLeave={handleInsightsMouseLeave}
+                >
+                  <div className="border-b border-gray-100 pb-4 mb-2">
+                    <h3 className="text-sm font-bold text-gray-500 mb-2">Insights & Playbooks</h3>
+                  </div>
+                  
+                  <ul className="space-y-2">
+                    <li>
+                      <Link to="/ai-quotient" className="flex items-center text-base font-medium text-prometheus-navy hover:text-prometheus-orange">
+                        AI Quotient Assessment
+                      </Link>
+                      <p className="text-xs text-gray-500 mt-1">Discover your organization's AI readiness.</p>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+            
             <Link to="/about" className="text-base font-medium hover:text-prometheus-orange">About</Link>
           </nav>
         </div>
