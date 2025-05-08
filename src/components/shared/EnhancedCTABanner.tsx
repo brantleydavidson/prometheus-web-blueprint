@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import HubSpotForm from '@/components/forms/HubSpotForm';
+import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 
 interface EnhancedCTABannerProps {
   title: string;
@@ -12,6 +13,14 @@ interface EnhancedCTABannerProps {
   hubspotFormId?: string;
   showInlineForm?: boolean;
   customData?: Record<string, any>;
+  useApi?: boolean;
+  formFields?: Array<{
+    name: string;
+    label: string;
+    type: 'text' | 'email' | 'number' | 'textarea' | 'checkbox' | 'select';
+    required?: boolean;
+    options?: Array<{value: string, label: string}>;
+  }>;
 }
 
 const EnhancedCTABanner = ({ 
@@ -21,10 +30,11 @@ const EnhancedCTABanner = ({
   buttonLink,
   hubspotFormId,
   showInlineForm = false,
-  customData = {}
+  customData = {},
+  useApi = false,
+  formFields = []
 }: EnhancedCTABannerProps) => {
-  // In Vite, environment variables need to be accessed via import.meta.env
-  const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID || "12345678";
+  const { portalId } = useHubSpot();
   
   return (
     <section className="py-16 bg-prometheus-navy text-white">
@@ -37,10 +47,12 @@ const EnhancedCTABanner = ({
             {showInlineForm && hubspotFormId ? (
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <HubSpotForm 
-                  portalId={HUBSPOT_PORTAL_ID}
+                  portalId={portalId}
                   formId={hubspotFormId}
                   className="hubspot-cta-form" 
                   customData={customData}
+                  useApi={useApi}
+                  formFields={formFields}
                 />
               </div>
             ) : (

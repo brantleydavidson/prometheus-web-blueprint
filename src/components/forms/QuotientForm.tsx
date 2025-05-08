@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import HubSpotForm from '@/components/forms/HubSpotForm';
 import ResultsPage from '@/components/forms/ResultsPage';
 import { questions } from '@/data/aiQuotientQuestions';
+import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 
 const QuotientForm = () => {
   const { toast } = useToast();
@@ -20,8 +20,7 @@ const QuotientForm = () => {
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Using Vite's import.meta.env for environment variables
-  const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID || "12345678";
+  const { portalId } = useHubSpot();
   const HUBSPOT_FORM_ID = import.meta.env.VITE_HUBSPOT_FORM_ID || "abcdef12-3456-7890-abcd-ef1234567890";
   
   const form = useForm({
@@ -112,10 +111,68 @@ const QuotientForm = () => {
     });
     setIsSubmitting(false);
   };
+
+  // Define form fields for the API-based form
+  const formFields = [
+    {
+      name: "firstname",
+      label: "First Name",
+      type: "text" as const,
+      required: true
+    },
+    {
+      name: "lastname",
+      label: "Last Name",
+      type: "text" as const,
+      required: true
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email" as const,
+      required: true
+    },
+    {
+      name: "company",
+      label: "Company",
+      type: "text" as const,
+      required: true
+    },
+    {
+      name: "jobtitle",
+      label: "Job Title",
+      type: "text" as const,
+      required: true
+    },
+    {
+      name: "phone",
+      label: "Phone Number",
+      type: "text" as const,
+      required: false
+    },
+    {
+      name: "industry",
+      label: "Industry",
+      type: "select" as const,
+      required: false,
+      options: [
+        { value: "technology", label: "Technology" },
+        { value: "healthcare", label: "Healthcare" },
+        { value: "finance", label: "Finance" },
+        { value: "education", label: "Education" },
+        { value: "manufacturing", label: "Manufacturing" },
+        { value: "retail", label: "Retail" },
+        { value: "other", label: "Other" }
+      ]
+    }
+  ];
   
   if (showResults) {
     // Create custom data for HubSpot
     const hubspotCustomData = createHubSpotCustomData();
+
+    // Check if we should use the API approach based on whether we have an API key
+    const useApiApproach = !!import.meta.env.VITE_HUBSPOT_API_KEY;
 
     return (
       <div className="space-y-8">
@@ -128,11 +185,13 @@ const QuotientForm = () => {
           </p>
           
           <HubSpotForm 
-            portalId={HUBSPOT_PORTAL_ID}
+            portalId={portalId}
             formId={HUBSPOT_FORM_ID}
             onFormSubmit={handleHubSpotSubmit}
             className="hubspot-ai-quotient-form"
             customData={hubspotCustomData}
+            useApi={useApiApproach}
+            formFields={formFields}
           />
         </Card>
       </div>
