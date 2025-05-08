@@ -1,7 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card } from '@/components/ui/card';
-import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 import ResultsPage from '@/components/forms/ResultsPage';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,148 +14,22 @@ interface SubmitResultsFormProps {
     company: string;
   };
   onSubmit: () => void;
+  isSubmitting?: boolean;
+  isSubmitted?: boolean;
 }
 
 const SubmitResultsForm = ({ 
   score, 
   totalPossible, 
   userInfo, 
-  onSubmit 
+  onSubmit,
+  isSubmitting = false,
+  isSubmitted = false
 }: SubmitResultsFormProps) => {
-  const { portalId, formId, region, submissionDelay } = useHubSpot();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitAttempt, setSubmitAttempt] = useState(0);
   const { toast } = useToast();
   
-  // Convert score to string for consistency with HubSpot expectations
-  const scoreAsString = String(score);
+  // Display submission status based on props (now controlled by parent)
   
-  // Debug information
-  console.log(`Score for submission: ${score} (${typeof score})`);
-  console.log(`Score as string: ${scoreAsString} (${typeof scoreAsString})`);
-  console.log(`Using HubSpot portalId: ${portalId}, formId: ${formId}, region: ${region}`);
-  console.log(`Using submission delay: ${submissionDelay || 15000}ms`);
-
-  // Get HubSpot tracking cookie
-  const getHubspotCookie = () => {
-    const cookies = document.cookie.split(';');
-    const hubspotCookie = cookies.find(c => c.trim().startsWith('hubspotutk='));
-    return hubspotCookie ? hubspotCookie.trim().substring(11) : undefined;
-  };
-
-  // Submit directly to HubSpot API
-  const submitToHubSpot = async () => {
-    if (!portalId || !formId) {
-      console.error('Missing required HubSpot configuration');
-      return false;
-    }
-    
-    try {
-      console.log(`Attempt ${submitAttempt + 1}: Starting submission to HubSpot...`);
-      
-      // Create focused fields array with ONLY what's absolutely necessary
-      const fields = [
-        { name: "firstname", value: userInfo.firstname },
-        { name: "lastname", value: userInfo.lastname },
-        { name: "email", value: userInfo.email },
-        { name: "company", value: userInfo.company },
-        { name: "aitest_score", value: scoreAsString }
-      ];
-      
-      console.log('Submitting these fields to HubSpot:', fields);
-      
-      // Build the payload with the cookie for better tracking
-      const payload = {
-        submittedAt: Date.now(),
-        fields: fields,
-        context: {
-          hutk: getHubspotCookie(),
-          pageUri: window.location.href,
-          pageName: document.title
-        }
-      };
-      
-      // Submit to the forms API
-      const url = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
-      console.log(`Submitting to URL: ${url}`);
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const responseText = await response.text();
-      console.log('HubSpot API response text:', responseText);
-      
-      let responseData;
-      try {
-        responseData = JSON.parse(responseText);
-        console.log('HubSpot API response data:', responseData);
-      } catch (e) {
-        console.log('Could not parse response as JSON:', e);
-      }
-
-      if (!response.ok) {
-        throw new Error(responseData?.message || `Failed with status ${response.status}`);
-      }
-      
-      console.log('Form submission successful!');
-      
-      setIsSubmitted(true);
-      toast({
-        title: "Success!",
-        description: "Your assessment has been submitted successfully.",
-      });
-      onSubmit();
-      
-      return true;
-    } catch (error) {
-      console.error('Form submission error:', error);
-      return false;
-    }
-  };
-
-  // Submission logic with delay
-  useEffect(() => {
-    if (isSubmitted || isSubmitting) return;
-    
-    const attemptSubmission = async () => {
-      setIsSubmitting(true);
-      
-      try {
-        // Wait for HubSpot tracking to initialize
-        console.log(`Waiting ${submissionDelay || 15000}ms before submitting...`);
-        await new Promise(resolve => setTimeout(resolve, submissionDelay || 15000));
-        
-        // Try form submission
-        const success = await submitToHubSpot();
-        
-        if (success) {
-          console.log('Submission successful!');
-        } else if (submitAttempt < 2) {
-          console.log(`Attempt ${submitAttempt + 1} failed, will retry...`);
-          setSubmitAttempt(prev => prev + 1);
-        } else {
-          console.log('All submission attempts failed');
-          toast({
-            variant: "destructive",
-            title: "Submission Warning",
-            description: "Your results were saved locally but we had trouble submitting to our system. Please contact support.",
-          });
-        }
-      } finally {
-        setIsSubmitting(false);
-      }
-    };
-    
-    // Start submission process
-    attemptSubmission();
-  }, [submitAttempt]);
-
   return (
     <div className="space-y-8">
       <ResultsPage score={score} totalPossible={totalPossible} />
@@ -167,25 +40,25 @@ const SubmitResultsForm = ({
           Thank you for completing the AI Quotient assessment.
         </p>
         
-        {(isSubmitting) && (
+        {isSubmitting && (
           <div className="text-center p-4">
             <p className="text-blue-600 font-medium">Submitting your assessment...</p>
           </div>
         )}
         
-        {(isSubmitted) && (
+        {isSubmitted && (
           <div className="text-center p-4">
             <p className="text-green-600 font-medium">Your assessment has been submitted!</p>
           </div>
         )}
         
-        {(!isSubmitting && !isSubmitted && submitAttempt >= 2) && (
+        {!isSubmitting && !isSubmitted && (
           <div className="text-center p-4">
             <p className="text-amber-600 font-medium">
               We're having trouble submitting your assessment. Your results are saved locally.
             </p>
             <button 
-              onClick={() => setSubmitAttempt(0)} 
+              onClick={onSubmit} 
               className="mt-2 px-4 py-2 bg-prometheus-orange text-white rounded hover:bg-prometheus-orange/90 transition-colors"
             >
               Try Again
