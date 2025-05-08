@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import HubSpotForm from '@/components/forms/HubSpotForm';
 import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
@@ -25,11 +25,13 @@ const SubmitResultsForm = ({
 }: SubmitResultsFormProps) => {
   const { portalId, apiKey, formId } = useHubSpot();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   
   // Create HubSpot custom data with assessment results
+  // Ensure the aitest_score is a string for proper HubSpot processing
   const hubspotCustomData = {
     ...userInfo,
-    aitest_score: score,
+    aitest_score: String(score),
   };
 
   // Use the API approach if we have an API key
@@ -37,6 +39,7 @@ const SubmitResultsForm = ({
   
   const handleHubSpotSubmit = () => {
     setIsSubmitting(true);
+    setIsSubmitted(true);
     onSubmit();
     setIsSubmitting(false);
   };
@@ -51,14 +54,22 @@ const SubmitResultsForm = ({
           Thank you for completing the AI Quotient assessment. Your data has been submitted successfully.
         </p>
         
-        <HubSpotForm 
-          portalId={portalId}
-          formId={formId}
-          onFormSubmit={handleHubSpotSubmit}
-          className="hubspot-ai-quotient-form"
-          customData={hubspotCustomData}
-          useApi={useApiApproach}
-        />
+        {!isSubmitted && (
+          <HubSpotForm 
+            portalId={portalId}
+            formId={formId}
+            onFormSubmit={handleHubSpotSubmit}
+            className="hubspot-ai-quotient-form"
+            customData={hubspotCustomData}
+            useApi={useApiApproach}
+          />
+        )}
+        
+        {isSubmitted && (
+          <div className="text-center p-4">
+            <p className="text-green-600 font-medium">Your assessment has been submitted!</p>
+          </div>
+        )}
       </Card>
     </div>
   );
