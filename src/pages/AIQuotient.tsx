@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import QuotientForm from '@/components/forms/QuotientForm';
+import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
 
 const AIQuotient = () => {
   return (
@@ -35,6 +36,14 @@ const AIQuotient = () => {
         <div className="container max-w-4xl mx-auto px-4 py-12">
           <QuotientForm />
         </div>
+        
+        {/* Additional CTA at the bottom of the page */}
+        <EnhancedCTABanner 
+          title="Accelerate Your AI Journey with Prometheus"
+          description="Let our team help you implement AI solutions tailored to your business needs."
+          buttonText="Contact Us"
+          buttonLink="/contact-us"
+        />
       </main>
       <Footer />
     </div>

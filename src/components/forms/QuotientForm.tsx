@@ -20,9 +20,9 @@ const QuotientForm = () => {
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Replace with your actual HubSpot IDs
-  const HUBSPOT_PORTAL_ID = "your-portal-id";
-  const HUBSPOT_FORM_ID = "your-form-id";
+  // Use placeholders for HubSpot IDs - these would be replaced with real values in production
+  const HUBSPOT_PORTAL_ID = process.env.HUBSPOT_PORTAL_ID || "12345678";
+  const HUBSPOT_FORM_ID = process.env.HUBSPOT_FORM_ID || "abcdef12-3456-7890-abcd-ef1234567890";
   
   const form = useForm({
     defaultValues: {
