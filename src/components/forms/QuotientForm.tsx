@@ -53,53 +53,9 @@ const QuotientForm = () => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // This is the last question - submit the form to HubSpot
-      if (submitToHubSpot) {
-        setIsSubmitting(true);
-        
-        try {
-          // Create focused fields array with ONLY what's absolutely necessary
-          const fields = [
-            { name: "firstname", value: userInfo.firstname },
-            { name: "lastname", value: userInfo.lastname },
-            { name: "email", value: userInfo.email },
-            { name: "company", value: userInfo.company },
-            { name: "aitest_score", value: String(newScore) }
-          ];
-          
-          // Wait a moment for HubSpot tracking to initialize (shorter than before)
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          
-          console.log("Submitting to HubSpot with score:", newScore);
-          const success = await submitToHubSpot(fields);
-          
-          if (success) {
-            setIsSubmitted(true);
-            toast({
-              title: "Success!",
-              description: "Your assessment has been submitted successfully.",
-            });
-          } else {
-            toast({
-              variant: "destructive",
-              title: "Submission Warning",
-              description: "We had trouble submitting to our system. Please contact support.",
-            });
-          }
-        } catch (error) {
-          console.error("Error submitting to HubSpot:", error);
-          toast({
-            variant: "destructive",
-            title: "Submission Error",
-            description: "An error occurred while submitting your assessment.",
-          });
-        } finally {
-          setIsSubmitting(false);
-          setShowResults(true);
-        }
-      } else {
-        setShowResults(true);
-      }
+      // This is the last question - show results without submitting to HubSpot
+      setShowResults(true);
+      // Note: We're NOT submitting to HubSpot here anymore
     }
   };
   
@@ -111,11 +67,54 @@ const QuotientForm = () => {
     }
   };
   
-  const handleSubmitResults = () => {
-    toast({
-      title: "Thank you!",
-      description: "Your assessment has been submitted successfully.",
-    });
+  const handleSubmitResults = async () => {
+    if (!submitToHubSpot) {
+      toast({
+        variant: "destructive",
+        title: "Submission Error",
+        description: "HubSpot integration is not available.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Create focused fields array with ONLY what's absolutely necessary
+      const fields = [
+        { name: "firstname", value: userInfo.firstname },
+        { name: "lastname", value: userInfo.lastname },
+        { name: "email", value: userInfo.email },
+        { name: "company", value: userInfo.company },
+        { name: "aitest_score", value: String(score) }
+      ];
+      
+      console.log("Submitting to HubSpot with score:", score);
+      const success = await submitToHubSpot(fields);
+      
+      if (success) {
+        setIsSubmitted(true);
+        toast({
+          title: "Success!",
+          description: "Your assessment has been submitted successfully.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Submission Warning",
+          description: "We had trouble submitting to our system. Please contact support.",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting to HubSpot:", error);
+      toast({
+        variant: "destructive",
+        title: "Submission Error",
+        description: "An error occurred while submitting your assessment.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Show user information collection form
