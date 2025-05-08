@@ -29,14 +29,10 @@ const SubmitResultsForm = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   
-  // Create HubSpot custom data with assessment results
-  // Using ai_test_score instead of aitest_score - may need to match exactly what's in HubSpot
+  // Use the exact field name as configured in the HubSpot form
   const hubspotCustomData = {
     ...userInfo,
-    // Try both common formats that HubSpot might recognize
-    ai_test_score: String(score),  
-    aitest_score: String(score),
-    ai_quotient_score: String(score)
+    aitest_score: String(score)  // Use the same field name you configured in HubSpot
   };
 
   // Log the data being sent to HubSpot for debugging
@@ -44,21 +40,24 @@ const SubmitResultsForm = ({
     console.log('HubSpot data prepared:', hubspotCustomData);
   }, [hubspotCustomData]);
 
-  // Determine if we can use the API approach
-  const useApiApproach = !!apiKey;
-  
-  // Handle direct API submission to HubSpot
+  // Always use the API approach for more reliable submission
   const submitDirectlyToHubSpot = async () => {
-    if (!apiKey) return;
+    if (!apiKey) {
+      console.error('No HubSpot API key found');
+      return;
+    }
     
     try {
       setIsSubmitting(true);
+      console.log('Starting HubSpot submission with data:', hubspotCustomData);
       
       // Format data for HubSpot API
       const fields = Object.entries(hubspotCustomData).map(([name, value]) => ({
         name,
         value: typeof value === 'object' ? JSON.stringify(value) : String(value)
       }));
+
+      console.log('Formatted fields for HubSpot:', fields);
 
       const payload = {
         fields,
@@ -68,7 +67,7 @@ const SubmitResultsForm = ({
         }
       };
       
-      console.log('Submitting directly to HubSpot:', payload);
+      console.log('Submitting to HubSpot API with payload:', payload);
       
       // Submit to HubSpot API
       const url = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
@@ -80,12 +79,20 @@ const SubmitResultsForm = ({
         body: JSON.stringify(payload)
       });
 
+      const responseText = await response.text();
+      console.log('Raw HubSpot response:', responseText);
+      
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        console.log('Could not parse response as JSON:', e);
+      }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit to HubSpot');
+        throw new Error(responseData?.message || `Failed with status ${response.status}`);
       }
       
-      const responseData = await response.json();
       console.log('HubSpot submission successful:', responseData);
       
       setIsSubmitted(true);
@@ -105,20 +112,14 @@ const SubmitResultsForm = ({
       setIsSubmitting(false);
     }
   };
-  
-  // Handle form submission through the HubSpotForm component
-  const handleHubSpotSubmit = () => {
-    console.log('HubSpot form submitted through component');
-    setIsSubmitted(true);
-    onSubmit();
-  };
 
-  // Auto-submit if we're using the API approach
+  // Auto-submit when component mounts
   useEffect(() => {
-    if (useApiApproach && !isSubmitted && !isSubmitting) {
+    if (!isSubmitted && !isSubmitting) {
+      console.log('Auto-submitting to HubSpot...');
       submitDirectlyToHubSpot();
     }
-  }, [useApiApproach, isSubmitted]);
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -127,19 +128,8 @@ const SubmitResultsForm = ({
       <Card className="p-6 bg-white shadow-lg border border-gray-200">
         <h3 className="text-xl font-semibold mb-4">Your Assessment Is Complete</h3>
         <p className="mb-6 text-gray-600">
-          Thank you for completing the AI Quotient assessment. Your data has been submitted successfully.
+          Thank you for completing the AI Quotient assessment.
         </p>
-        
-        {!isSubmitted && !useApiApproach && (
-          <HubSpotForm 
-            portalId={portalId}
-            formId={formId}
-            onFormSubmit={handleHubSpotSubmit}
-            className="hubspot-ai-quotient-form"
-            customData={hubspotCustomData}
-            useApi={false}
-          />
-        )}
         
         {(isSubmitting) && (
           <div className="text-center p-4">
