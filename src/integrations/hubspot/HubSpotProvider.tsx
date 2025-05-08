@@ -6,11 +6,13 @@ interface HubSpotContextType {
   portalId: string;
   apiKey?: string;
   formId: string;
+  region?: string;
 }
 
 const HubSpotContext = createContext<HubSpotContextType>({
   portalId: '',
   formId: '',
+  region: 'na1',
 });
 
 export const useHubSpot = () => useContext(HubSpotContext);
@@ -25,12 +27,14 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
   // Using Private App access token which works with the newest APIs
   const HUBSPOT_API_KEY = "pat-na2-57ad6ebd-c3d3-4855-9af3-20217e0c57bb";
   const HUBSPOT_FORM_ID = "90ea34b5-d0e9-40e4-a98c-b31b4dc6f445";
+  const HUBSPOT_REGION = "na2"; // Explicitly set region to na2 based on API key format
   
   return (
     <HubSpotContext.Provider value={{ 
       portalId: HUBSPOT_PORTAL_ID,
       apiKey: HUBSPOT_API_KEY,
-      formId: HUBSPOT_FORM_ID
+      formId: HUBSPOT_FORM_ID,
+      region: HUBSPOT_REGION
     }}>
       <HubSpotScript portalId={HUBSPOT_PORTAL_ID} />
       {children}
