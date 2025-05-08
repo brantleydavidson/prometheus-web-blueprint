@@ -46,10 +46,16 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       console.log('Starting direct submission to HubSpot...');
       console.log('Submitting these fields to HubSpot:', fields);
       
+      // Ensure all fields have string values
+      const processedFields = fields.map(field => ({
+        ...field,
+        value: String(field.value) // Convert all values to strings
+      }));
+      
       // Build the payload with the cookie for better tracking
       const payload = {
         submittedAt: Date.now(),
-        fields: fields,
+        fields: processedFields,
         context: {
           hutk: getHubspotCookie(),
           pageUri: window.location.href,
@@ -60,6 +66,7 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       // Submit to the forms API
       const url = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`;
       console.log(`Submitting to URL: ${url}`);
+      console.log('Payload:', JSON.stringify(payload));
       
       const response = await fetch(url, {
         method: 'POST',

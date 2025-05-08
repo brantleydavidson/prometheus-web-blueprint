@@ -80,16 +80,25 @@ const QuotientForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Create focused fields array with ONLY what's absolutely necessary
+      // Calculate the score percentage for a clearer metric (0-100 instead of raw score)
+      const scorePercentage = Math.round((score / (totalSteps * 4)) * 100);
+      
+      // Log the values being sent to help with debugging
+      console.log("Submitting to HubSpot with raw score:", score);
+      console.log("Total possible score:", totalSteps * 4);
+      console.log("Score percentage:", scorePercentage);
+      
+      // Create focused fields array with user info and the score
       const fields = [
         { name: "firstname", value: userInfo.firstname },
         { name: "lastname", value: userInfo.lastname },
         { name: "email", value: userInfo.email },
         { name: "company", value: userInfo.company },
-        { name: "aitest_score", value: String(score) }
+        // Send both raw score and percentage for flexibility
+        { name: "aitest_score", value: String(score) },
+        { name: "aitest_score_percentage", value: String(scorePercentage) }
       ];
       
-      console.log("Submitting to HubSpot with score:", score);
       const success = await submitToHubSpot(fields);
       
       if (success) {
