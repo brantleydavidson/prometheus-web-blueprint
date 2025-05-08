@@ -30,9 +30,13 @@ const SubmitResultsForm = ({
   const { toast } = useToast();
   
   // Create HubSpot custom data with assessment results
+  // Using ai_test_score instead of aitest_score - may need to match exactly what's in HubSpot
   const hubspotCustomData = {
     ...userInfo,
-    aitest_score: String(score), // Ensure score is a string
+    // Try both common formats that HubSpot might recognize
+    ai_test_score: String(score),  
+    aitest_score: String(score),
+    ai_quotient_score: String(score)
   };
 
   // Log the data being sent to HubSpot for debugging
