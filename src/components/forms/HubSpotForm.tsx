@@ -40,6 +40,17 @@ const HubSpotForm = ({
   const uniqueId = targetId || `hubspot-form-${formId}`;
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // If customData contains all the necessary user info, submit automatically
+  useEffect(() => {
+    const requiredFields = ['firstname', 'lastname', 'email', 'company'];
+    const hasAllRequired = requiredFields.every(field => customData[field]);
+    
+    if (useApi && hasAllRequired && !isSubmitted) {
+      submitFormToHubSpot();
+    }
+  }, [customData, useApi]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -70,8 +81,6 @@ const HubSpotForm = ({
       const submitData = {
         ...formData,
         ...customData,
-        portal_id: portalId,
-        form_id: formId
       };
 
       // API endpoint for HubSpot form submissions
@@ -91,11 +100,12 @@ const HubSpotForm = ({
         }
       };
 
+      console.log('Submitting to HubSpot:', payload);
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
         },
         body: JSON.stringify(payload)
       });
@@ -107,6 +117,7 @@ const HubSpotForm = ({
 
       // Clear form after successful submission
       setFormData({});
+      setIsSubmitted(true);
       
       toast({
         title: "Success!",
@@ -132,6 +143,18 @@ const HubSpotForm = ({
     e.preventDefault();
     submitFormToHubSpot();
   };
+
+  // If already submitted or auto-submitted, show a thank you message
+  if (isSubmitted) {
+    return (
+      <div className={className}>
+        <div className="text-center p-6">
+          <h3 className="text-xl font-semibold mb-3">Thank You!</h3>
+          <p className="text-gray-600">Your assessment has been submitted successfully.</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     // Only use the HubSpot embed script if not using API

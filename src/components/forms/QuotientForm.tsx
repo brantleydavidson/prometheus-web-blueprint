@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -5,7 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { ArrowRight, ArrowLeft, Flag, Brain, BookOpen } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ArrowRight, ArrowLeft, Flag, Brain, User, Building, Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import HubSpotForm from '@/components/forms/HubSpotForm';
 import ResultsPage from '@/components/forms/ResultsPage';
@@ -14,34 +16,54 @@ import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 
 const QuotientForm = () => {
   const { toast } = useToast();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(-1); // -1 is for user info page
+  const [userInfo, setUserInfo] = useState({
+    firstname: '',
+    lastname: '',
+    email: '',
+    company: ''
+  });
   const [answers, setAnswers] = useState<{[key: number]: string}>({});
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { portalId } = useHubSpot();
-  const HUBSPOT_FORM_ID = import.meta.env.VITE_HUBSPOT_FORM_ID || "abcdef12-3456-7890-abcd-ef1234567890";
+  const { portalId, apiKey, formId } = useHubSpot();
   
-  const form = useForm({
+  // Form for collecting user information
+  const userInfoForm = useForm({
+    defaultValues: userInfo
+  });
+
+  // Form for the quiz questions
+  const quizForm = useForm({
     defaultValues: {
       answer: ''
     }
   });
   
   const totalSteps = questions.length;
-  const progress = ((currentStep) / totalSteps) * 100;
+  const progress = currentStep < 0 ? 0 : ((currentStep) / totalSteps) * 100;
   
-  const currentQuestion = questions[currentStep];
+  const currentQuestion = currentStep >= 0 && currentStep < questions.length ? questions[currentStep] : null;
   
   useEffect(() => {
     // Pre-select the previous answer if it exists
-    if (answers[currentStep]) {
-      form.setValue('answer', answers[currentStep]);
-    } else {
-      form.setValue('answer', '');
+    if (currentStep >= 0 && answers[currentStep]) {
+      quizForm.setValue('answer', answers[currentStep]);
+    } else if (currentStep >= 0) {
+      quizForm.setValue('answer', '');
     }
-  }, [currentStep, form, answers]);
+  }, [currentStep, quizForm, answers]);
+  
+  const handleUserInfoSubmit = (data: typeof userInfo) => {
+    setUserInfo(data);
+    setCurrentStep(0); // Move to the first question
+    toast({
+      title: "Let's Begin!",
+      description: "Now let's assess your AI readiness.",
+    });
+  };
   
   const handleNext = (data: { answer: string }) => {
     // Save answer
@@ -49,7 +71,7 @@ const QuotientForm = () => {
     setAnswers(newAnswers);
     
     // Calculate running score
-    const questionValue = currentQuestion.options.find(
+    const questionValue = currentQuestion?.options.find(
       option => option.id === data.answer
     )?.value || 0;
     
@@ -62,7 +84,7 @@ const QuotientForm = () => {
       setShowResults(true);
       toast({
         title: "Assessment Complete!",
-        description: "Please complete the form to receive your personalized report.",
+        description: "Your assessment has been completed successfully.",
       });
     }
   };
@@ -70,128 +92,133 @@ const QuotientForm = () => {
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+    } else if (currentStep === 0) {
+      setCurrentStep(-1); // Go back to user info page
     }
   };
   
   // Create HubSpot custom data with assessment results
   const createHubSpotCustomData = () => {
-    // Calculate percentage score
-    const percentage = Math.round((score / (totalSteps * 4)) * 100);
-    
-    // Determine category based on score
-    let category = '';
-    if (percentage >= 80) {
-      category = "AI Innovator";
-    } else if (percentage >= 60) {
-      category = "AI Ready";
-    } else if (percentage >= 40) {
-      category = "AI Emerging";
-    } else {
-      category = "AI Developing";
-    }
-    
-    // Create object with all assessment data for HubSpot
     return {
-      ai_quotient_score: score,
-      ai_quotient_percentage: percentage,
-      ai_quotient_category: category,
-      ai_quotient_total_questions: totalSteps,
-      ai_quotient_answers: JSON.stringify(answers),
-      ai_quotient_completion_date: new Date().toISOString().split('T')[0]
+      ...userInfo,
+      aitest_score: score, // Using the specific field name requested
     };
   };
   
   const handleHubSpotSubmit = () => {
     setIsSubmitting(true);
-    // This function is called when the HubSpot form is submitted
-    // The custom data is already passed to HubSpot via hidden fields
     toast({
       title: "Thank you!",
-      description: "Your personalized AI Quotient report will be sent to your email shortly.",
+      description: "Your assessment has been submitted successfully.",
     });
     setIsSubmitting(false);
   };
 
-  // Define form fields for the API-based form
-  const formFields = [
-    {
-      name: "firstname",
-      label: "First Name",
-      type: "text" as const,
-      required: true
-    },
-    {
-      name: "lastname",
-      label: "Last Name",
-      type: "text" as const,
-      required: true
-    },
-    {
-      name: "email",
-      label: "Email",
-      type: "email" as const,
-      required: true
-    },
-    {
-      name: "company",
-      label: "Company",
-      type: "text" as const,
-      required: true
-    },
-    {
-      name: "jobtitle",
-      label: "Job Title",
-      type: "text" as const,
-      required: true
-    },
-    {
-      name: "phone",
-      label: "Phone Number",
-      type: "text" as const,
-      required: false
-    },
-    {
-      name: "industry",
-      label: "Industry",
-      type: "select" as const,
-      required: false,
-      options: [
-        { value: "technology", label: "Technology" },
-        { value: "healthcare", label: "Healthcare" },
-        { value: "finance", label: "Finance" },
-        { value: "education", label: "Education" },
-        { value: "manufacturing", label: "Manufacturing" },
-        { value: "retail", label: "Retail" },
-        { value: "other", label: "Other" }
-      ]
-    }
-  ];
-  
+  // Render user information collection page
+  if (currentStep === -1) {
+    return (
+      <div className="space-y-8">
+        <Card className="p-6 shadow-md">
+          <div className="flex items-start gap-3 mb-6">
+            <User className="h-6 w-6 text-prometheus-orange mt-1" />
+            <h2 className="text-xl font-semibold">Let's start with your information</h2>
+          </div>
+          
+          <Form {...userInfoForm}>
+            <form onSubmit={userInfoForm.handleSubmit(handleUserInfoSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={userInfoForm.control}
+                  name="firstname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your first name" required {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={userInfoForm.control}
+                  name="lastname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your last name" required {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={userInfoForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="your.email@example.com" required {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={userInfoForm.control}
+                name="company"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your company name" required {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex justify-end pt-4">
+                <Button 
+                  type="submit" 
+                  className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white flex gap-2"
+                >
+                  Start Assessment <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </Card>
+      </div>
+    );
+  }
+
   if (showResults) {
     // Create custom data for HubSpot
     const hubspotCustomData = createHubSpotCustomData();
 
-    // Check if we should use the API approach based on whether we have an API key
-    const useApiApproach = !!import.meta.env.VITE_HUBSPOT_API_KEY;
+    // Use the API approach since we have an API key
+    const useApiApproach = !!apiKey;
 
     return (
       <div className="space-y-8">
         <ResultsPage score={score} totalPossible={totalSteps * 4} />
         
         <Card className="p-6 bg-white shadow-lg border border-gray-200">
-          <h3 className="text-xl font-semibold mb-4">Get Your Detailed Report</h3>
+          <h3 className="text-xl font-semibold mb-4">Your Assessment Is Complete</h3>
           <p className="mb-6 text-gray-600">
-            Complete the form below to receive your personalized AI Quotient report with actionable recommendations tailored to your score.
+            Thank you for completing the AI Quotient assessment. Your data has been submitted successfully.
           </p>
           
           <HubSpotForm 
             portalId={portalId}
-            formId={HUBSPOT_FORM_ID}
+            formId={formId}
             onFormSubmit={handleHubSpotSubmit}
             className="hubspot-ai-quotient-form"
             customData={hubspotCustomData}
             useApi={useApiApproach}
-            formFields={formFields}
           />
         </Card>
       </div>
@@ -210,13 +237,13 @@ const QuotientForm = () => {
       <Card className="p-6 shadow-md">
         <div className="flex items-start gap-3 mb-6">
           <Brain className="h-6 w-6 text-prometheus-orange mt-1" />
-          <h2 className="text-xl font-semibold">{currentQuestion.question}</h2>
+          <h2 className="text-xl font-semibold">{currentQuestion?.question}</h2>
         </div>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleNext)} className="space-y-6">
+        <Form {...quizForm}>
+          <form onSubmit={quizForm.handleSubmit(handleNext)} className="space-y-6">
             <FormField
-              control={form.control}
+              control={quizForm.control}
               name="answer"
               render={({ field }) => (
                 <FormItem className="space-y-4">
@@ -225,7 +252,7 @@ const QuotientForm = () => {
                     value={field.value}
                     className="space-y-3"
                   >
-                    {currentQuestion.options.map((option) => (
+                    {currentQuestion?.options.map((option) => (
                       <div key={option.id} className="flex items-center space-x-2 rounded-md border border-gray-200 p-3 hover:bg-gray-50 transition-colors">
                         <RadioGroupItem value={option.id} id={option.id} />
                         <FormLabel htmlFor={option.id} className="flex-grow cursor-pointer font-normal">
@@ -243,7 +270,6 @@ const QuotientForm = () => {
                 type="button" 
                 variant="outline" 
                 onClick={handlePrevious}
-                disabled={currentStep === 0}
                 className="flex gap-2"
               >
                 <ArrowLeft className="h-4 w-4" /> Previous
@@ -252,7 +278,7 @@ const QuotientForm = () => {
               <Button 
                 type="submit" 
                 className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white flex gap-2"
-                disabled={!form.watch('answer')}
+                disabled={!quizForm.watch('answer')}
               >
                 {currentStep === totalSteps - 1 ? (
                   <>Finish <Flag className="h-4 w-4" /></>

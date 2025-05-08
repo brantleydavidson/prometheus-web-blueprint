@@ -5,10 +5,12 @@ import HubSpotScript from './hubspotScript';
 interface HubSpotContextType {
   portalId: string;
   apiKey?: string;
+  formId: string;
 }
 
 const HubSpotContext = createContext<HubSpotContextType>({
   portalId: '',
+  formId: '',
 });
 
 export const useHubSpot = () => useContext(HubSpotContext);
@@ -18,14 +20,16 @@ interface HubSpotProviderProps {
 }
 
 const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
-  // Using Vite's import.meta.env for environment variables
-  const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID || "12345678";
-  const HUBSPOT_API_KEY = import.meta.env.VITE_HUBSPOT_API_KEY;
+  // Using specific values provided by the user
+  const HUBSPOT_PORTAL_ID = "242669200";
+  const HUBSPOT_API_KEY = "pat-na2-57ad6ebd-c3d3-4855-9af3-20217e0c57bb";
+  const HUBSPOT_FORM_ID = "90ea34b5-d0e9-40e4-a98c-b31b4dc6f445";
   
   return (
     <HubSpotContext.Provider value={{ 
       portalId: HUBSPOT_PORTAL_ID,
-      apiKey: HUBSPOT_API_KEY
+      apiKey: HUBSPOT_API_KEY,
+      formId: HUBSPOT_FORM_ID
     }}>
       <HubSpotScript portalId={HUBSPOT_PORTAL_ID} />
       {children}

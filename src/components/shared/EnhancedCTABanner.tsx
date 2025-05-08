@@ -34,7 +34,9 @@ const EnhancedCTABanner = ({
   useApi = false,
   formFields = []
 }: EnhancedCTABannerProps) => {
-  const { portalId } = useHubSpot();
+  const { portalId, formId } = useHubSpot();
+  // Use the formId from props or from the context
+  const actualFormId = hubspotFormId || formId;
   
   return (
     <section className="py-16 bg-prometheus-navy text-white">
@@ -44,11 +46,10 @@ const EnhancedCTABanner = ({
             <h2 className="text-2xl md:text-3xl font-bold mb-4">{title}</h2>
             <p className="text-lg mb-8">{description}</p>
             
-            {showInlineForm && hubspotFormId ? (
+            {showInlineForm && actualFormId ? (
               <div className="bg-white p-6 rounded-lg shadow-lg">
                 <HubSpotForm 
-                  portalId={portalId}
-                  formId={hubspotFormId}
+                  formId={actualFormId}
                   className="hubspot-cta-form" 
                   customData={customData}
                   useApi={useApi}
