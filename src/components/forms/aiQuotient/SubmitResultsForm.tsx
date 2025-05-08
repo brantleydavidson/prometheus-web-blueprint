@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
@@ -28,153 +29,63 @@ const SubmitResultsForm = ({
   const [submitAttempts, setSubmitAttempts] = useState(0);
   const { toast } = useToast();
 
+  // Explicitly convert score to string for HubSpot
+  const scoreAsString = String(score);
+  
+  // Log original score and string conversion to verify format
+  console.log(`Original score: ${score}, Type: ${typeof score}`);
+  console.log(`Converted score: ${scoreAsString}, Type: ${typeof scoreAsString}`);
+
   // IMPORTANT: Prioritizing 'aitest_score' field as specified by the user
-  // Still including other variations for backward compatibility
-  // Also explicitly converting score to string for HubSpot
+  // Using a more targeted approach with fewer variations
   const hubspotCustomData = {
     ...userInfo,
-    // Primary field name as specified by user
-    aitest_score: String(score),
-    // Secondary alternatives
-    ai_test_score: String(score),
-    ai_quotient: String(score),
-    aiQuotient: String(score),
-    ai_quotient_score: String(score),
-    aiQuotientScore: String(score),
-    hs_ai_quotient_score: String(score),
-    score: String(score),
-    // Also pass as properties for API calls
+    // Primary field name as specified by user (primary focus)
+    aitest_score: scoreAsString,
+    // Only include a few essential backups
+    ai_test_score: scoreAsString,
+    score: scoreAsString,
+    // Also include directly in properties object for API calls
     properties: {
-      aitest_score: String(score),
-      ai_test_score: String(score)
+      aitest_score: scoreAsString
     }
   };
 
   // Log the data being sent to HubSpot for debugging
   useEffect(() => {
-    console.log('HubSpot data prepared:', hubspotCustomData);
+    console.log('HubSpot submission data:', hubspotCustomData);
     console.log('Using HubSpot region:', region || 'na1');
-    console.log('Using submission delay:', submissionDelay || 5000, 'ms');
+    console.log('Using submission delay:', submissionDelay || 8000, 'ms');
   }, [hubspotCustomData, region, submissionDelay]);
 
-  // Submit via embedded form script - improved with longer timeouts
-  const submitViaEmbeddedScript = () => {
-    if (!(window as any).hbspt || !(window as any).hbspt.forms) {
-      console.error("HubSpot forms script not loaded");
-      return false;
-    }
-    
-    try {
-      console.log("Submitting via embedded script with extended delay");
-      
-      // Create a hidden div to host the form
-      const formContainerId = `hidden-form-${Date.now()}`;
-      const formContainer = document.createElement('div');
-      formContainer.id = formContainerId;
-      formContainer.style.display = 'none';
-      document.body.appendChild(formContainer);
-      
-      // Create the form with longer delay to ensure proper synchronization
-      setTimeout(() => {
-        console.log("Creating embedded form after delay");
-        (window as any).hbspt.forms.create({
-          region: region || 'na1',
-          portalId: portalId,
-          formId: formId,
-          target: `#${formContainerId}`,
-          inlineMessage: "Form submitted via script",
-          onFormSubmit: () => {
-            console.log("Embedded form submitted successfully");
-            setTimeout(() => {
-              if (formContainer.parentNode) {
-                document.body.removeChild(formContainer);
-              }
-              setIsSubmitted(true);
-              onSubmit();
-            }, 2000);
-            return true;
-          },
-          onFormReady: ($form) => {
-            console.log("Form is ready, filling fields with data");
-            // Fill in form fields with a delay to ensure proper state
-            setTimeout(() => {
-              try {
-                // Standard fields
-                Object.entries(userInfo).forEach(([key, value]) => {
-                  const field = $form.find(`[name="${key}"]`);
-                  if (field.length) {
-                    console.log(`Setting field ${key} to ${value}`);
-                    field.val(value);
-                  } else {
-                    console.log(`Field ${key} not found in form`);
-                  }
-                });
-                
-                // Try all score field names, but prioritize the aitest_score
-                [
-                  'aitest_score', // This is now first in the list as requested
-                  'ai_test_score', 
-                  'ai_quotient', 
-                  'ai_quotient_score', 
-                  'aiQuotientScore', 
-                  'hs_ai_quotient_score',
-                  'score'
-                ].forEach(fieldName => {
-                  const field = $form.find(`[name="${fieldName}"]`);
-                  if (field.length) {
-                    console.log(`Found score field: ${fieldName}, setting to ${score}`);
-                    field.val(String(score));
-                  }
-                });
-                
-                // Wait longer before submission
-                console.log("Waiting before submitting form...");
-                setTimeout(() => {
-                  console.log("Now submitting form...");
-                  $form.submit();
-                }, 3000);
-              } catch (error) {
-                console.error("Error filling or submitting embedded form:", error);
-              }
-            }, 2000);
-          }
-        });
-      }, submissionDelay || 5000);
-      
-      return true;
-    } catch (error) {
-      console.error("Error with embedded form submission:", error);
-      return false;
-    }
-  };
-
-  // Submit directly to HubSpot API with increased delays
+  // Directly call HubSpot API with the simplest possible payload
   const submitDirectlyToHubSpot = async () => {
     if (!apiKey) {
-      console.error('No HubSpot API key found');
+      console.error('No HubSpot API key found for API submission');
       return false;
     }
     
     try {
       setIsSubmitting(true);
-      console.log('Starting HubSpot API submission with data:', hubspotCustomData);
+      console.log('Starting direct HubSpot API submission for aitest_score');
       
-      // Wait longer to ensure HubSpot is ready to receive the data
-      await new Promise(resolve => setTimeout(resolve, submissionDelay || 5000));
+      // Wait for HubSpot to be ready
+      await new Promise(resolve => setTimeout(resolve, submissionDelay || 8000));
       
-      // Format data for HubSpot API
-      const fields = Object.entries(hubspotCustomData)
-        .filter(([key]) => key !== 'properties') // Skip properties field
-        .map(([name, value]) => ({
-          name,
-          value: typeof value === 'object' ? JSON.stringify(value) : String(value)
-        }));
+      // Create the simplest possible payload focusing on the aitest_score
+      const simpleFields = [
+        { name: "firstname", value: userInfo.firstname },
+        { name: "lastname", value: userInfo.lastname },
+        { name: "email", value: userInfo.email },
+        { name: "company", value: userInfo.company },
+        { name: "aitest_score", value: scoreAsString }
+      ];
 
-      console.log('Formatted fields for HubSpot:', fields);
+      console.log('Simplified fields for HubSpot API:', simpleFields);
 
       const payload = {
         submittedAt: Date.now(),
-        fields,
+        fields: simpleFields,
         context: {
           hutk: getHubspotCookie(),
           pageUri: window.location.href,
@@ -182,9 +93,9 @@ const SubmitResultsForm = ({
         }
       };
       
-      console.log('Submitting to HubSpot API with payload:', payload);
+      console.log('Submitting to HubSpot API with simplified payload:', payload);
       
-      // Submit to HubSpot API
+      // Use the HubSpot forms API
       const url = `https://api.hsforms.com/submissions/v3/integration/submit/${portalId}/${formId}`;
       const response = await fetch(url, {
         method: 'POST',
@@ -195,7 +106,7 @@ const SubmitResultsForm = ({
       });
 
       const responseText = await response.text();
-      console.log('Raw HubSpot response:', responseText);
+      console.log('HubSpot API response:', responseText);
       
       let responseData;
       try {
@@ -208,7 +119,7 @@ const SubmitResultsForm = ({
         throw new Error(responseData?.message || `Failed with status ${response.status}`);
       }
       
-      console.log('HubSpot submission successful:', responseData);
+      console.log('HubSpot submission successful with aitest_score focus');
       setIsSubmitted(true);
       toast({
         title: "Success!",
@@ -231,86 +142,102 @@ const SubmitResultsForm = ({
     }
   };
   
-  // Get the HubSpot cookie for better tracking
+  // Try to get the HubSpot cookie for better tracking
   const getHubspotCookie = () => {
     const cookies = document.cookie.split(';');
     const hubspotCookie = cookies.find(c => c.trim().startsWith('hubspotutk='));
     return hubspotCookie ? hubspotCookie.trim().substring(11) : undefined;
   };
   
-  // Try a third method: Manual form submission with hidden inputs
-  const trySynchronizedFormSubmission = () => {
-    console.log("Attempting manual form submission with hidden inputs");
+  // Try a direct properties API call to update the contact
+  const tryContactPropertiesUpdate = async () => {
+    if (!apiKey) {
+      console.error('No HubSpot API key found for properties update');
+      return false;
+    }
     
     try {
-      // Create a pre-filled form using hidden inputs in the DOM
-      const formDiv = document.createElement('div');
-      formDiv.style.position = 'absolute';
-      formDiv.style.left = '-9999px'; // Hide off-screen
-      document.body.appendChild(formDiv);
+      console.log('Attempting direct contact properties update');
       
-      const form = document.createElement('form');
-      form.id = `hubspot-sync-form-${Date.now()}`;
-      form.action = `https://forms.hsforms.com/submissions/v3/public/submit/formsnext/multipart/${portalId}/${formId}`;
-      form.method = 'POST';
-      form.target = '_blank'; // Open in new window/tab to avoid navigation
-      formDiv.appendChild(form);
+      // First try to get the contact by email
+      const emailEncoded = encodeURIComponent(userInfo.email);
+      const searchUrl = `https://api.hubapi.com/crm/v3/objects/contacts/search`;
       
-      // Add all user fields
-      Object.entries(userInfo).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = String(value);
-        form.appendChild(input);
+      const searchPayload = {
+        filterGroups: [{
+          filters: [{
+            propertyName: 'email',
+            operator: 'EQ',
+            value: userInfo.email
+          }]
+        }]
+      };
+      
+      console.log('Searching for contact with email:', userInfo.email);
+      
+      const searchResponse = await fetch(searchUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(searchPayload)
       });
       
-      // Add score field with all possible names, but prioritize aitest_score
-      [
-        'aitest_score', // This one first as requested
-        'ai_test_score',
-        'ai_quotient', 
-        'ai_quotient_score', 
-        'aiQuotientScore', 
-        'hs_ai_quotient_score',
-        'score'
-      ].forEach(fieldName => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = fieldName;
-        input.value = String(score);
-        form.appendChild(input);
-      });
+      const searchData = await searchResponse.json();
+      console.log('Search response:', searchData);
       
-      // Wait a bit before submitting
-      console.log("Preparing to submit manual form in 3 seconds...");
-      setTimeout(() => {
-        try {
-          console.log("Submitting manual form now");
-          form.submit();
-          console.log("Manual form submitted");
-          
-          // Wait a bit longer before marking as submitted
-          setTimeout(() => {
-            document.body.removeChild(formDiv);
-            setIsSubmitted(true);
-            onSubmit();
-          }, 3000);
-        } catch (err) {
-          console.error("Error submitting manual form:", err);
-          document.body.removeChild(formDiv);
+      let contactId;
+      
+      if (searchData.results && searchData.results.length > 0) {
+        contactId = searchData.results[0].id;
+        console.log('Found existing contact with ID:', contactId);
+      } else {
+        console.log('Contact not found, will create during form submission');
+        return false;
+      }
+      
+      if (contactId) {
+        // Update the contact properties directly
+        const updateUrl = `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`;
+        
+        const updatePayload = {
+          properties: {
+            aitest_score: scoreAsString
+          }
+        };
+        
+        console.log('Updating contact with aitest_score:', updatePayload);
+        
+        const updateResponse = await fetch(updateUrl, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(updatePayload)
+        });
+        
+        const updateData = await updateResponse.json();
+        console.log('Contact update response:', updateData);
+        
+        if (updateResponse.ok) {
+          console.log('Successfully updated contact with aitest_score property');
+          return true;
+        } else {
+          console.error('Failed to update contact:', updateData);
           return false;
         }
-      }, 3000);
+      }
       
-      return true;
+      return false;
     } catch (error) {
-      console.error("Error setting up manual form:", error);
+      console.error('Error updating contact properties:', error);
       return false;
     }
   };
 
-  // Submit data automatically with improved spacing between attempts
+  // Submit data with a focused approach
   useEffect(() => {
     const attemptSubmission = async () => {
       if (isSubmitted || isSubmitting || submitAttempts >= 3) return;
@@ -318,59 +245,37 @@ const SubmitResultsForm = ({
       setIsSubmitting(true);
       setSubmitAttempts(prev => prev + 1);
       
-      console.log(`Submission attempt ${submitAttempts + 1}`);
+      console.log(`Focused submission attempt ${submitAttempts + 1} for aitest_score`);
       
-      // For first attempt, try the embedded script method
-      if (submitAttempts === 0) {
-        submitViaEmbeddedScript();
-        
-        // Wait longer before trying next method
-        setTimeout(async () => {
-          if (!isSubmitted) {
-            const apiSuccess = await submitDirectlyToHubSpot();
-            
-            // If API method also fails, wait before trying synchronized form method
-            if (!apiSuccess && !isSubmitted) {
-              setTimeout(() => {
-                if (!isSubmitted) {
-                  trySynchronizedFormSubmission();
-                }
-              }, 8000);
-            }
-          }
-        }, 10000); // Wait 10 seconds before trying API method
+      // First attempt - direct API submission with a focus on aitest_score
+      const apiSuccess = await submitDirectlyToHubSpot();
+      
+      // If direct submission succeeded, also try to update the contact properties directly 
+      if (apiSuccess) {
+        console.log('First method succeeded, also attempting contact property update for redundancy');
+        await tryContactPropertiesUpdate();
       } 
-      // For second attempt, try API submission with longer delay
-      else if (submitAttempts === 1 && !isSubmitted) {
+      // If first attempt failed, try the contact properties update as a fallback
+      else if (!isSubmitted) {
+        console.log('First method failed, trying direct contact property update instead');
         setTimeout(async () => {
           if (!isSubmitted) {
-            await submitDirectlyToHubSpot();
-          }
-          
-          // Try synchronized form as last resort after a longer wait
-          setTimeout(() => {
-            if (!isSubmitted) {
-              trySynchronizedFormSubmission();
+            const contactUpdateSuccess = await tryContactPropertiesUpdate();
+            if (contactUpdateSuccess) {
+              setIsSubmitted(true);
+              onSubmit();
             }
-          }, 8000);
-        }, 5000);
-      }
-      // For third attempt, just try synchronized form submission
-      else if (submitAttempts === 2 && !isSubmitted) {
-        setTimeout(() => {
-          if (!isSubmitted) {
-            trySynchronizedFormSubmission();
           }
-        }, 3000);
+        }, 5000);
       }
       
       setIsSubmitting(false);
     };
     
-    // Wait longer before initial submission attempt
+    // Wait before initial submission attempt
     const timer = setTimeout(() => {
       attemptSubmission();
-    }, 2000);
+    }, 3000);
     
     return () => clearTimeout(timer);
   }, [submitAttempts, isSubmitted]);

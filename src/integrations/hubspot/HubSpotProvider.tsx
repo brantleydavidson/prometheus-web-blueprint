@@ -30,7 +30,7 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
   const HUBSPOT_API_KEY = "pat-na2-57ad6ebd-c3d3-4855-9af3-20217e0c57bb";
   const HUBSPOT_FORM_ID = "90ea34b5-d0e9-40e4-a98c-b31b4dc6f445";
   const HUBSPOT_REGION = "na2"; // Explicitly set region to na2 based on API key format
-  const SUBMISSION_DELAY = 5000; // Increased delay to 5 seconds to ensure HubSpot has time to process
+  const SUBMISSION_DELAY = 8000; // Increased delay to 8 seconds to ensure HubSpot has more time to process
   
   return (
     <HubSpotContext.Provider value={{ 
