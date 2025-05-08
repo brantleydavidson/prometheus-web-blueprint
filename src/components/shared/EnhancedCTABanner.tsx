@@ -21,8 +21,8 @@ const EnhancedCTABanner = ({
   hubspotFormId,
   showInlineForm = false
 }: EnhancedCTABannerProps) => {
-  // Replace with your actual HubSpot Portal ID
-  const HUBSPOT_PORTAL_ID = 'your-portal-id';
+  // Replace with your actual HubSpot Portal ID from the environment
+  const HUBSPOT_PORTAL_ID = process.env.HUBSPOT_PORTAL_ID || "your-portal-id";
   
   return (
     <section className="py-16 bg-prometheus-navy text-white">

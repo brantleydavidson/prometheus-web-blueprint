@@ -33,6 +33,7 @@ import AuthProvider from "./providers/AuthProvider";
 import HubSpotProvider from "./integrations/hubspot/HubSpotProvider";
 import ContactUs from "./pages/ContactUs";
 import BookAudit from "./pages/BookAudit";
+import AIQuotient from "./pages/AIQuotient";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
                 <Route path="/blueprint" element={<Blueprint />} />
                 <Route path="/contact-us" element={<ContactUs />} />
                 <Route path="/book-audit" element={<BookAudit />} />
+                <Route path="/ai-quotient" element={<AIQuotient />} />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<Admin />}>
