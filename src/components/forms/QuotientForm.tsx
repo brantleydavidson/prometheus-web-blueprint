@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -73,10 +74,38 @@ const QuotientForm = () => {
     }
   };
   
+  // Create HubSpot custom data with assessment results
+  const createHubSpotCustomData = () => {
+    // Calculate percentage score
+    const percentage = Math.round((score / (totalSteps * 4)) * 100);
+    
+    // Determine category based on score
+    let category = '';
+    if (percentage >= 80) {
+      category = "AI Innovator";
+    } else if (percentage >= 60) {
+      category = "AI Ready";
+    } else if (percentage >= 40) {
+      category = "AI Emerging";
+    } else {
+      category = "AI Developing";
+    }
+    
+    // Create object with all assessment data for HubSpot
+    return {
+      ai_quotient_score: score,
+      ai_quotient_percentage: percentage,
+      ai_quotient_category: category,
+      ai_quotient_total_questions: totalSteps,
+      ai_quotient_answers: JSON.stringify(answers),
+      ai_quotient_completion_date: new Date().toISOString().split('T')[0]
+    };
+  };
+  
   const handleHubSpotSubmit = () => {
     setIsSubmitting(true);
-    // In a real implementation, you might want to send the score and answers
-    // to your backend or directly to HubSpot via an edge function
+    // This function is called when the HubSpot form is submitted
+    // The custom data is already passed to HubSpot via hidden fields
     toast({
       title: "Thank you!",
       description: "Your personalized AI Quotient report will be sent to your email shortly.",
@@ -85,6 +114,9 @@ const QuotientForm = () => {
   };
   
   if (showResults) {
+    // Create custom data for HubSpot
+    const hubspotCustomData = createHubSpotCustomData();
+
     return (
       <div className="space-y-8">
         <ResultsPage score={score} totalPossible={totalSteps * 4} />
@@ -100,6 +132,7 @@ const QuotientForm = () => {
             formId={HUBSPOT_FORM_ID}
             onFormSubmit={handleHubSpotSubmit}
             className="hubspot-ai-quotient-form"
+            customData={hubspotCustomData}
           />
         </Card>
       </div>

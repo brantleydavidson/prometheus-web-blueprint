@@ -11,6 +11,7 @@ interface EnhancedCTABannerProps {
   buttonLink: string;
   hubspotFormId?: string;
   showInlineForm?: boolean;
+  customData?: Record<string, any>;
 }
 
 const EnhancedCTABanner = ({ 
@@ -19,10 +20,10 @@ const EnhancedCTABanner = ({
   buttonText, 
   buttonLink,
   hubspotFormId,
-  showInlineForm = false
+  showInlineForm = false,
+  customData = {}
 }: EnhancedCTABannerProps) => {
   // In Vite, environment variables need to be accessed via import.meta.env
-  // Using a default placeholder value
   const HUBSPOT_PORTAL_ID = import.meta.env.VITE_HUBSPOT_PORTAL_ID || "12345678";
   
   return (
@@ -39,6 +40,7 @@ const EnhancedCTABanner = ({
                   portalId={HUBSPOT_PORTAL_ID}
                   formId={hubspotFormId}
                   className="hubspot-cta-form" 
+                  customData={customData}
                 />
               </div>
             ) : (

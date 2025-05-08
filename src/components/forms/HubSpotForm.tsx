@@ -8,6 +8,7 @@ interface HubSpotFormProps {
   onFormSubmit?: () => void;
   region?: string;
   className?: string;
+  customData?: Record<string, any>; // Custom data to pass to HubSpot
 }
 
 const HubSpotForm = ({ 
@@ -16,7 +17,8 @@ const HubSpotForm = ({
   targetId, 
   onFormSubmit, 
   region = 'na1',
-  className = 'hubspot-form-container'
+  className = 'hubspot-form-container',
+  customData = {}
 }: HubSpotFormProps) => {
   const formContainerRef = useRef<HTMLDivElement>(null);
   const uniqueId = targetId || `hubspot-form-${formId}`;
@@ -48,6 +50,13 @@ const HubSpotForm = ({
         formId,
         target: `#${uniqueId}`,
         onFormSubmit: onFormSubmit ? () => onFormSubmit() : undefined,
+        // Add hidden fields for custom data
+        ...(Object.keys(customData).length > 0 && {
+          hiddenFields: Object.entries(customData).reduce((acc, [key, value]) => {
+            acc[key] = String(value);
+            return acc;
+          }, {} as Record<string, string>)
+        })
       });
     }
 
@@ -57,7 +66,7 @@ const HubSpotForm = ({
         formContainerRef.current.innerHTML = '';
       }
     };
-  }, [portalId, formId, uniqueId, region, onFormSubmit]);
+  }, [portalId, formId, uniqueId, region, onFormSubmit, customData]);
 
   return <div id={uniqueId} ref={formContainerRef} className={className} />;
 };
