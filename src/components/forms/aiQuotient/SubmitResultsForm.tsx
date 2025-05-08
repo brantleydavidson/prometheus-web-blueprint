@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import HubSpotForm from '@/components/forms/HubSpotForm';
 import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 import ResultsPage from '@/components/forms/ResultsPage';
 import { useToast } from '@/hooks/use-toast';
@@ -29,10 +28,22 @@ const SubmitResultsForm = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   
-  // Use the exact field name as configured in the HubSpot form
+  // Try multiple field name variations that might match what's in HubSpot
+  // Sometimes HubSpot's internal field name is different from what's displayed in the UI
   const hubspotCustomData = {
     ...userInfo,
-    aitest_score: String(score)  // Use the same field name you configured in HubSpot
+    // Try different variations of the field name - HubSpot sometimes normalizes field names
+    aitest_score: String(score),
+    ai_test_score: String(score),
+    aitestscore: String(score),
+    "ai test score": String(score),
+    "ai_quotient_score": String(score),
+    "ai quotient score": String(score),
+    // Also try it directly in the properties field which sometimes works
+    properties: {
+      aitest_score: String(score),
+      ai_test_score: String(score)
+    }
   };
 
   // Log the data being sent to HubSpot for debugging
@@ -40,7 +51,7 @@ const SubmitResultsForm = ({
     console.log('HubSpot data prepared:', hubspotCustomData);
   }, [hubspotCustomData]);
 
-  // Always use the API approach for more reliable submission
+  // Submit directly to HubSpot
   const submitDirectlyToHubSpot = async () => {
     if (!apiKey) {
       console.error('No HubSpot API key found');
@@ -52,10 +63,12 @@ const SubmitResultsForm = ({
       console.log('Starting HubSpot submission with data:', hubspotCustomData);
       
       // Format data for HubSpot API
-      const fields = Object.entries(hubspotCustomData).map(([name, value]) => ({
-        name,
-        value: typeof value === 'object' ? JSON.stringify(value) : String(value)
-      }));
+      const fields = Object.entries(hubspotCustomData)
+        .filter(([key]) => key !== 'properties') // Skip the properties field as we'll handle it separately
+        .map(([name, value]) => ({
+          name,
+          value: typeof value === 'object' ? JSON.stringify(value) : String(value)
+        }));
 
       console.log('Formatted fields for HubSpot:', fields);
 
@@ -94,6 +107,64 @@ const SubmitResultsForm = ({
       }
       
       console.log('HubSpot submission successful:', responseData);
+      
+      // Now let's try to update the contact directly with the properties
+      try {
+        if (userInfo.email) {
+          console.log('Attempting to update contact directly via email:', userInfo.email);
+          // First get the contact by email to get the ID
+          const contactSearchUrl = `https://api.hubapi.com/crm/v3/objects/contacts/search`;
+          const searchResponse = await fetch(contactSearchUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              filterGroups: [
+                {
+                  filters: [
+                    {
+                      propertyName: "email",
+                      operator: "EQ",
+                      value: userInfo.email
+                    }
+                  ]
+                }
+              ]
+            })
+          });
+          
+          const searchData = await searchResponse.json();
+          console.log('Contact search response:', searchData);
+          
+          if (searchData.results && searchData.results.length > 0) {
+            const contactId = searchData.results[0].id;
+            console.log('Found contact ID:', contactId);
+            
+            // Update the contact with the score
+            const updateUrl = `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`;
+            const updateResponse = await fetch(updateUrl, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+              },
+              body: JSON.stringify({
+                properties: {
+                  aitest_score: String(score)
+                }
+              })
+            });
+            
+            const updateData = await updateResponse.json();
+            console.log('Contact update response:', updateData);
+          }
+        }
+      } catch (contactUpdateError) {
+        console.error('Error updating contact directly:', contactUpdateError);
+        // Don't throw here, we still consider the form submission successful
+      }
       
       setIsSubmitted(true);
       toast({
