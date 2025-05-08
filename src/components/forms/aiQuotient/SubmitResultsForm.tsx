@@ -23,7 +23,7 @@ const SubmitResultsForm = ({
   userInfo, 
   onSubmit 
 }: SubmitResultsFormProps) => {
-  const { portalId, apiKey, formId, region, submissionDelay } = useHubSpot();
+  const { portalId, formId, region, submissionDelay } = useHubSpot();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitAttempt, setSubmitAttempt] = useState(0);
@@ -45,9 +45,9 @@ const SubmitResultsForm = ({
     return hubspotCookie ? hubspotCookie.trim().substring(11) : undefined;
   };
 
-  // Submit directly to HubSpot API - extremely simplified to focus on the score field
+  // Submit directly to HubSpot API
   const submitToHubSpot = async () => {
-    if (!apiKey || !portalId || !formId) {
+    if (!portalId || !formId) {
       console.error('Missing required HubSpot configuration');
       return false;
     }
@@ -56,7 +56,6 @@ const SubmitResultsForm = ({
       console.log(`Attempt ${submitAttempt + 1}: Starting submission to HubSpot...`);
       
       // Create focused fields array with ONLY what's absolutely necessary
-      // Using aitest_score as the primary field name
       const fields = [
         { name: "firstname", value: userInfo.firstname },
         { name: "lastname", value: userInfo.lastname },
@@ -105,10 +104,7 @@ const SubmitResultsForm = ({
         throw new Error(responseData?.message || `Failed with status ${response.status}`);
       }
       
-      console.log('Form submission successful! Attempting direct property update as well...');
-      
-      // Also try to update contact properties directly for redundancy
-      await updateContactProperty();
+      console.log('Form submission successful!');
       
       setIsSubmitted(true);
       toast({
@@ -120,81 +116,6 @@ const SubmitResultsForm = ({
       return true;
     } catch (error) {
       console.error('Form submission error:', error);
-      return false;
-    }
-  };
-  
-  // Update contact property directly using the CRM API
-  const updateContactProperty = async () => {
-    if (!apiKey) return false;
-    
-    try {
-      console.log('Attempting direct contact property update...');
-      
-      // First search for the contact by email
-      const searchUrl = `https://api.hubapi.com/crm/v3/objects/contacts/search`;
-      const searchPayload = {
-        filterGroups: [{
-          filters: [{
-            propertyName: 'email',
-            operator: 'EQ',
-            value: userInfo.email
-          }]
-        }]
-      };
-      
-      console.log('Searching for contact with email:', userInfo.email);
-      
-      const searchResponse = await fetch(searchUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify(searchPayload)
-      });
-      
-      const searchData = await searchResponse.json();
-      console.log('Search response:', searchData);
-      
-      // If contact exists, update their properties directly
-      if (searchData.results && searchData.results.length > 0) {
-        const contactId = searchData.results[0].id;
-        console.log('Found existing contact with ID:', contactId);
-        
-        const updateUrl = `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`;
-        const updatePayload = {
-          properties: {
-            aitest_score: scoreAsString
-          }
-        };
-        
-        console.log('Updating contact properties directly:', updatePayload);
-        
-        const updateResponse = await fetch(updateUrl, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify(updatePayload)
-        });
-        
-        const updateData = await updateResponse.json();
-        console.log('Contact update response:', updateData);
-        
-        if (updateResponse.ok) {
-          console.log('Successfully updated contact property');
-          return true;
-        }
-      } else {
-        // If contact doesn't exist yet, the form submission will create it
-        console.log('No existing contact found - form submission will create a new contact');
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Error updating contact property:', error);
       return false;
     }
   };
