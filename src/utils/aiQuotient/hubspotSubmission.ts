@@ -86,10 +86,26 @@ export const prepareHubSpotFields = (
     fields.push({ name: "message", value: comments });
   }
   
+  // Expected pillar names in HubSpot
+  const expectedPillars = [
+    "Data Spine Health",
+    "Funnel Intelligence & Attribution", 
+    "Automation Maturity",
+    "AI-Ready Content Operations",
+    "Governance & Change Management"
+  ];
+  
+  console.log('[DEBUG] Expected pillars for submission:', expectedPillars);
+  console.log('[DEBUG] Actual pillars in pillarScores:', Object.keys(pillarScores));
+  console.log('[DEBUG] Actual pillars in maxPillarScores:', Object.keys(maxPillarScores));
+  
   // Add pillar scores and percentages - ensure format matches HubSpot property names exactly
-  Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
+  expectedPillars.forEach(pillar => {
     // Format pillar name for HubSpot using exact required format
     const formattedPillar = formatPillarNameForHubSpot(pillar);
+    
+    // Get pillar score (or default to 0)
+    const pillarScore = pillarScores[pillar] || 0;
     
     // Add the raw score with proper property name (no underscores)
     fields.push({ 
@@ -106,10 +122,45 @@ export const prepareHubSpotFields = (
         value: String(pillarPercentage) 
       });
     }
+    
+    console.log(`[DEBUG] Adding pillar: ${pillar} as pillar${formattedPillar} with score: ${pillarScore}`);
+    console.log(`[DEBUG] Max score for ${pillar}: ${maxForPillar}`);
   });
   
   // Flag that this is a detailed report request (no underscores)
   fields.push({ name: "requesteddetailedreport", value: "Yes" });
+  
+  // Do a verification check for all required fields
+  const requiredFields = [
+    "aitestscorepercentage",
+    "pillarfunnelintelligenceattribution",
+    "pillarfunnelintelligenceattributionpercentage",
+    "pillaraireadycontentoperationspercentage",
+    "pillardataspinehealthpercentage",
+    "requesteddetailedreport",
+    "pillargovernancechangemanagementpercentage",
+    "pillargovernancechangemanagement",
+    "pillaraireadycontentoperations",
+    "pillardataspinehealth",
+    "pillarautomationmaturity",
+    "pillarautomationmaturitypercentage",
+    "aitestscore",
+    "aireadinesscategory"
+  ];
+  
+  // Check if all required fields are present
+  const fieldNames = fields.map(f => f.name);
+  const missingFields = requiredFields.filter(f => !fieldNames.includes(f));
+  
+  if (missingFields.length > 0) {
+    console.error('[ERROR] Missing required HubSpot fields:', missingFields);
+    
+    // Add any missing fields with default values
+    missingFields.forEach(fieldName => {
+      fields.push({ name: fieldName, value: "0" });
+      console.log(`[DEBUG] Adding missing field with default value: ${fieldName}`);
+    });
+  }
   
   // Log the fields to help with debugging
   console.log("Final HubSpot fields before submission:", JSON.stringify(fields, null, 2));

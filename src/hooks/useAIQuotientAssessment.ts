@@ -85,23 +85,33 @@ export const useAIQuotientAssessment = () => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // In testing mode, we may want to simulate full test completion
+      // In testing mode, we need to simulate data for all pillars
+      // to ensure all fields are sent to HubSpot
       if (TESTING_MODE) {
         console.log('[TESTING MODE] Simulating completion of all questions');
         
-        // Optional: Populate other pillars with sample data
-        // This would ensure all expected fields are sent to HubSpot
-        const allPillars = new Set(questions.map(q => q.pillar));
+        // Get all unique pillars from the full question set
+        const allPillars = Object.keys(questionsByPillar);
         const updatedPillarScores = { ...newPillarScores };
         
+        // Assign a simulated score to each pillar that doesn't have one yet
         allPillars.forEach(pillar => {
           if (!updatedPillarScores[pillar]) {
             updatedPillarScores[pillar] = 3; // Default test score
-            console.log(`[TESTING MODE] Adding sample score for pillar: ${pillar}`);
+            console.log(`[TESTING MODE] Adding simulated score for pillar: ${pillar}`);
           }
         });
         
+        // Update pillar scores with the simulated data
         setPillarScores(updatedPillarScores);
+        
+        // In testing mode, adjust the total score to be more realistic
+        // This ensures the AI readiness category is also reasonable
+        const simulatedTotalScore = 15; // Middle-range score for testing
+        setScore(simulatedTotalScore);
+        
+        console.log('[TESTING MODE] Using simulated total score:', simulatedTotalScore);
+        console.log('[TESTING MODE] Simulated pillar scores:', updatedPillarScores);
       }
       
       // This is the last question - show results
@@ -161,12 +171,20 @@ export const useAIQuotientAssessment = () => {
     setIsSubmitting(true);
     
     try {
+      // For testing mode, ensure we're calculating based on the full test
+      // not just the single question
+      const totalPossible = TESTING_MODE 
+        ? questions.length * 4  // Use all questions for percentage calculation
+        : totalSteps * 4;       // Use active questions in normal mode
+        
       // Calculate score percentage and determine category
-      const scorePercentage = calculateScorePercentage(score, questions.length * 4);
+      const scorePercentage = calculateScorePercentage(score, totalPossible);
       const categoryName = getAIReadinessCategory(scorePercentage);
       
       // Debug the pillar scores
-      console.log('Original pillar names and scores:', pillarScores);
+      console.log('[DEBUG] Original pillar names and scores:', pillarScores);
+      console.log('[DEBUG] Score percentage:', scorePercentage);
+      console.log('[DEBUG] AI readiness category:', categoryName);
       
       // Prepare fields for HubSpot
       const fields = prepareHubSpotFields(
@@ -181,7 +199,7 @@ export const useAIQuotientAssessment = () => {
       // Log submission details
       logSubmissionDetails(
         score,
-        questions.length * 4,
+        totalPossible,
         scorePercentage,
         categoryName,
         pillarScores,

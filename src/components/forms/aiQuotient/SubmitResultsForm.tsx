@@ -49,11 +49,13 @@ const SubmitResultsForm = ({
     console.log('SubmitResultsForm initialized with:');
     console.log('User Info:', userInfo);
     console.log('Score:', score, 'of', totalPossible);
+    console.log('Pillar Scores:', pillarScores);
+    console.log('Max Pillar Scores:', maxPillarScores);
     console.log('Using HubSpot Portal ID:', portalId);
     console.log('Using HubSpot Form ID:', formId);
     console.log('Testing Mode:', TESTING_MODE ? 'ENABLED' : 'DISABLED');
     console.log('==========================================');
-  }, [userInfo, score, totalPossible, portalId, formId]);
+  }, [userInfo, score, totalPossible, pillarScores, maxPillarScores, portalId, formId]);
 
   const handleRequestReport = () => {
     console.log('Report requested - opening additional form');
@@ -102,6 +104,7 @@ const SubmitResultsForm = ({
             <div className="ml-3">
               <p className="text-sm text-yellow-700">
                 <strong>TESTING MODE ENABLED</strong> - Only 1 question is being used to simulate the full assessment.
+                <span className="block mt-1">All pillar fields will still be sent to HubSpot for proper testing.</span>
               </p>
             </div>
           </div>
