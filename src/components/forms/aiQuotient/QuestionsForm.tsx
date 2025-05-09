@@ -22,12 +22,19 @@ interface QuestionFormProps {
   onPrevious: () => void;
 }
 
+// TESTING MODE: Set to true to show only 1 question for testing
+const TESTING_MODE = true;
+// Define how many questions to show in testing mode
+const TESTING_QUESTION_COUNT = 1;
+
 const QuestionsForm = ({ currentStep, answers, onNext, onPrevious }: QuestionFormProps) => {
-  const totalSteps = questions.length;
+  // Use all questions in normal mode, but only the specified count in testing mode
+  const activeQuestions = TESTING_MODE ? questions.slice(0, TESTING_QUESTION_COUNT) : questions;
+  const totalSteps = activeQuestions.length;
   const progress = ((currentStep + 1) / totalSteps) * 100;
   
-  const currentQuestion = currentStep >= 0 && currentStep < questions.length 
-    ? questions[currentStep] 
+  const currentQuestion = currentStep >= 0 && currentStep < activeQuestions.length 
+    ? activeQuestions[currentStep] 
     : null;
   
   const quizForm = useForm({
@@ -50,7 +57,10 @@ const QuestionsForm = ({ currentStep, answers, onNext, onPrevious }: QuestionFor
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-gray-500">Question {currentStep + 1} of {totalSteps}</div>
+        <div className="text-sm text-gray-500">
+          Question {currentStep + 1} of {totalSteps} 
+          {TESTING_MODE && <span className="ml-2 text-prometheus-orange font-medium">(TESTING MODE)</span>}
+        </div>
         <div className="text-sm font-medium">{Math.round(progress)}% Complete</div>
       </div>
       
@@ -117,3 +127,4 @@ const QuestionsForm = ({ currentStep, answers, onNext, onPrevious }: QuestionFor
 };
 
 export default QuestionsForm;
+
