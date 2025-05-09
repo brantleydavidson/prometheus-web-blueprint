@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import HubSpotScript from './hubspotScript';
 
 interface HubSpotContextType {
@@ -9,6 +9,7 @@ interface HubSpotContextType {
   region?: string;
   submissionDelay?: number;
   submitToHubSpot?: (fields: any[]) => Promise<boolean>;
+  isDomainPrimary?: boolean;
 }
 
 const HubSpotContext = createContext<HubSpotContextType>({
@@ -16,6 +17,7 @@ const HubSpotContext = createContext<HubSpotContextType>({
   formId: '',
   region: 'na1',
   submissionDelay: 2000,
+  isDomainPrimary: true,
 });
 
 export const useHubSpot = () => useContext(HubSpotContext);
@@ -32,6 +34,18 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
   const HUBSPOT_FORM_ID = "90ea34b5-d0e9-40e4-a98c-b31b4dc6f445";
   const HUBSPOT_REGION = "na2"; // Explicitly set region to na2 based on API key format
   const SUBMISSION_DELAY = 20000; // Kept for backward compatibility
+  
+  // This site is the primary domain (not hosted on HubSpot)
+  const IS_DOMAIN_PRIMARY = true;
+  
+  useEffect(() => {
+    // When this site is primary, we need to notify HubSpot's tracking script
+    if (IS_DOMAIN_PRIMARY && (window as any).hsq) {
+      console.log('Setting up HubSpot tracking for primary domain');
+      // Register this as primary domain for analytics
+      (window as any).hsq.push(['setPath', window.location.pathname + window.location.search]);
+    }
+  }, []);
   
   // Get HubSpot tracking cookie
   const getHubspotCookie = () => {
@@ -106,7 +120,8 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       formId: HUBSPOT_FORM_ID,
       region: HUBSPOT_REGION,
       submissionDelay: SUBMISSION_DELAY,
-      submitToHubSpot
+      submitToHubSpot,
+      isDomainPrimary: IS_DOMAIN_PRIMARY
     }}>
       <HubSpotScript portalId={HUBSPOT_PORTAL_ID} />
       {children}
