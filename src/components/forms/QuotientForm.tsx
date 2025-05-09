@@ -143,10 +143,23 @@ const QuotientForm = () => {
       // Calculate the score percentage for a clearer metric (0-100 instead of raw score)
       const scorePercentage = Math.round((score / (totalSteps * 4)) * 100);
       
+      // Get the AI readiness category based on the score percentage
+      let categoryName = "";
+      if (scorePercentage >= 80) {
+        categoryName = "AI Innovator";
+      } else if (scorePercentage >= 60) {
+        categoryName = "AI Ready";
+      } else if (scorePercentage >= 40) {
+        categoryName = "AI Emerging";
+      } else {
+        categoryName = "AI Developing";
+      }
+      
       // Log the values being sent to help with debugging
       console.log("Submitting to HubSpot with raw score:", score);
       console.log("Total possible score:", totalSteps * 4);
       console.log("Score percentage:", scorePercentage);
+      console.log("AI readiness category:", categoryName);
       console.log("Pillar scores:", pillarScores);
       
       // Update property names to match exactly what's in HubSpot
@@ -159,7 +172,8 @@ const QuotientForm = () => {
         
         // Custom properties - using exact property names from HubSpot
         { name: "aitestscore", value: String(score) },
-        { name: "aitestscorepercentage", value: String(scorePercentage) }
+        { name: "aitestscorepercentage", value: String(scorePercentage) },
+        { name: "aireadinesscategory", value: categoryName }
       ];
       
       // Add pillar scores as separate fields with exact naming from HubSpot
