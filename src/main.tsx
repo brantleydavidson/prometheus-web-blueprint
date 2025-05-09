@@ -11,6 +11,8 @@ const userAgent = navigator.userAgent;
 const PRERENDER_TOKEN = 'dKzffLw7ttkED8XRG9R1';
 
 console.log('User Agent:', userAgent);
+console.log('Current hostname:', window.location.hostname);
+console.log('Current protocol:', window.location.protocol);
 
 // Special handling for HubSpot tracking and form submissions
 // This helps ensure HubSpot forms work properly with Lovable as primary domain

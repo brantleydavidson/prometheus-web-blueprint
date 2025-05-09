@@ -1,7 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import QuotientForm from '@/components/forms/QuotientForm';
@@ -16,6 +15,8 @@ const AIQuotient = () => {
           name="description" 
           content="Take our quick 25-question AI Quotient assessment to receive your personalized AI readiness score and detailed recommendations across five key pillars of AI implementation." 
         />
+        {/* Add canonical URL to ensure proper SEO with domain changes */}
+        <link rel="canonical" href="https://teamprometheus.io/ai-quotient" />
       </Helmet>
       <Navbar />
       <main className="flex-grow">
