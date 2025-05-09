@@ -63,56 +63,61 @@ export const prepareHubSpotFields = (
   // Extract additional form data
   const { jobTitle, phoneNumber, comments } = extractAdditionalFormData();
   
-  // Prepare the basic fields
+  // Prepare the basic fields - use exact HubSpot property names
   const fields: HubSpotField[] = [
-    // Standard contact properties
+    // Standard contact properties - these must match HubSpot exactly
     { name: "firstname", value: userInfo.firstname },
     { name: "lastname", value: userInfo.lastname },
     { name: "email", value: userInfo.email },
     { name: "company", value: userInfo.company },
     
-    // Add job title and phone if provided
+    // Add job title and phone if provided - use exact HubSpot property names
     { name: "jobtitle", value: jobTitle },
     { name: "phone", value: phoneNumber },
     
-    // Custom properties for AI Quotient
-    { name: "aitestscore", value: String(score) },
-    { name: "aitestscorepercentage", value: String(scorePercentage) },
-    { name: "aireadinesscategory", value: categoryName },
+    // Custom properties for AI Quotient - ensure these match HubSpot exactly
+    { name: "ai_test_score", value: String(score) },
+    { name: "ai_test_score_percentage", value: String(scorePercentage) },
+    { name: "ai_readiness_category", value: categoryName },
   ];
   
-  // Add comments if provided
+  // Add comments if provided - use exact HubSpot property name
   if (comments) {
     fields.push({ name: "message", value: comments });
   }
   
-  // Add pillar scores and percentages
+  // Add pillar scores and percentages - ensure format matches HubSpot property names
   Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
-    // Format pillar name for HubSpot
-    const pillarName = formatPillarNameForHubSpot(pillar);
-    fields.push({ name: `pillar${pillarName}`, value: String(pillarScore) });
+    // Format pillar name for HubSpot using proper underscores
+    const formattedPillar = formatPillarNameForHubSpot(pillar);
     
-    // Add percentage for each pillar
+    // Add the raw score with proper property name
+    fields.push({ 
+      name: `pillar_${formattedPillar}`, 
+      value: String(pillarScore) 
+    });
+    
+    // Add percentage for each pillar with proper property name
     const maxForPillar = maxPillarScores[pillar] || 0;
     if (maxForPillar > 0) {
       const pillarPercentage = Math.round((pillarScore / maxForPillar) * 100);
       fields.push({ 
-        name: `pillar${pillarName}percentage`, 
+        name: `pillar_${formattedPillar}_percentage`, 
         value: String(pillarPercentage) 
       });
     }
   });
   
   // Flag that this is a detailed report request
-  fields.push({ name: "requesteddetailedreport", value: "Yes" });
+  fields.push({ name: "requested_detailed_report", value: "Yes" });
   
   return fields;
 };
 
 /**
  * Log detailed information about the submission
- * @param userInfo User information
  * @param score Total score
+ * @param totalPossible Maximum possible score
  * @param scorePercentage Score percentage
  * @param categoryName AI readiness category
  * @param pillarScores Pillar scores
