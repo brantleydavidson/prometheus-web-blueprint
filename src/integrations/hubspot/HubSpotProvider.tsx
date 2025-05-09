@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect } from 'react';
 import HubSpotScript from './hubspotScript';
 
@@ -27,12 +26,12 @@ interface HubSpotProviderProps {
 }
 
 const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
-  // Using specific values provided by the user
-  const HUBSPOT_PORTAL_ID = "242669200";
-  // Using Private App access token which works with the newest APIs
-  const HUBSPOT_API_KEY = "pat-na2-57ad6ebd-c3d3-4855-9af3-20217e0c57bb";
-  const HUBSPOT_FORM_ID = "90ea34b5-d0e9-40e4-a98c-b31b4dc6f445";
-  const HUBSPOT_REGION = "na2"; // Explicitly set region to na2 based on API key format
+  // Updated with production values provided by the user
+  const HUBSPOT_PORTAL_ID = "40043781";
+  // Updated Private App access token for production
+  const HUBSPOT_API_KEY = "pat-na1-07fcb3a7-a84d-446e-bde2-dc26df387c72";
+  const HUBSPOT_FORM_ID = "8309ec82-bc28-4185-bade-8e73f33d2b08";
+  const HUBSPOT_REGION = "na1"; // Updated region to na1 based on API key format
   const SUBMISSION_DELAY = 20000; // Kept for backward compatibility
   
   // This site is the primary domain (not hosted on HubSpot)
