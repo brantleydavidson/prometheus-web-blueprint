@@ -7,8 +7,8 @@ import { prepareHubSpotFields, logSubmissionDetails } from '@/utils/aiQuotient/h
 import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 import { useToast } from '@/hooks/use-toast';
 
-// TESTING MODE: Set to true to limit questions for testing
-const TESTING_MODE = true;
+// TESTING MODE: Set to false to use all questions for normal operation
+const TESTING_MODE = false;
 const TESTING_QUESTION_COUNT = 1;
 
 export interface AssessmentState {

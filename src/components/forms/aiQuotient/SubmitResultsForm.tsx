@@ -10,7 +10,7 @@ import AdditionalInfoForm, { AdditionalInfoFormData } from './AdditionalInfoForm
 import SubmissionConfirmation from './SubmissionConfirmation';
 
 // TESTING MODE flag
-const TESTING_MODE = true;
+const TESTING_MODE = false;
 
 interface SubmitResultsFormProps {
   score: number;

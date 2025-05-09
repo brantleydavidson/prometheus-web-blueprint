@@ -22,8 +22,8 @@ interface QuestionFormProps {
   onPrevious: () => void;
 }
 
-// TESTING MODE: Set to true to show only 1 question for testing
-const TESTING_MODE = true;
+// TESTING MODE: Set to false to show all questions for normal operation
+const TESTING_MODE = false;
 // Define how many questions to show in testing mode
 const TESTING_QUESTION_COUNT = 1;
 
@@ -127,4 +127,3 @@ const QuestionsForm = ({ currentStep, answers, onNext, onPrevious }: QuestionFor
 };
 
 export default QuestionsForm;
-
