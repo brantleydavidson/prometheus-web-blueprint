@@ -47,11 +47,14 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
     }
     
     // Add config verification logs
+    console.log('====================================');
     console.log('HubSpot Provider Initialized with:');
     console.log('Portal ID:', HUBSPOT_PORTAL_ID);
     console.log('Form ID:', HUBSPOT_FORM_ID);
     console.log('Region:', HUBSPOT_REGION);
     console.log('Current Page:', window.location.pathname);
+    console.log('Current URL:', window.location.href);
+    console.log('====================================');
   }, []);
   
   // Get HubSpot tracking cookie
@@ -67,9 +70,11 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       console.log('==========================================');
       console.log('Starting direct submission to HubSpot...');
       console.log('Current page: ', window.location.pathname);
+      console.log('Current URL: ', window.location.href);
       console.log('Using Portal ID:', HUBSPOT_PORTAL_ID);
       console.log('Using Form ID:', HUBSPOT_FORM_ID);
-      console.log('Submitting these fields to HubSpot:', fields);
+      console.log('API Key available:', HUBSPOT_API_KEY ? 'Yes (redacted for security)' : 'No');
+      console.log('Submitting these fields to HubSpot:', JSON.stringify(fields, null, 2));
       
       // Ensure all fields have string values
       const processedFields = fields.map(field => {
@@ -83,6 +88,9 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       // Get HubSpot cookie for tracking
       const hubspotCookie = getHubspotCookie();
       console.log('HubSpot cookie found:', hubspotCookie ? 'Yes' : 'No');
+      if (hubspotCookie) {
+        console.log('HubSpot cookie value (partial):', hubspotCookie.substring(0, 5) + '...');
+      }
       
       // Build the payload with the cookie for better tracking
       const payload = {
@@ -92,13 +100,19 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
           hutk: hubspotCookie,
           pageUri: window.location.href,
           pageName: document.title
+        },
+        legalConsentOptions: {
+          consent: {
+            consentToProcess: true,
+            text: "I agree to allow this website to store and process my personal data."
+          }
         }
       };
       
       // Submit to the forms API
       const url = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`;
       console.log(`Submitting to URL: ${url}`);
-      console.log('Payload:', JSON.stringify(payload));
+      console.log('Payload:', JSON.stringify(payload, null, 2));
       
       const response = await fetch(url, {
         method: 'POST',

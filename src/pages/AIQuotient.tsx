@@ -1,11 +1,15 @@
+
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import QuotientForm from '@/components/forms/QuotientForm';
 import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
+import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 
 const AIQuotient = () => {
+  const { portalId, formId } = useHubSpot();
+  
   // Add effect to help with prerender detection
   useEffect(() => {
     // Signal to Prerender that the page is ready
@@ -39,9 +43,13 @@ const AIQuotient = () => {
   
   // Log when the page component mounts
   useEffect(() => {
+    console.log('==========================================');
     console.log('AIQuotient page mounted');
     console.log('Current URL:', window.location.href);
-    console.log('Current route: /ai-quotient');
+    console.log('Current pathname:', window.location.pathname);
+    console.log('Using HubSpot Portal ID:', portalId);
+    console.log('Using HubSpot Form ID:', formId);
+    console.log('==========================================');
     
     // Check for any domain issues
     const isDomainIssue = window.location.hostname === 'undefined' || 
@@ -55,7 +63,7 @@ const AIQuotient = () => {
     return () => {
       console.log('AIQuotient page unmounted');
     };
-  }, []);
+  }, [portalId, formId]);
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { questions, questionsByPillar } from '@/data/aiQuotientQuestions';
 import UserInfoForm, { UserInfo } from './aiQuotient/UserInfoForm';
@@ -23,7 +23,17 @@ const QuotientForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   
-  const { submitToHubSpot } = useHubSpot();
+  const { portalId, formId, submitToHubSpot } = useHubSpot();
+  
+  // Log HubSpot configuration when component mounts
+  useEffect(() => {
+    console.log('==========================================');
+    console.log('QuotientForm initialized with HubSpot config:');
+    console.log('Portal ID:', portalId);
+    console.log('Form ID:', formId);
+    console.log('submitToHubSpot function available:', !!submitToHubSpot);
+    console.log('==========================================');
+  }, [portalId, formId, submitToHubSpot]);
   
   const totalSteps = questions.length;
   
@@ -106,6 +116,9 @@ const QuotientForm = () => {
   const handleSubmitResults = async () => {
     console.log('=== Starting AI Quotient results submission ===');
     console.log('Current page:', window.location.pathname);
+    console.log('Current URL:', window.location.href);
+    console.log('Using HubSpot Portal ID:', portalId);
+    console.log('Using HubSpot Form ID:', formId);
     
     if (!submitToHubSpot) {
       console.error('HubSpot submitToHubSpot function is not available');
@@ -160,8 +173,8 @@ const QuotientForm = () => {
         }
       });
       
-      console.log("Submitting these fields to HubSpot:", fields);
-      console.log("Starting submission to HubSpot...");
+      console.log("Submitting these fields to HubSpot:", JSON.stringify(fields, null, 2));
+      console.log("Starting direct API submission to HubSpot...");
       const success = await submitToHubSpot(fields);
       
       if (success) {

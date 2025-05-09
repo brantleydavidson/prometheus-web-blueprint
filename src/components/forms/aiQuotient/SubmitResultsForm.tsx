@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import ResultsPage from '@/components/forms/ResultsPage';
 import { useToast } from '@/hooks/use-toast';
@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
+import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 
 interface SubmitResultsFormProps {
   score: number;
@@ -43,7 +44,19 @@ const SubmitResultsForm = ({
   isSubmitted = false
 }: SubmitResultsFormProps) => {
   const { toast } = useToast();
+  const { portalId, formId } = useHubSpot();
   const [showAdditionalForm, setShowAdditionalForm] = useState(false);
+  
+  // Log configuration when component mounts
+  useEffect(() => {
+    console.log('==========================================');
+    console.log('SubmitResultsForm initialized with:');
+    console.log('User Info:', userInfo);
+    console.log('Score:', score, 'of', totalPossible);
+    console.log('Using HubSpot Portal ID:', portalId);
+    console.log('Using HubSpot Form ID:', formId);
+    console.log('==========================================');
+  }, [userInfo, score, totalPossible, portalId, formId]);
   
   const additionalForm = useForm<AdditionalInfoForm>({
     defaultValues: {
