@@ -6,9 +6,9 @@ import Footer from '@/components/layout/Footer';
 import HubSpotForm from '@/components/forms/HubSpotForm';
 
 const ContactUs = () => {
-  // Replace with your actual HubSpot form ID
-  const HUBSPOT_CONTACT_FORM_ID = "your-contact-form-id";
-  const HUBSPOT_PORTAL_ID = "your-portal-id";
+  // Use your actual HubSpot portal ID and form ID
+  const HUBSPOT_CONTACT_FORM_ID = "90ea34b5-d0e9-40e4-a98c-b31b4dc6f445";
+  const HUBSPOT_PORTAL_ID = "242669200";
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -92,6 +92,7 @@ const ContactUs = () => {
                 portalId={HUBSPOT_PORTAL_ID}
                 formId={HUBSPOT_CONTACT_FORM_ID}
                 className="hubspot-contact-form"
+                region="na2"
               />
             </div>
           </div>
