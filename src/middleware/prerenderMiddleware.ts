@@ -1,4 +1,3 @@
-
 /**
  * This file configures Prerender.io integration for search engine optimization
  * It detects search engine crawlers and serves pre-rendered content
@@ -45,7 +44,18 @@ export const shouldPrerender = (userAgent: string): boolean => {
   // Special case for Prerender verification
   if (userAgentLC.includes('prerender')) {
     console.log('Prerender verification detected');
-    return true;
+    return false; // Changed to false to prevent redirect loops
+  }
+  
+  // During domain configuration issues, temporarily disable prerendering
+  // This helps with testing the site without getting caught in redirects
+  const isDomainIssue = window.location.hostname === 'undefined' || 
+                       window.location.hostname === '' || 
+                       !window.location.hostname.includes('.');
+  
+  if (isDomainIssue) {
+    console.log('Domain issue detected, disabling prerender');
+    return false;
   }
   
   // Check if user agent matches any crawler patterns
@@ -65,8 +75,17 @@ export const getPrerenderUrl = (path: string, prerenderToken: string): string =>
   // Clean up the path and ensure it starts with a slash
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   
-  // Base URL for the website
-  const baseUrl = 'https://www.teamprometheus.io';
+  // Use current hostname for more reliable prerendering
+  const hostname = window.location.hostname;
+  
+  // Enhanced logging for debugging
+  console.log('Getting prerender URL with hostname:', hostname);
+  
+  // Only use teamprometheus.io domain if we're on a valid domain
+  // Otherwise use the current hostname to avoid redirect issues
+  const baseUrl = hostname && hostname.includes('.') ? 
+    `https://${hostname}` : 
+    'https://teamprometheus.io';
   
   // Format: https://service.prerender.io/https://www.teamprometheus.io/path
   const prerenderUrl = `https://service.prerender.io/${baseUrl}${cleanPath}`;

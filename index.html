@@ -7,10 +7,14 @@
     <title>Prometheus Agency | Tame Your Tech. Unleash Growth. | CRM & Marketing Experts</title>
     <meta name="description" content="Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies." />
     
-    <!-- DNS prefetching to help with domain resolution -->
+    <!-- Enhanced DNS prefetching for faster resolution -->
     <link rel="dns-prefetch" href="//teamprometheus.io">
     <link rel="dns-prefetch" href="//www.teamprometheus.io">
     <link rel="dns-prefetch" href="//lovable.app">
+    <link rel="dns-prefetch" href="//supabase.co">
+    <link rel="dns-prefetch" href="//js.hsforms.net">
+    <link rel="preconnect" href="//teamprometheus.io" crossorigin>
+    <link rel="preconnect" href="//www.teamprometheus.io" crossorigin>
     
     <!-- Prerender.io verification - multiple methods -->
     <meta name="prerender-status-code" content="200">
@@ -39,6 +43,9 @@
     <meta name="googlebot" content="index, follow" />
     <meta http-equiv="x-dns-prefetch-control" content="on">
     
+    <!-- Ensure SSL -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    
     <!-- Canonical URL to help with SEO -->
     <link rel="canonical" href="https://teamprometheus.io/" id="canonical-link" />
     
@@ -47,7 +54,7 @@
     
     <link rel="icon" href="https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png" type="image/png" />
     
-    <!-- Additional script to handle domain issues -->
+    <!-- Enhanced script to handle domain issues -->
     <script>
       // Set canonical link correctly based on current domain
       document.addEventListener('DOMContentLoaded', function() {
@@ -58,7 +65,25 @@
             const path = window.location.pathname || '/';
             canonicalLink.href = 'https://teamprometheus.io' + path;
           }
+          
+          // Log domain resolution success
+          console.log('DOM loaded successfully for domain: ' + window.location.hostname);
+          
+          // Check for Cloudflare-related errors
+          if (document.body.innerText.includes('Error 1001') || 
+              document.body.innerText.includes('DNS resolution error')) {
+            console.error('Cloudflare Error detected in page body');
+            console.error('This indicates a DNS configuration issue between your domain registrar and Lovable');
+          }
+        } else {
+          console.error('Domain resolution failed - hostname is undefined');
         }
+        
+        // Add debugging info to console
+        console.log('Browser info:', navigator.userAgent);
+        console.log('Protocol:', window.location.protocol);
+        console.log('Pathname:', window.location.pathname);
+        console.log('Full URL:', window.location.href);
       });
     </script>
   </head>
@@ -71,6 +96,11 @@
       <p>Please enable JavaScript to access the full functionality of this site.</p>
     </noscript>
     
+    <!-- Domain connection status monitor -->
+    <div id="domain-status" style="display:none;position:fixed;bottom:0;left:0;background:rgba(0,0,0,0.7);color:white;padding:5px;font-size:10px;z-index:9999;">
+      Domain: <span id="domain-name"></span>
+    </div>
+    
     <!-- Prerender verification helper div -->
     <div id="prerender-status" style="display:none;">Prerender Ready</div>
     
@@ -81,5 +111,26 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Domain monitoring script -->
+    <script>
+      // Monitor domain connection issues
+      window.addEventListener('load', function() {
+        const domainStatus = document.getElementById('domain-status');
+        const domainName = document.getElementById('domain-name');
+        
+        if (domainStatus && domainName) {
+          // Only show for dev/debugging purposes
+          if (window.location.hostname.includes('lovableproject.com') || 
+              window.location.hostname === 'localhost' ||
+              window.location.hostname === 'undefined' ||
+              !window.location.hostname.includes('.')) {
+            
+            domainStatus.style.display = 'block';
+            domainName.innerText = window.location.hostname || 'undefined';
+          }
+        }
+      });
+    </script>
   </body>
 </html>

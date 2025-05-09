@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -7,6 +6,57 @@ import QuotientForm from '@/components/forms/QuotientForm';
 import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
 
 const AIQuotient = () => {
+  // Add effect to help with prerender detection
+  useEffect(() => {
+    // Signal to Prerender that the page is ready
+    const prerenderReady = () => {
+      if (window.prerenderReady === undefined) {
+        window.prerenderReady = true;
+      }
+      
+      // Log for verification purposes
+      console.log('Prerender Ready state set on AIQuotient page');
+      
+      // Update the hidden status div
+      const statusDiv = document.getElementById('prerender-status');
+      if (statusDiv) {
+        statusDiv.textContent = 'AIQuotient Page Ready for Prerender';
+      }
+    };
+    
+    // Set a timeout to ensure content is fully loaded before marking ready
+    setTimeout(() => {
+      prerenderReady();
+    }, 1000);
+    
+    // Clean up
+    return () => {
+      if (window.prerenderReady !== undefined) {
+        window.prerenderReady = false;
+      }
+    };
+  }, []);
+  
+  // Log when the page component mounts
+  useEffect(() => {
+    console.log('AIQuotient page mounted');
+    console.log('Current URL:', window.location.href);
+    console.log('Current route: /ai-quotient');
+    
+    // Check for any domain issues
+    const isDomainIssue = window.location.hostname === 'undefined' || 
+                         window.location.hostname === '' || 
+                         !window.location.hostname.includes('.');
+    
+    if (isDomainIssue) {
+      console.error('Domain issue detected on AIQuotient page');
+    }
+    
+    return () => {
+      console.log('AIQuotient page unmounted');
+    };
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
@@ -17,6 +67,11 @@ const AIQuotient = () => {
         />
         {/* Add canonical URL to ensure proper SEO with domain changes */}
         <link rel="canonical" href="https://teamprometheus.io/ai-quotient" />
+        
+        {/* Enhanced Prerender verification meta tags */}
+        <meta name="prerender-status-code" content="200" />
+        <meta name="prerender-token" content="dKzffLw7ttkED8XRG9R1" />
+        <meta name="fragment" content="!" />
       </Helmet>
       <Navbar />
       <main className="flex-grow">
@@ -89,8 +144,20 @@ const AIQuotient = () => {
         />
       </main>
       <Footer />
+      
+      {/* Hidden marker for Prerender verification */}
+      <div id="prerender-marker" data-testid="prerender-verification" style={{position: 'absolute', bottom: 0, right: 0, opacity: 0.1}}>
+        Prerender Verification: dKzffLw7ttkED8XRG9R1
+      </div>
     </div>
   );
 };
+
+// Add typescript declaration for window.prerenderReady
+declare global {
+  interface Window {
+    prerenderReady?: boolean;
+  }
+}
 
 export default AIQuotient;
