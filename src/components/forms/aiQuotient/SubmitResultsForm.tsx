@@ -46,6 +46,7 @@ const SubmitResultsForm = ({
   const { toast } = useToast();
   const { portalId, formId } = useHubSpot();
   const [showAdditionalForm, setShowAdditionalForm] = useState(false);
+  const [localSubmitted, setLocalSubmitted] = useState(false);
   
   // Log configuration when component mounts
   useEffect(() => {
@@ -72,7 +73,14 @@ const SubmitResultsForm = ({
   };
   
   const handleSubmitAdditionalInfo = (data: AdditionalInfoForm) => {
+    // Prevent multiple submissions
+    if (localSubmitted || isSubmitted) {
+      console.log('Form already submitted, preventing duplicate submission');
+      return;
+    }
+    
     console.log('Additional info submitted:', data);
+    setLocalSubmitted(true);
     
     // We're ONLY calling onSubmit here, not in multiple places
     // This ensures we only submit to HubSpot once
@@ -83,6 +91,9 @@ const SubmitResultsForm = ({
       description: "We'll send your detailed report to your email shortly.",
     });
   };
+  
+  // Combine the component's local submitted state with the prop
+  const effectivelySubmitted = localSubmitted || isSubmitted;
   
   return (
     <div className="space-y-8">
@@ -97,7 +108,7 @@ const SubmitResultsForm = ({
         <h3 className="text-xl font-semibold mb-4">Your Assessment Is Complete</h3>
         <p className="mb-6 text-gray-600">
           Thank you for completing the AI Quotient assessment. Your summary results are shown above.
-          {!isSubmitted && !isSubmitting && !showAdditionalForm && (
+          {!effectivelySubmitted && !isSubmitting && !showAdditionalForm && (
             <span className="block mt-2">To receive your <strong>detailed personalized report</strong> with actionable recommendations, please request it below.</span>
           )}
         </p>
@@ -108,7 +119,7 @@ const SubmitResultsForm = ({
           </div>
         )}
         
-        {isSubmitted && (
+        {effectivelySubmitted && (
           <div className="text-center p-4 space-y-3">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-600 mb-2">
               <CheckCircle className="h-6 w-6" />
@@ -119,7 +130,7 @@ const SubmitResultsForm = ({
           </div>
         )}
         
-        {!isSubmitting && !isSubmitted && !showAdditionalForm && (
+        {!isSubmitting && !effectivelySubmitted && !showAdditionalForm && (
           <div className="text-center p-4">
             <Button 
               onClick={handleRequestReport} 
@@ -130,7 +141,7 @@ const SubmitResultsForm = ({
           </div>
         )}
         
-        {!isSubmitting && !isSubmitted && showAdditionalForm && (
+        {!isSubmitting && !effectivelySubmitted && showAdditionalForm && (
           <div className="p-4 border rounded-lg bg-gray-50">
             <h4 className="font-medium text-lg mb-4">Complete Your Report Request</h4>
             <p className="text-sm text-gray-600 mb-4">Please provide a few additional details to help us customize your report:</p>
@@ -225,6 +236,7 @@ const SubmitResultsForm = ({
                   <Button 
                     type="submit" 
                     className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white flex items-center gap-2"
+                    disabled={localSubmitted || isSubmitted}
                   >
                     Submit Report Request <Send className="h-4 w-4" />
                   </Button>

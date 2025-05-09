@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { questions, questionsByPillar } from '@/data/aiQuotientQuestions';
@@ -148,7 +149,7 @@ const QuotientForm = () => {
       console.log("Score percentage:", scorePercentage);
       console.log("Pillar scores:", pillarScores);
       
-      // Update property names to match exactly what's specified in HubSpot
+      // Update property names to match exactly what's specified in HubSpot (removed underscores)
       const fields = [
         // Standard contact properties
         { name: "firstname", value: userInfo.firstname },
@@ -157,15 +158,15 @@ const QuotientForm = () => {
         { name: "company", value: userInfo.company },
         
         // Custom properties - updated to match exactly what's in HubSpot
-        { name: "aitest_score", value: String(score) },
-        { name: "aitest_score_percentage", value: String(scorePercentage) },
-        { name: "requested_detailed_report", value: "Yes" }
+        { name: "aitestscore", value: String(score) },
+        { name: "aitestscorepercentage", value: String(scorePercentage) },
+        { name: "requesteddetailedreport", value: "Yes" }
       ];
       
       // Add pillar scores as separate fields with exact naming from HubSpot
       Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
-        // Use the exact naming convention specified: pillar_{pillar_name}
-        const pillarFieldName = `pillar_${pillar.toLowerCase().replace(/\s+/g, '_')}`;
+        // Use the exact naming convention specified, but without underscores
+        const pillarFieldName = `pillar${pillar.toLowerCase().replace(/\s+/g, '')}`;
         fields.push({ name: pillarFieldName, value: String(pillarScore) });
         
         // Also add percentage for each pillar with exact naming
@@ -173,7 +174,7 @@ const QuotientForm = () => {
         if (maxForPillar > 0) {
           const pillarPercentage = Math.round((pillarScore / maxForPillar) * 100);
           fields.push({ 
-            name: `${pillarFieldName}_percentage`, 
+            name: `${pillarFieldName}percentage`, 
             value: String(pillarPercentage) 
           });
         }
