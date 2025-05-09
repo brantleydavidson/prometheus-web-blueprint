@@ -14,7 +14,7 @@ const AIQuotient = () => {
         <title>AI Quotient Assessment | Prometheus Agency</title>
         <meta 
           name="description" 
-          content="Discover your organization's AI readiness with our comprehensive AI Quotient assessment. Get a personalized report with actionable insights." 
+          content="Discover your organization's AI readiness with our comprehensive 25-question AI Quotient assessment across five key pillars. Get a personalized report with actionable insights." 
         />
       </Helmet>
       <Navbar />
@@ -25,11 +25,30 @@ const AIQuotient = () => {
               What's Your AI Quotient?
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mb-4">
-              Discover how ready your organization is to implement and benefit from AI technologies.
+              Discover how ready your organization is to implement and benefit from AI technologies across five key pillars.
             </p>
-            <p className="text-lg text-gray-400">
-              Complete our assessment to receive a personalized report with actionable insights.
-            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-8">
+              <div className="bg-white/10 p-4 rounded-lg">
+                <h3 className="font-semibold text-white">Data Spine Health</h3>
+                <p className="text-gray-300">The foundation of AI success: your data infrastructure and quality</p>
+              </div>
+              <div className="bg-white/10 p-4 rounded-lg">
+                <h3 className="font-semibold text-white">Funnel Intelligence & Attribution</h3>
+                <p className="text-gray-300">How well you track, attribute and optimize your marketing and sales funnel</p>
+              </div>
+              <div className="bg-white/10 p-4 rounded-lg">
+                <h3 className="font-semibold text-white">Automation Maturity</h3>
+                <p className="text-gray-300">The sophistication of your existing automation and workflows</p>
+              </div>
+              <div className="bg-white/10 p-4 rounded-lg">
+                <h3 className="font-semibold text-white">AI-Ready Content Operations</h3>
+                <p className="text-gray-300">How prepared your content systems are for AI enhancement</p>
+              </div>
+              <div className="bg-white/10 p-4 rounded-lg md:col-span-2">
+                <h3 className="font-semibold text-white">Governance & Change Management</h3>
+                <p className="text-gray-300">Your organizational readiness to adopt and govern AI technologies</p>
+              </div>
+            </div>
           </div>
         </div>
         

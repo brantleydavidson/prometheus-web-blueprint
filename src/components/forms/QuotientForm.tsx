@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { questions } from '@/data/aiQuotientQuestions';
+import { questions, questionsByPillar } from '@/data/aiQuotientQuestions';
 import UserInfoForm, { UserInfo } from './aiQuotient/UserInfoForm';
 import QuestionsForm from './aiQuotient/QuestionsForm';
 import SubmitResultsForm from './aiQuotient/SubmitResultsForm';
@@ -18,6 +18,7 @@ const QuotientForm = () => {
   });
   const [answers, setAnswers] = useState<{[key: number]: string}>({});
   const [score, setScore] = useState(0);
+  const [pillarScores, setPillarScores] = useState<{[key: string]: number}>({});
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -25,6 +26,12 @@ const QuotientForm = () => {
   const { submitToHubSpot } = useHubSpot();
   
   const totalSteps = questions.length;
+  
+  // Calculate maximum points possible for each pillar
+  const maxPillarScores = Object.keys(questionsByPillar).reduce((acc, pillar) => {
+    acc[pillar] = questionsByPillar[pillar].length * 4; // 4 points per question maximum
+    return acc;
+  }, {} as Record<string, number>);
   
   const handleUserInfoSubmit = (data: UserInfo) => {
     setUserInfo(data);
@@ -46,21 +53,49 @@ const QuotientForm = () => {
       option => option.id === data.answer
     )?.value || 0;
     
+    // Update total score
     const newScore = score + questionValue;
     setScore(newScore);
+    
+    // Update pillar scores
+    const pillar = currentQuestion.pillar;
+    const newPillarScores = {
+      ...pillarScores,
+      [pillar]: (pillarScores[pillar] || 0) + questionValue
+    };
+    setPillarScores(newPillarScores);
     
     // Move to next question or finish
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // This is the last question - show results without submitting to HubSpot
+      // This is the last question - show results
       setShowResults(true);
-      // Note: We're NOT submitting to HubSpot here anymore
     }
   };
   
   const handlePrevious = () => {
     if (currentStep > 0) {
+      // Remove the score contribution from the current question when going back
+      const currentQuestion = questions[currentStep];
+      const currentAnswerId = answers[currentStep];
+      
+      if (currentAnswerId) {
+        const pointValue = currentQuestion.options.find(
+          option => option.id === currentAnswerId
+        )?.value || 0;
+        
+        // Update total score
+        setScore(score - pointValue);
+        
+        // Update pillar score
+        const pillar = currentQuestion.pillar;
+        setPillarScores({
+          ...pillarScores,
+          [pillar]: (pillarScores[pillar] || 0) - pointValue
+        });
+      }
+      
       setCurrentStep(currentStep - 1);
     } else if (currentStep === 0) {
       setCurrentStep(-1); // Go back to user info page
@@ -87,8 +122,9 @@ const QuotientForm = () => {
       console.log("Submitting to HubSpot with raw score:", score);
       console.log("Total possible score:", totalSteps * 4);
       console.log("Score percentage:", scorePercentage);
+      console.log("Pillar scores:", pillarScores);
       
-      // Create focused fields array with user info and the score
+      // Create fields array with user info and the scores
       const fields = [
         { name: "firstname", value: userInfo.firstname },
         { name: "lastname", value: userInfo.lastname },
@@ -98,6 +134,23 @@ const QuotientForm = () => {
         { name: "aitest_score", value: String(score) },
         { name: "aitest_score_percentage", value: String(scorePercentage) }
       ];
+      
+      // Add pillar scores as separate fields
+      Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
+        // Convert pillar name to a valid field name (lowercase, underscore)
+        const fieldName = `pillar_${pillar.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+        fields.push({ name: fieldName, value: String(pillarScore) });
+        
+        // Also add percentage for each pillar
+        const maxForPillar = maxPillarScores[pillar] || 0;
+        if (maxForPillar > 0) {
+          const pillarPercentage = Math.round((pillarScore / maxForPillar) * 100);
+          fields.push({ 
+            name: `${fieldName}_percentage`, 
+            value: String(pillarPercentage) 
+          });
+        }
+      });
       
       const success = await submitToHubSpot(fields);
       
@@ -138,6 +191,8 @@ const QuotientForm = () => {
         score={score} 
         totalPossible={totalSteps * 4} 
         userInfo={userInfo}
+        pillarScores={pillarScores}
+        maxPillarScores={maxPillarScores}
         onSubmit={handleSubmitResults}
         isSubmitting={isSubmitting}
         isSubmitted={isSubmitted}
@@ -145,14 +200,30 @@ const QuotientForm = () => {
     );
   }
   
+  // Get the current pillar
+  const currentPillar = currentStep >= 0 ? questions[currentStep].pillar : '';
+  const pillarQuestionCount = currentPillar ? questionsByPillar[currentPillar]?.length || 0 : 0;
+  const pillarProgress = currentPillar ? 
+    questionsByPillar[currentPillar].findIndex(q => q.id === questions[currentStep].id) + 1 : 0;
+  
   // Show questions form
   return (
-    <QuestionsForm 
-      currentStep={currentStep} 
-      answers={answers} 
-      onNext={handleNext} 
-      onPrevious={handlePrevious} 
-    />
+    <>
+      {currentPillar && (
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-prometheus-navy mb-2">{currentPillar}</h3>
+          <p className="text-sm text-gray-500">
+            Section {pillarProgress} of {pillarQuestionCount}
+          </p>
+        </div>
+      )}
+      <QuestionsForm 
+        currentStep={currentStep} 
+        answers={answers} 
+        onNext={handleNext} 
+        onPrevious={handlePrevious} 
+      />
+    </>
   );
 };
 

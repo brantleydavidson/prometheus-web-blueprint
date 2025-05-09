@@ -15,6 +15,8 @@ interface SubmitResultsFormProps {
     email: string;
     company: string;
   };
+  pillarScores?: Record<string, number>;
+  maxPillarScores?: Record<string, number>;
   onSubmit: () => void;
   isSubmitting?: boolean;
   isSubmitted?: boolean;
@@ -24,6 +26,8 @@ const SubmitResultsForm = ({
   score, 
   totalPossible, 
   userInfo, 
+  pillarScores = {},
+  maxPillarScores = {},
   onSubmit,
   isSubmitting = false,
   isSubmitted = false
@@ -32,7 +36,12 @@ const SubmitResultsForm = ({
   
   return (
     <div className="space-y-8">
-      <ResultsPage score={score} totalPossible={totalPossible} />
+      <ResultsPage 
+        score={score} 
+        totalPossible={totalPossible} 
+        pillarScores={pillarScores}
+        maxPillarScores={maxPillarScores}
+      />
       
       <Card className="p-6 bg-white shadow-lg border border-gray-200">
         <h3 className="text-xl font-semibold mb-4">Your Assessment Is Complete</h3>
@@ -41,7 +50,7 @@ const SubmitResultsForm = ({
           {!isSubmitted && !isSubmitting && (
             <>
               <br />
-              <span className="block mt-2">Click the button below to submit your results.</span>
+              <span className="block mt-2">Click the button below to submit your results and receive your detailed report.</span>
             </>
           )}
         </p>
@@ -55,7 +64,7 @@ const SubmitResultsForm = ({
         {isSubmitted && (
           <div className="text-center p-4">
             <p className="text-green-600 font-medium">Your assessment has been submitted!</p>
-            <p className="mt-2 text-gray-600">We'll be in touch soon with additional insights.</p>
+            <p className="mt-2 text-gray-600">We'll be in touch soon with your detailed AI readiness report and strategic recommendations.</p>
           </div>
         )}
         

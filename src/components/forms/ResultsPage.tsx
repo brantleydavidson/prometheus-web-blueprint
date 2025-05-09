@@ -2,15 +2,24 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { BookOpen, Brain, Award } from 'lucide-react';
+import { BookOpen, Brain, Award, ChevronDown, ChevronUp } from 'lucide-react';
+import { questions, questionsByPillar } from '@/data/aiQuotientQuestions';
 
 interface ResultsPageProps {
   score: number;
   totalPossible: number;
+  pillarScores?: Record<string, number>;
+  maxPillarScores?: Record<string, number>;
 }
 
-const ResultsPage = ({ score, totalPossible }: ResultsPageProps) => {
+const ResultsPage = ({ 
+  score, 
+  totalPossible,
+  pillarScores = {},
+  maxPillarScores = {}
+}: ResultsPageProps) => {
   const percentage = Math.round((score / totalPossible) * 100);
+  const [expandedPillar, setExpandedPillar] = React.useState<string | null>(null);
   
   // Categories based on score percentage
   let category: { title: string; description: string; icon: React.ReactNode };
@@ -40,6 +49,17 @@ const ResultsPage = ({ score, totalPossible }: ResultsPageProps) => {
       icon: <Brain className="h-10 w-10 text-red-500" />
     };
   }
+
+  // Get all pillars and calculate percentages
+  const pillars = Object.keys(questionsByPillar);
+  
+  const togglePillar = (pillar: string) => {
+    if (expandedPillar === pillar) {
+      setExpandedPillar(null);
+    } else {
+      setExpandedPillar(pillar);
+    }
+  };
   
   return (
     <Card className="p-8 bg-white shadow-lg border border-gray-200">
@@ -59,12 +79,58 @@ const ResultsPage = ({ score, totalPossible }: ResultsPageProps) => {
       
       <div className="space-y-4 text-gray-700">
         <p className="text-lg">{category.description}</p>
-        <p>Our detailed report will provide you with:</p>
+        
+        {/* Pillar breakdown */}
+        <h3 className="text-lg font-semibold mt-6 mb-3">Your Performance by Category</h3>
+        <div className="space-y-4">
+          {pillars.map((pillar) => {
+            const pillarMax = maxPillarScores[pillar] || (questionsByPillar[pillar]?.length * 4 || 0);
+            const pillarScore = pillarScores[pillar] || 0;
+            const pillarPercentage = Math.round((pillarScore / pillarMax) * 100) || 0;
+            
+            return (
+              <div key={pillar} className="border rounded-lg p-3">
+                <button 
+                  className="w-full flex justify-between items-center text-left"
+                  onClick={() => togglePillar(pillar)}
+                >
+                  <div>
+                    <h4 className="font-medium">{pillar}</h4>
+                    <div className="flex items-center text-sm mt-1">
+                      <div className="flex-1 max-w-xs">
+                        <Progress value={pillarPercentage} className="h-2" />
+                      </div>
+                      <span className="ml-2">{pillarScore}/{pillarMax}</span>
+                    </div>
+                  </div>
+                  {expandedPillar === pillar ? 
+                    <ChevronUp className="h-5 w-5" /> : 
+                    <ChevronDown className="h-5 w-5" />}
+                </button>
+                
+                {expandedPillar === pillar && (
+                  <div className="mt-3 text-sm space-y-2 border-t pt-2">
+                    {/* Tips based on pillar score */}
+                    {pillarPercentage < 50 ? (
+                      <p className="text-orange-600">Focus area: This category needs significant improvement to leverage AI effectively.</p>
+                    ) : pillarPercentage < 75 ? (
+                      <p className="text-blue-600">Opportunity area: With targeted improvements in this category, you could see substantial AI benefits.</p>
+                    ) : (
+                      <p className="text-green-600">Strength area: Your organization demonstrates strong capabilities in this category.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        
+        <p className="mt-6">Our detailed report will provide you with:</p>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Strategic recommendations tailored to your organization</li>
-          <li>Specific action steps to improve your AI readiness</li>
+          <li>Strategic recommendations tailored to your organization's specific needs</li>
+          <li>Actionable insights for each of the five key pillars of AI readiness</li>
+          <li>Prioritized roadmap for AI implementation based on your current state</li>
           <li>Case studies relevant to your industry and score level</li>
-          <li>Resources to accelerate your AI implementation journey</li>
         </ul>
       </div>
     </Card>
