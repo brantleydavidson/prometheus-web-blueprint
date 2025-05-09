@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { questions, questionsByPillar } from '@/data/aiQuotientQuestions';
@@ -149,8 +148,7 @@ const QuotientForm = () => {
       console.log("Score percentage:", scorePercentage);
       console.log("Pillar scores:", pillarScores);
       
-      // Ensure property names match exactly what's in HubSpot
-      // These field names must exist in your HubSpot account
+      // Update property names to match exactly what's specified in HubSpot
       const fields = [
         // Standard contact properties
         { name: "firstname", value: userInfo.firstname },
@@ -158,24 +156,24 @@ const QuotientForm = () => {
         { name: "email", value: userInfo.email },
         { name: "company", value: userInfo.company },
         
-        // Custom properties - make sure these exist in HubSpot with exact same names
-        { name: "ai_readiness_score", value: String(score) },
-        { name: "ai_readiness_percentage", value: String(scorePercentage) },
-        { name: "requested_ai_report", value: "Yes" }
+        // Custom properties - updated to match exactly what's in HubSpot
+        { name: "aitest_score", value: String(score) },
+        { name: "aitest_score_percentage", value: String(scorePercentage) },
+        { name: "requested_detailed_report", value: "Yes" }
       ];
       
-      // Add pillar scores as separate fields with standardized naming
+      // Add pillar scores as separate fields with exact naming from HubSpot
       Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
-        // Convert to snake_case for consistency in HubSpot
-        const fieldName = `ai_pillar_${pillar.toLowerCase().replace(/\s+/g, '_')}`;
-        fields.push({ name: fieldName, value: String(pillarScore) });
+        // Use the exact naming convention specified: pillar_{pillar_name}
+        const pillarFieldName = `pillar_${pillar.toLowerCase().replace(/\s+/g, '_')}`;
+        fields.push({ name: pillarFieldName, value: String(pillarScore) });
         
-        // Also add percentage for each pillar
+        // Also add percentage for each pillar with exact naming
         const maxForPillar = maxPillarScores[pillar] || 0;
         if (maxForPillar > 0) {
           const pillarPercentage = Math.round((pillarScore / maxForPillar) * 100);
           fields.push({ 
-            name: `${fieldName}_percentage`, 
+            name: `${pillarFieldName}_percentage`, 
             value: String(pillarPercentage) 
           });
         }

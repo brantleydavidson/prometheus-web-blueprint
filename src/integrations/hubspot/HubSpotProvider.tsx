@@ -74,7 +74,12 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       console.log('Using Portal ID:', HUBSPOT_PORTAL_ID);
       console.log('Using Form ID:', HUBSPOT_FORM_ID);
       console.log('API Key available:', HUBSPOT_API_KEY ? 'Yes (redacted for security)' : 'No');
-      console.log('Submitting these fields to HubSpot:', JSON.stringify(fields, null, 2));
+      
+      // Log each field being submitted to help with debugging property names
+      console.log('Fields being submitted to HubSpot:');
+      fields.forEach(field => {
+        console.log(`- ${field.name}: ${field.value}`);
+      });
       
       // Clean and validate field values
       const processedFields = fields.map(field => {
@@ -126,6 +131,7 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
         body: JSON.stringify(payload)
       });
 
+      // Get full text response for better debugging
       const responseText = await response.text();
       console.log('HubSpot API response status:', response.status);
       console.log('HubSpot API response text:', responseText);
@@ -134,6 +140,19 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       try {
         responseData = JSON.parse(responseText);
         console.log('HubSpot API response data:', responseData);
+        
+        // Look for errors in the response data
+        if (responseData.errors && responseData.errors.length > 0) {
+          console.error('HubSpot API returned errors:', responseData.errors);
+          // Log each error to help with debugging
+          responseData.errors.forEach((error: any, index: number) => {
+            console.error(`Error ${index + 1}:`, error.message);
+            if (error.errorType === 'INVALID_PROPERTY') {
+              console.error(`Invalid property: ${error.name}`);
+            }
+          });
+          throw new Error('HubSpot API returned errors');
+        }
       } catch (e) {
         console.log('Could not parse response as JSON:', e);
       }

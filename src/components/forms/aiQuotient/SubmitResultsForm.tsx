@@ -74,8 +74,8 @@ const SubmitResultsForm = ({
   const handleSubmitAdditionalInfo = (data: AdditionalInfoForm) => {
     console.log('Additional info submitted:', data);
     
-    // We now include the additional form data in the onSubmit call
-    // instead of calling onSubmit separately in two places
+    // We're ONLY calling onSubmit here, not in multiple places
+    // This ensures we only submit to HubSpot once
     onSubmit();
     
     toast({
