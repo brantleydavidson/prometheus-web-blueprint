@@ -76,9 +76,9 @@ export const prepareHubSpotFields = (
     { name: "phone", value: phoneNumber },
     
     // Custom properties for AI Quotient - ensure these match HubSpot exactly
-    { name: "ai_test_score", value: String(score) },
-    { name: "ai_test_score_percentage", value: String(scorePercentage) },
-    { name: "ai_readiness_category", value: categoryName },
+    { name: "aitestscore", value: String(score) },
+    { name: "aitestscorepercentage", value: String(scorePercentage) },
+    { name: "aireadinesscategory", value: categoryName },
   ];
   
   // Add comments if provided - use exact HubSpot property name
@@ -88,28 +88,28 @@ export const prepareHubSpotFields = (
   
   // Add pillar scores and percentages - ensure format matches HubSpot property names
   Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
-    // Format pillar name for HubSpot using proper underscores
+    // Format pillar name for HubSpot using proper format
     const formattedPillar = formatPillarNameForHubSpot(pillar);
     
-    // Add the raw score with proper property name
+    // Add the raw score with proper property name (no underscores)
     fields.push({ 
-      name: `pillar_${formattedPillar}`, 
+      name: `pillar${formattedPillar}`, 
       value: String(pillarScore) 
     });
     
-    // Add percentage for each pillar with proper property name
+    // Add percentage for each pillar with proper property name (no underscores)
     const maxForPillar = maxPillarScores[pillar] || 0;
     if (maxForPillar > 0) {
       const pillarPercentage = Math.round((pillarScore / maxForPillar) * 100);
       fields.push({ 
-        name: `pillar_${formattedPillar}_percentage`, 
+        name: `pillar${formattedPillar}percentage`, 
         value: String(pillarPercentage) 
       });
     }
   });
   
-  // Flag that this is a detailed report request
-  fields.push({ name: "requested_detailed_report", value: "Yes" });
+  // Flag that this is a detailed report request (no underscores)
+  fields.push({ name: "requesteddetailedreport", value: "Yes" });
   
   return fields;
 };

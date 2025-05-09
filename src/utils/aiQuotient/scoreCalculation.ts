@@ -46,12 +46,12 @@ export const calculateScorePercentage = (score: number, totalPossible: number): 
  * @returns Formatted pillar name for HubSpot
  */
 export const formatPillarNameForHubSpot = (pillar: string): string => {
-  // Format to lowercase and replace spaces with underscores
-  // For example: "Governance & Change Management" -> "governance_change_management"
+  // Format to lowercase and remove special characters for HubSpot property compatibility
+  // For example: "Governance & Change Management" -> "governancechangemanagement"
   return pillar
     .toLowerCase()
     .replace(/&/g, '')  // Remove ampersands
-    .replace(/[\s-]+/g, '_')  // Replace spaces and hyphens with underscores
-    .replace(/[^a-z0-9_]/g, '') // Remove any other non-alphanumeric characters except underscores
+    .replace(/[\s-]+/g, '')  // Remove spaces and hyphens
+    .replace(/[^a-z0-9]/g, '') // Remove any other non-alphanumeric characters
     .trim(); // Trim any leading/trailing spaces
 };
