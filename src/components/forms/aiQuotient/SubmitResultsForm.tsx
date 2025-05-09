@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import ResultsPage from '@/components/forms/ResultsPage';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
+import { Send, Mail, Download, CheckCircle } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useForm } from 'react-hook-form';
 
 interface SubmitResultsFormProps {
   score: number;
@@ -22,6 +26,12 @@ interface SubmitResultsFormProps {
   isSubmitted?: boolean;
 }
 
+interface AdditionalInfoForm {
+  jobTitle: string;
+  phoneNumber: string;
+  comments: string;
+}
+
 const SubmitResultsForm = ({ 
   score, 
   totalPossible, 
@@ -33,6 +43,29 @@ const SubmitResultsForm = ({
   isSubmitted = false
 }: SubmitResultsFormProps) => {
   const { toast } = useToast();
+  const [showAdditionalForm, setShowAdditionalForm] = useState(false);
+  
+  const additionalForm = useForm<AdditionalInfoForm>({
+    defaultValues: {
+      jobTitle: '',
+      phoneNumber: '',
+      comments: ''
+    }
+  });
+
+  const handleRequestReport = () => {
+    setShowAdditionalForm(true);
+  };
+  
+  const handleSubmitAdditionalInfo = (data: AdditionalInfoForm) => {
+    // Proceed with submission including the additional data
+    onSubmit();
+    
+    toast({
+      title: "Request Received!",
+      description: "We'll send your detailed report to your email shortly.",
+    });
+  };
   
   return (
     <div className="space-y-8">
@@ -46,37 +79,141 @@ const SubmitResultsForm = ({
       <Card className="p-6 bg-white shadow-lg border border-gray-200">
         <h3 className="text-xl font-semibold mb-4">Your Assessment Is Complete</h3>
         <p className="mb-6 text-gray-600">
-          Thank you for completing the AI Quotient assessment. 
-          {!isSubmitted && !isSubmitting && (
-            <>
-              <br />
-              <span className="block mt-2">Click the button below to submit your results and receive your detailed report.</span>
-            </>
+          Thank you for completing the AI Quotient assessment. Your summary results are shown above.
+          {!isSubmitted && !isSubmitting && !showAdditionalForm && (
+            <span className="block mt-2">To receive your <strong>detailed personalized report</strong> with actionable recommendations, please request it below.</span>
           )}
         </p>
         
         {isSubmitting && (
           <div className="text-center p-4">
-            <p className="text-blue-600 font-medium">Submitting your assessment...</p>
+            <p className="text-blue-600 font-medium">Processing your report request...</p>
           </div>
         )}
         
         {isSubmitted && (
-          <div className="text-center p-4">
-            <p className="text-green-600 font-medium">Your assessment has been submitted!</p>
-            <p className="mt-2 text-gray-600">We'll be in touch soon with your detailed AI readiness report and strategic recommendations.</p>
+          <div className="text-center p-4 space-y-3">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-600 mb-2">
+              <CheckCircle className="h-6 w-6" />
+            </div>
+            <h4 className="text-lg font-medium text-green-600">Report Request Confirmed!</h4>
+            <p className="text-gray-600">We'll be sending your detailed AI readiness report to {userInfo.email} within one business day.</p>
+            <p className="text-sm text-gray-500 mt-4">A member of our team may reach out to discuss strategic recommendations for your organization.</p>
           </div>
         )}
         
-        {!isSubmitting && !isSubmitted && (
+        {!isSubmitting && !isSubmitted && !showAdditionalForm && (
           <div className="text-center p-4">
             <Button 
-              onClick={onSubmit} 
+              onClick={handleRequestReport} 
               className="px-6 py-2 bg-prometheus-orange text-white rounded hover:bg-prometheus-orange/90 transition-colors flex items-center gap-2"
-              disabled={isSubmitting}
             >
-              Submit Results <Send className="h-4 w-4" />
+              Request Detailed Report <Download className="h-4 w-4" />
             </Button>
+          </div>
+        )}
+        
+        {!isSubmitting && !isSubmitted && showAdditionalForm && (
+          <div className="p-4 border rounded-lg bg-gray-50">
+            <h4 className="font-medium text-lg mb-4">Complete Your Report Request</h4>
+            <p className="text-sm text-gray-600 mb-4">Please provide a few additional details to help us customize your report:</p>
+            
+            <Form {...additionalForm}>
+              <form onSubmit={additionalForm.handleSubmit(handleSubmitAdditionalInfo)} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <Input value={userInfo.firstname} disabled className="bg-gray-100" />
+                    </FormItem>
+                  </div>
+                  
+                  <div>
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <Input value={userInfo.lastname} disabled className="bg-gray-100" />
+                    </FormItem>
+                  </div>
+                  
+                  <div>
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <Input value={userInfo.email} disabled className="bg-gray-100" />
+                    </FormItem>
+                  </div>
+                  
+                  <div>
+                    <FormItem>
+                      <FormLabel>Company</FormLabel>
+                      <Input value={userInfo.company} disabled className="bg-gray-100" />
+                    </FormItem>
+                  </div>
+                  
+                  <div>
+                    <FormField
+                      control={additionalForm.control}
+                      name="jobTitle"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Job Title</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Your role in the company" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div>
+                    <FormField
+                      control={additionalForm.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number (optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Best number to reach you" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+                
+                <FormField
+                  control={additionalForm.control}
+                  name="comments"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Additional Comments (optional)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Any specific areas of interest or questions you have about AI implementation" 
+                          className="min-h-[100px]" 
+                          {...field} 
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="flex justify-end space-x-3 pt-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setShowAdditionalForm(false)}
+                  >
+                    Back
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white flex items-center gap-2"
+                  >
+                    Submit Report Request <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </div>
         )}
       </Card>

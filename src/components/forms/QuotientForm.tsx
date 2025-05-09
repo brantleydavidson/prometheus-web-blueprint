@@ -132,7 +132,9 @@ const QuotientForm = () => {
         { name: "company", value: userInfo.company },
         // Send both raw score and percentage for flexibility
         { name: "aitest_score", value: String(score) },
-        { name: "aitest_score_percentage", value: String(scorePercentage) }
+        { name: "aitest_score_percentage", value: String(scorePercentage) },
+        // Add a field to indicate this is a report request
+        { name: "requested_detailed_report", value: "Yes" }
       ];
       
       // Add pillar scores as separate fields

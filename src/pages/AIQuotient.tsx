@@ -11,10 +11,10 @@ const AIQuotient = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>AI Quotient Assessment | Prometheus Agency</title>
+        <title>AI Quotient Assessment | Get Your AI Readiness Score | Prometheus Agency</title>
         <meta 
           name="description" 
-          content="Discover your organization's AI readiness with our comprehensive 25-question AI Quotient assessment across five key pillars. Get a personalized report with actionable insights." 
+          content="Take our quick 25-question AI Quotient assessment to receive your personalized AI readiness score and detailed recommendations across five key pillars of AI implementation." 
         />
       </Helmet>
       <Navbar />
@@ -24,9 +24,29 @@ const AIQuotient = () => {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               What's Your AI Quotient?
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mb-4">
-              Discover how ready your organization is to implement and benefit from AI technologies across five key pillars.
+            <p className="text-xl text-gray-300 max-w-3xl mb-6">
+              Take our quick assessment to discover how ready your organization is to implement and benefit from AI technologies across five key pillars.
             </p>
+            <div className="bg-white/10 rounded-lg p-6 mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-prometheus-orange rounded-full h-10 w-10 flex items-center justify-center text-white font-bold">
+                  1
+                </div>
+                <h2 className="text-xl font-semibold">Complete the 25-question assessment (5 minutes)</h2>
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-prometheus-orange rounded-full h-10 w-10 flex items-center justify-center text-white font-bold">
+                  2
+                </div>
+                <h2 className="text-xl font-semibold">Get your instant AI Quotient score</h2>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="bg-prometheus-orange rounded-full h-10 w-10 flex items-center justify-center text-white font-bold">
+                  3
+                </div>
+                <h2 className="text-xl font-semibold">Receive a detailed analysis and action plan</h2>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-8">
               <div className="bg-white/10 p-4 rounded-lg">
                 <h3 className="font-semibold text-white">Data Spine Health</h3>
@@ -53,7 +73,10 @@ const AIQuotient = () => {
         </div>
         
         <div className="container max-w-4xl mx-auto px-4 py-12">
-          <QuotientForm />
+          <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-8">
+            <h2 className="text-2xl font-bold text-prometheus-navy mb-6 text-center">Start Your AI Quotient Assessment</h2>
+            <QuotientForm />
+          </div>
         </div>
         
         {/* Additional CTA at the bottom of the page */}
