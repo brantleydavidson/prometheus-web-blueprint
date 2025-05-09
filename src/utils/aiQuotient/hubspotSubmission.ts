@@ -86,9 +86,9 @@ export const prepareHubSpotFields = (
     fields.push({ name: "message", value: comments });
   }
   
-  // Add pillar scores and percentages - ensure format matches HubSpot property names
+  // Add pillar scores and percentages - ensure format matches HubSpot property names exactly
   Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
-    // Format pillar name for HubSpot using proper format
+    // Format pillar name for HubSpot using exact required format
     const formattedPillar = formatPillarNameForHubSpot(pillar);
     
     // Add the raw score with proper property name (no underscores)
@@ -110,6 +110,9 @@ export const prepareHubSpotFields = (
   
   // Flag that this is a detailed report request (no underscores)
   fields.push({ name: "requesteddetailedreport", value: "Yes" });
+  
+  // Log the fields to help with debugging
+  console.log("Final HubSpot fields before submission:", JSON.stringify(fields, null, 2));
   
   return fields;
 };

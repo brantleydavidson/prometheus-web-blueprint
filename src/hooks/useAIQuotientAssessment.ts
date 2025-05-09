@@ -139,6 +139,9 @@ export const useAIQuotientAssessment = () => {
       const scorePercentage = calculateScorePercentage(score, totalSteps * 4);
       const categoryName = getAIReadinessCategory(scorePercentage);
       
+      // Debug the pillar scores
+      console.log('Original pillar names and scores:', pillarScores);
+      
       // Prepare fields for HubSpot
       const fields = prepareHubSpotFields(
         userInfo,

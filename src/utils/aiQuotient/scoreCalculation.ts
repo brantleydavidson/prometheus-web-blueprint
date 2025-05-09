@@ -1,4 +1,3 @@
-
 import { questionsByPillar } from '@/data/aiQuotientQuestions';
 
 /**
@@ -46,8 +45,21 @@ export const calculateScorePercentage = (score: number, totalPossible: number): 
  * @returns Formatted pillar name for HubSpot
  */
 export const formatPillarNameForHubSpot = (pillar: string): string => {
-  // Format to lowercase and remove special characters for HubSpot property compatibility
-  // For example: "Governance & Change Management" -> "governancechangemanagement"
+  // Exact mapping for known pillars to ensure correct property names
+  const pillarMapping: Record<string, string> = {
+    "Data Spine Health": "dataspinehealth",
+    "Funnel Intelligence & Attribution": "funnelintelligenceattribution",
+    "Automation Maturity": "automationmaturity",
+    "AI-Ready Content Operations": "aireadycontentoperations",
+    "Governance & Change Management": "governancechangemanagement"
+  };
+  
+  // If we have an exact mapping, use it
+  if (pillarMapping[pillar]) {
+    return pillarMapping[pillar];
+  }
+  
+  // Otherwise, fall back to the generic formatting
   return pillar
     .toLowerCase()
     .replace(/&/g, '')  // Remove ampersands
