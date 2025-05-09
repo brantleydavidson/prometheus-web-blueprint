@@ -10,15 +10,29 @@ const userAgent = navigator.userAgent;
 // HubSpot token - this is your HubSpot Portal ID's specific token
 const PRERENDER_TOKEN = 'dKzffLw7ttkED8XRG9R1';
 
+// Enhanced domain logging
+console.log('Application startup:');
 console.log('User Agent:', userAgent);
 console.log('Current hostname:', window.location.hostname);
 console.log('Current protocol:', window.location.protocol);
+console.log('Is Cloudflare?', navigator.userAgent.includes('Cloudflare'));
+console.log('Full URL:', window.location.href);
 
 // Special handling for HubSpot tracking and form submissions
 // This helps ensure HubSpot forms work properly with Lovable as primary domain
 const isHubSpotRequest = userAgent.toLowerCase().includes('hubspot') || 
                          window.location.href.includes('hsforms') ||
                          document.referrer.includes('hubspot');
+
+// Check for domain issues
+const isDomainIssue = window.location.hostname === 'undefined' || 
+                     window.location.hostname === '' || 
+                     !window.location.hostname.includes('.');
+
+if (isDomainIssue) {
+  console.error('Domain resolution issue detected:', window.location.hostname);
+  // Still render the app, but log the issue
+}
 
 if (isHubSpotRequest) {
   console.log('HubSpot request detected: Ensuring compatibility');
