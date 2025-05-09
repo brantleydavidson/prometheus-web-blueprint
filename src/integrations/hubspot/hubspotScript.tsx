@@ -37,11 +37,18 @@ const HubSpotScript = ({ portalId }: HubSpotScriptProps) => {
       // Configure HubSpot to understand this is a custom domain integration
       (window as any)._hsq = (window as any)._hsq || [];
       (window as any)._hsq.push(['setPortalId', portalId]);
-      console.log('HubSpot tracking initialized with setPortalId');
+      console.log('HubSpot tracking initialized with setPortalId:', portalId);
       
       // Set the current path for tracking
       (window as any)._hsq.push(['setPath', window.location.pathname + window.location.search]);
       console.log('HubSpot tracking initialized with setPath:', window.location.pathname + window.location.search);
+    }
+    
+    // Remove any existing HubSpot scripts from previous configurations
+    const existingScript = document.getElementById('hs-script-loader');
+    if (existingScript) {
+      document.body.removeChild(existingScript);
+      console.log('Removed existing HubSpot tracking script');
     }
     
     // Append to document
