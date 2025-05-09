@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { UserInfo } from '@/components/forms/aiQuotient/UserInfoForm';
-import { questions } from '@/data/aiQuotientQuestions';
+import { questions, questionsByPillar } from '@/data/aiQuotientQuestions';
 import { calculateMaxPillarScores, getAIReadinessCategory, calculateScorePercentage } from '@/utils/aiQuotient/scoreCalculation';
 import { prepareHubSpotFields, logSubmissionDetails } from '@/utils/aiQuotient/hubspotSubmission';
 import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
