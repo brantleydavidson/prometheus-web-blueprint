@@ -76,12 +76,16 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       console.log('API Key available:', HUBSPOT_API_KEY ? 'Yes (redacted for security)' : 'No');
       console.log('Submitting these fields to HubSpot:', JSON.stringify(fields, null, 2));
       
-      // Ensure all fields have string values
+      // Clean and validate field values
       const processedFields = fields.map(field => {
         console.log(`Processing field: ${field.name} with value:`, field.value);
+        
+        // Make sure the value is a string and not null/undefined
+        const value = field.value != null ? String(field.value) : "";
+        
         return {
-          ...field,
-          value: String(field.value) // Convert all values to strings
+          name: field.name,
+          value: value
         };
       });
       

@@ -74,7 +74,8 @@ const SubmitResultsForm = ({
   const handleSubmitAdditionalInfo = (data: AdditionalInfoForm) => {
     console.log('Additional info submitted:', data);
     
-    // Proceed with submission including the additional data
+    // We now include the additional form data in the onSubmit call
+    // instead of calling onSubmit separately in two places
     onSubmit();
     
     toast({

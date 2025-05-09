@@ -18,6 +18,13 @@ const HubSpotScript = ({ portalId }: HubSpotScriptProps) => {
     console.log('Current pathname:', window.location.pathname);
     console.log('==========================================');
     
+    // Remove any existing HubSpot scripts from previous configurations first
+    const existingScript = document.getElementById('hs-script-loader');
+    if (existingScript) {
+      document.body.removeChild(existingScript);
+      console.log('Removed existing HubSpot tracking script');
+    }
+    
     // Create script element
     const script = document.createElement('script');
     script.type = 'text/javascript';
@@ -42,13 +49,6 @@ const HubSpotScript = ({ portalId }: HubSpotScriptProps) => {
       // Set the current path for tracking
       (window as any)._hsq.push(['setPath', window.location.pathname + window.location.search]);
       console.log('HubSpot tracking initialized with setPath:', window.location.pathname + window.location.search);
-    }
-    
-    // Remove any existing HubSpot scripts from previous configurations
-    const existingScript = document.getElementById('hs-script-loader');
-    if (existingScript) {
-      document.body.removeChild(existingScript);
-      console.log('Removed existing HubSpot tracking script');
     }
     
     // Append to document

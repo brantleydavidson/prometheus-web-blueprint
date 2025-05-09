@@ -120,6 +120,12 @@ const QuotientForm = () => {
     console.log('Using HubSpot Portal ID:', portalId);
     console.log('Using HubSpot Form ID:', formId);
     
+    // Prevent multiple submissions
+    if (isSubmitting || isSubmitted) {
+      console.log('Submission already in progress or completed, skipping');
+      return;
+    }
+    
     if (!submitToHubSpot) {
       console.error('HubSpot submitToHubSpot function is not available');
       toast({
@@ -143,23 +149,25 @@ const QuotientForm = () => {
       console.log("Score percentage:", scorePercentage);
       console.log("Pillar scores:", pillarScores);
       
-      // Create fields array with user info and the scores
+      // Ensure property names match exactly what's in HubSpot
+      // These field names must exist in your HubSpot account
       const fields = [
+        // Standard contact properties
         { name: "firstname", value: userInfo.firstname },
         { name: "lastname", value: userInfo.lastname },
         { name: "email", value: userInfo.email },
         { name: "company", value: userInfo.company },
-        // Send both raw score and percentage for flexibility
-        { name: "aitest_score", value: String(score) },
-        { name: "aitest_score_percentage", value: String(scorePercentage) },
-        // Add a field to indicate this is a report request
-        { name: "requested_detailed_report", value: "Yes" }
+        
+        // Custom properties - make sure these exist in HubSpot with exact same names
+        { name: "ai_readiness_score", value: String(score) },
+        { name: "ai_readiness_percentage", value: String(scorePercentage) },
+        { name: "requested_ai_report", value: "Yes" }
       ];
       
-      // Add pillar scores as separate fields
+      // Add pillar scores as separate fields with standardized naming
       Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
-        // Convert pillar name to a valid field name (lowercase, underscore)
-        const fieldName = `pillar_${pillar.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+        // Convert to snake_case for consistency in HubSpot
+        const fieldName = `ai_pillar_${pillar.toLowerCase().replace(/\s+/g, '_')}`;
         fields.push({ name: fieldName, value: String(pillarScore) });
         
         // Also add percentage for each pillar
