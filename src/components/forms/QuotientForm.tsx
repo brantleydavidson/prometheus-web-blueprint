@@ -34,6 +34,7 @@ const QuotientForm = () => {
   }, {} as Record<string, number>);
   
   const handleUserInfoSubmit = (data: UserInfo) => {
+    console.log('User info submitted:', data);
     setUserInfo(data);
     setCurrentStep(0); // Move to the first question
     toast({
@@ -103,7 +104,11 @@ const QuotientForm = () => {
   };
   
   const handleSubmitResults = async () => {
+    console.log('=== Starting AI Quotient results submission ===');
+    console.log('Current page:', window.location.pathname);
+    
     if (!submitToHubSpot) {
+      console.error('HubSpot submitToHubSpot function is not available');
       toast({
         variant: "destructive",
         title: "Submission Error",
@@ -112,6 +117,7 @@ const QuotientForm = () => {
       return;
     }
 
+    console.log('HubSpot integration available, proceeding with submission');
     setIsSubmitting(true);
     
     try {
@@ -155,15 +161,18 @@ const QuotientForm = () => {
       });
       
       console.log("Submitting these fields to HubSpot:", fields);
+      console.log("Starting submission to HubSpot...");
       const success = await submitToHubSpot(fields);
       
       if (success) {
+        console.log("HubSpot submission successful");
         setIsSubmitted(true);
         toast({
           title: "Success!",
           description: "Your assessment has been submitted successfully.",
         });
       } else {
+        console.error("HubSpot submission returned false");
         toast({
           variant: "destructive",
           title: "Submission Warning",
@@ -178,6 +187,7 @@ const QuotientForm = () => {
         description: "An error occurred while submitting your assessment.",
       });
     } finally {
+      console.log('=== Finished AI Quotient results submission ===');
       setIsSubmitting(false);
     }
   };

@@ -41,12 +41,15 @@ const HubSpotForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  console.log(`HubSpotForm initialized with formId: ${formId}, portalId: ${portalId || contextPortalId}`);
+  
   // If customData contains all the necessary user info, submit automatically
   useEffect(() => {
     const requiredFields = ['firstname', 'lastname', 'email', 'company'];
     const hasAllRequired = requiredFields.every(field => customData[field]);
     
     if (useApi && hasAllRequired && !isSubmitted) {
+      console.log('Auto-submitting form with provided customData');
       submitFormToHubSpot();
     }
   }, [customData, useApi, isSubmitted]);
@@ -63,6 +66,9 @@ const HubSpotForm = ({
   };
 
   const submitFormToHubSpot = async () => {
+    console.log('=== Starting HubSpotForm submission ===');
+    console.log('Current page:', window.location.pathname);
+    
     if (!apiKey && useApi) {
       console.error('HubSpot API key is required for API submission');
       toast({
@@ -99,7 +105,7 @@ const HubSpotForm = ({
         }
       };
 
-      console.log('Submitting to HubSpot URL:', url);
+      console.log('Submitting HubSpotForm to URL:', url);
       console.log('Submitting with portalId:', portalId);
       console.log('Submitting with formId:', formId);
       console.log('Payload:', payload);
@@ -113,6 +119,7 @@ const HubSpotForm = ({
       });
 
       const responseText = await response.text();
+      console.log('HubSpot API response status:', response.status);
       console.log('HubSpot API response text:', responseText);
       
       let responseData;
@@ -124,10 +131,12 @@ const HubSpotForm = ({
       }
 
       if (!response.ok) {
+        console.error(`HubSpot form submission failed with status ${response.status}`);
         throw new Error(responseData?.message || `Failed with status ${response.status}`);
       }
 
       // Clear form after successful submission
+      console.log('HubSpot form submission successful');
       setFormData({});
       setIsSubmitted(true);
       
@@ -147,6 +156,7 @@ const HubSpotForm = ({
         variant: "destructive"
       });
     } finally {
+      console.log('=== Finished HubSpotForm submission ===');
       setIsSubmitting(false);
     }
   };

@@ -45,6 +45,13 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       // Register this as primary domain for analytics
       (window as any).hsq.push(['setPath', window.location.pathname + window.location.search]);
     }
+    
+    // Add config verification logs
+    console.log('HubSpot Provider Initialized with:');
+    console.log('Portal ID:', HUBSPOT_PORTAL_ID);
+    console.log('Form ID:', HUBSPOT_FORM_ID);
+    console.log('Region:', HUBSPOT_REGION);
+    console.log('Current Page:', window.location.pathname);
   }, []);
   
   // Get HubSpot tracking cookie
@@ -57,21 +64,32 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
   // Direct submission function that can be called immediately
   const submitToHubSpot = async (fields: any[]) => {
     try {
+      console.log('==========================================');
       console.log('Starting direct submission to HubSpot...');
+      console.log('Current page: ', window.location.pathname);
+      console.log('Using Portal ID:', HUBSPOT_PORTAL_ID);
+      console.log('Using Form ID:', HUBSPOT_FORM_ID);
       console.log('Submitting these fields to HubSpot:', fields);
       
       // Ensure all fields have string values
-      const processedFields = fields.map(field => ({
-        ...field,
-        value: String(field.value) // Convert all values to strings
-      }));
+      const processedFields = fields.map(field => {
+        console.log(`Processing field: ${field.name} with value:`, field.value);
+        return {
+          ...field,
+          value: String(field.value) // Convert all values to strings
+        };
+      });
+      
+      // Get HubSpot cookie for tracking
+      const hubspotCookie = getHubspotCookie();
+      console.log('HubSpot cookie found:', hubspotCookie ? 'Yes' : 'No');
       
       // Build the payload with the cookie for better tracking
       const payload = {
         submittedAt: Date.now(),
         fields: processedFields,
         context: {
-          hutk: getHubspotCookie(),
+          hutk: hubspotCookie,
           pageUri: window.location.href,
           pageName: document.title
         }
@@ -91,6 +109,7 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       });
 
       const responseText = await response.text();
+      console.log('HubSpot API response status:', response.status);
       console.log('HubSpot API response text:', responseText);
       
       let responseData;
@@ -102,13 +121,16 @@ const HubSpotProvider = ({ children }: HubSpotProviderProps) => {
       }
 
       if (!response.ok) {
+        console.error(`HubSpot submission failed with status ${response.status}`);
         throw new Error(responseData?.message || `Failed with status ${response.status}`);
       }
       
       console.log('Form submission successful!');
+      console.log('==========================================');
       return true;
     } catch (error) {
       console.error('Form submission error:', error);
+      console.log('==========================================');
       return false;
     }
   };

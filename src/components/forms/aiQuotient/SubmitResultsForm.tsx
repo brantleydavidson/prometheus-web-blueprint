@@ -54,10 +54,13 @@ const SubmitResultsForm = ({
   });
 
   const handleRequestReport = () => {
+    console.log('Report requested - opening additional form');
     setShowAdditionalForm(true);
   };
   
   const handleSubmitAdditionalInfo = (data: AdditionalInfoForm) => {
+    console.log('Additional info submitted:', data);
+    
     // Proceed with submission including the additional data
     onSubmit();
     
