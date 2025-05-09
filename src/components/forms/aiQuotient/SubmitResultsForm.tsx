@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import ResultsPage from '@/components/forms/ResultsPage';
@@ -80,10 +79,14 @@ const SubmitResultsForm = ({
     }
     
     console.log('Additional info submitted:', data);
+    console.log('Job Title:', data.jobTitle);
+    console.log('Phone Number:', data.phoneNumber);
+    console.log('Comments:', data.comments);
+    
+    // Set local submission state before submitting
     setLocalSubmitted(true);
     
-    // We're ONLY calling onSubmit here, not in multiple places
-    // This ensures we only submit to HubSpot once
+    // Call parent's onSubmit method to handle HubSpot submission
     onSubmit();
     
     toast({
@@ -147,7 +150,11 @@ const SubmitResultsForm = ({
             <p className="text-sm text-gray-600 mb-4">Please provide a few additional details to help us customize your report:</p>
             
             <Form {...additionalForm}>
-              <form onSubmit={additionalForm.handleSubmit(handleSubmitAdditionalInfo)} className="space-y-4">
+              <form 
+                onSubmit={additionalForm.handleSubmit(handleSubmitAdditionalInfo)} 
+                className="space-y-4"
+                data-additional-info-form="true"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <FormItem>

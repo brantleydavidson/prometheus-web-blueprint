@@ -149,7 +149,7 @@ const QuotientForm = () => {
       console.log("Score percentage:", scorePercentage);
       console.log("Pillar scores:", pillarScores);
       
-      // Update property names to match exactly what's specified in HubSpot (removed underscores)
+      // Update property names to match exactly what's in HubSpot
       const fields = [
         // Standard contact properties
         { name: "firstname", value: userInfo.firstname },
@@ -157,19 +157,18 @@ const QuotientForm = () => {
         { name: "email", value: userInfo.email },
         { name: "company", value: userInfo.company },
         
-        // Custom properties - updated to match exactly what's in HubSpot
+        // Custom properties - using exact property names from HubSpot
         { name: "aitestscore", value: String(score) },
-        { name: "aitestscorepercentage", value: String(scorePercentage) },
-        { name: "requesteddetailedreport", value: "Yes" }
+        { name: "aitestscorepercentage", value: String(scorePercentage) }
       ];
       
       // Add pillar scores as separate fields with exact naming from HubSpot
       Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
-        // Use the exact naming convention specified, but without underscores
+        // Format pillar name to match HubSpot property naming convention
         const pillarFieldName = `pillar${pillar.toLowerCase().replace(/\s+/g, '')}`;
         fields.push({ name: pillarFieldName, value: String(pillarScore) });
         
-        // Also add percentage for each pillar with exact naming
+        // Also add percentage for each pillar
         const maxForPillar = maxPillarScores[pillar] || 0;
         if (maxForPillar > 0) {
           const pillarPercentage = Math.round((pillarScore / maxForPillar) * 100);
@@ -179,6 +178,29 @@ const QuotientForm = () => {
           });
         }
       });
+      
+      // Get additional info from the form submission
+      const additionalFormData = document.querySelector('form[data-additional-info-form="true"]');
+      if (additionalFormData) {
+        const jobTitleInput = additionalFormData.querySelector('input[name="jobTitle"]') as HTMLInputElement;
+        const phoneNumberInput = additionalFormData.querySelector('input[name="phoneNumber"]') as HTMLInputElement;
+        const commentsInput = additionalFormData.querySelector('textarea[name="comments"]') as HTMLTextAreaElement;
+        
+        if (jobTitleInput && jobTitleInput.value) {
+          fields.push({ name: "jobtitle", value: jobTitleInput.value });
+        }
+        
+        if (phoneNumberInput && phoneNumberInput.value) {
+          fields.push({ name: "phone", value: phoneNumberInput.value });
+        }
+        
+        if (commentsInput && commentsInput.value) {
+          fields.push({ name: "message", value: commentsInput.value });
+        }
+      }
+      
+      // Add requested_detailed_report property
+      fields.push({ name: "requesteddetailedreport", value: "Yes" });
       
       console.log("Submitting these fields to HubSpot:", JSON.stringify(fields, null, 2));
       console.log("Starting direct API submission to HubSpot...");
