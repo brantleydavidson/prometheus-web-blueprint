@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useHubSpot } from '@/integrations/hubspot/HubSpotProvider';
 import { Button } from '@/components/ui/button';
@@ -50,7 +49,7 @@ const HubSpotForm = ({
     if (useApi && hasAllRequired && !isSubmitted) {
       submitFormToHubSpot();
     }
-  }, [customData, useApi]);
+  }, [customData, useApi, isSubmitted]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -100,7 +99,10 @@ const HubSpotForm = ({
         }
       };
 
-      console.log('Submitting to HubSpot:', payload);
+      console.log('Submitting to HubSpot URL:', url);
+      console.log('Submitting with portalId:', portalId);
+      console.log('Submitting with formId:', formId);
+      console.log('Payload:', payload);
 
       const response = await fetch(url, {
         method: 'POST',
@@ -110,9 +112,19 @@ const HubSpotForm = ({
         body: JSON.stringify(payload)
       });
 
+      const responseText = await response.text();
+      console.log('HubSpot API response text:', responseText);
+      
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+        console.log('HubSpot API response data:', responseData);
+      } catch (e) {
+        console.log('Could not parse response as JSON:', e);
+      }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit form');
+        throw new Error(responseData?.message || `Failed with status ${response.status}`);
       }
 
       // Clear form after successful submission

@@ -30,7 +30,7 @@ const AIEnablement = () => {
               Implement AI solutions that deliver measurable results and ROI in as little as 30 days.
             </p>
             <Button asChild size="lg" className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white">
-              <Link to="/book-audit">Take the AI Quotient™ Quiz</Link>
+              <Link to="/ai-quotient">Take the AI Quotient™ Quiz</Link>
             </Button>
           </div>
         </div>
@@ -46,7 +46,7 @@ const AIEnablement = () => {
             <div className="bg-gray-50 p-6 rounded-lg mb-8 text-center">
               <p className="text-gray-500 mb-4">Embedded Typeform Quiz Coming Soon</p>
               <Button asChild size="lg" className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white">
-                <Link to="/book-audit">Take the AI Quotient™ Quiz</Link>
+                <Link to="/ai-quotient">Take the AI Quotient™ Quiz</Link>
               </Button>
             </div>
           </div>

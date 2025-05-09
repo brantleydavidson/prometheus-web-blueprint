@@ -154,6 +154,7 @@ const QuotientForm = () => {
         }
       });
       
+      console.log("Submitting these fields to HubSpot:", fields);
       const success = await submitToHubSpot(fields);
       
       if (success) {
