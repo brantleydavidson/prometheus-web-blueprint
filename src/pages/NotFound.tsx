@@ -1,15 +1,31 @@
-import { useLocation } from "react-router-dom";
+
+import { useLocation, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 
 const NotFound = () => {
   const location = useLocation();
-
+  
+  // Check if this is a www request that needs to be redirected
+  const isWwwSubdomain = window.location.hostname.startsWith('www.');
+  
   useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
+    if (!isWwwSubdomain) {
+      console.error(
+        "404 Error: User attempted to access non-existent route:",
+        location.pathname
+      );
+    }
+  }, [location.pathname, isWwwSubdomain]);
+  
+  // If this is a www request, redirect to the root domain while preserving the path
+  if (isWwwSubdomain) {
+    const rootDomain = window.location.hostname.replace('www.', '');
+    const redirectURL = `${window.location.protocol}//${rootDomain}${window.location.pathname}${window.location.search}`;
+    
+    // Use window.location.replace for a clean redirect without adding to browser history
+    window.location.replace(redirectURL);
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
