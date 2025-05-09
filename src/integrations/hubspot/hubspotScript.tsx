@@ -22,7 +22,7 @@ const HubSpotScript = ({ portalId }: HubSpotScriptProps) => {
     if (isDomainPrimary) {
       // Initialize HubSpot queue for tracking
       if (!(window as any).hsq) {
-        (window as any).hsq = [(window as any).hsq || [])];
+        (window as any).hsq = (window as any).hsq || [];
       }
       
       // Configure HubSpot to understand this is a custom domain integration
