@@ -162,7 +162,31 @@ const QuotientForm = () => {
       console.log("AI readiness category:", categoryName);
       console.log("Pillar scores:", pillarScores);
       
-      // Update property names to match exactly what's in HubSpot
+      // Get additional info from the form submission
+      const additionalFormData = document.querySelector('form[data-additional-info-form="true"]');
+      let jobTitle = "";
+      let phoneNumber = "";
+      let comments = "";
+      
+      if (additionalFormData) {
+        const jobTitleInput = additionalFormData.querySelector('input[name="jobTitle"]') as HTMLInputElement;
+        const phoneNumberInput = additionalFormData.querySelector('input[name="phoneNumber"]') as HTMLInputElement;
+        const commentsInput = additionalFormData.querySelector('textarea[name="comments"]') as HTMLTextAreaElement;
+        
+        if (jobTitleInput && jobTitleInput.value) {
+          jobTitle = jobTitleInput.value;
+        }
+        
+        if (phoneNumberInput && phoneNumberInput.value) {
+          phoneNumber = phoneNumberInput.value;
+        }
+        
+        if (commentsInput && commentsInput.value) {
+          comments = commentsInput.value;
+        }
+      }
+      
+      // Use exact property names from HubSpot (IMPORTANT: match property names exactly)
       const fields = [
         // Standard contact properties
         { name: "firstname", value: userInfo.firstname },
@@ -170,50 +194,39 @@ const QuotientForm = () => {
         { name: "email", value: userInfo.email },
         { name: "company", value: userInfo.company },
         
-        // Custom properties - using exact property names from HubSpot
+        // Add job title and phone if provided
+        { name: "jobtitle", value: jobTitle },
+        { name: "phone", value: phoneNumber },
+        
+        // Custom properties - USING EXACT NAMES AS IN HUBSPOT
         { name: "aitestscore", value: String(score) },
         { name: "aitestscorepercentage", value: String(scorePercentage) },
-        { name: "aireadinesscategory", value: categoryName }
+        { name: "aireadinesscategory", value: categoryName }, // This is the category name (AI Ready, etc.)
       ];
       
-      // Add pillar scores as separate fields with exact naming from HubSpot
+      // Add comments if provided
+      if (comments) {
+        fields.push({ name: "message", value: comments });
+      }
+      
+      // Add pillar scores as separate fields with exact naming from HubSpot (NO underscores)
       Object.entries(pillarScores).forEach(([pillar, pillarScore]) => {
         // Format pillar name to match HubSpot property naming convention
-        const pillarFieldName = `pillar${pillar.toLowerCase().replace(/\s+/g, '')}`;
-        fields.push({ name: pillarFieldName, value: String(pillarScore) });
+        const pillarName = pillar.toLowerCase().replace(/\s+/g, '');
+        fields.push({ name: `pillar${pillarName}`, value: String(pillarScore) });
         
         // Also add percentage for each pillar
         const maxForPillar = maxPillarScores[pillar] || 0;
         if (maxForPillar > 0) {
           const pillarPercentage = Math.round((pillarScore / maxForPillar) * 100);
           fields.push({ 
-            name: `${pillarFieldName}percentage`, 
+            name: `pillar${pillarName}percentage`, 
             value: String(pillarPercentage) 
           });
         }
       });
       
-      // Get additional info from the form submission
-      const additionalFormData = document.querySelector('form[data-additional-info-form="true"]');
-      if (additionalFormData) {
-        const jobTitleInput = additionalFormData.querySelector('input[name="jobTitle"]') as HTMLInputElement;
-        const phoneNumberInput = additionalFormData.querySelector('input[name="phoneNumber"]') as HTMLInputElement;
-        const commentsInput = additionalFormData.querySelector('textarea[name="comments"]') as HTMLTextAreaElement;
-        
-        if (jobTitleInput && jobTitleInput.value) {
-          fields.push({ name: "jobtitle", value: jobTitleInput.value });
-        }
-        
-        if (phoneNumberInput && phoneNumberInput.value) {
-          fields.push({ name: "phone", value: phoneNumberInput.value });
-        }
-        
-        if (commentsInput && commentsInput.value) {
-          fields.push({ name: "message", value: commentsInput.value });
-        }
-      }
-      
-      // Add requested_detailed_report property
+      // Flag that this is a detailed report request
       fields.push({ name: "requesteddetailedreport", value: "Yes" });
       
       console.log("Submitting these fields to HubSpot:", JSON.stringify(fields, null, 2));
