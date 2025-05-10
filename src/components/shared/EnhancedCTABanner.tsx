@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import HubSpotForm from '@/components/forms/HubSpotForm';
 
 interface EnhancedCTABannerProps {
   title: string;
@@ -9,6 +10,7 @@ interface EnhancedCTABannerProps {
   buttonText: string;
   buttonLink: string;
   bgColor?: string;
+  hubspotFormId?: string; // Added this prop as optional
 }
 
 const EnhancedCTABanner: React.FC<EnhancedCTABannerProps> = ({
@@ -16,7 +18,8 @@ const EnhancedCTABanner: React.FC<EnhancedCTABannerProps> = ({
   description,
   buttonText,
   buttonLink,
-  bgColor = 'bg-prometheus-navy'
+  bgColor = 'bg-prometheus-navy',
+  hubspotFormId
 }) => {
   return (
     <div className={`${bgColor} py-16 px-4 sm:px-6 lg:px-8`}>
@@ -27,15 +30,22 @@ const EnhancedCTABanner: React.FC<EnhancedCTABannerProps> = ({
         <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
           {description}
         </p>
-        <Button
-          asChild
-          size="lg"
-          className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white"
-        >
-          <Link to={buttonLink}>
-            {buttonText}
-          </Link>
-        </Button>
+        
+        {hubspotFormId ? (
+          <div className="bg-white p-6 rounded-lg max-w-md mx-auto">
+            <HubSpotForm formId={hubspotFormId} className="hubspot-form-cta" />
+          </div>
+        ) : (
+          <Button
+            asChild
+            size="lg"
+            className="bg-prometheus-orange hover:bg-prometheus-orange/90 text-white"
+          >
+            <Link to={buttonLink}>
+              {buttonText}
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );
