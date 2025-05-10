@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <!-- Main Pages -->
   <url>
     <loc>https://www.teamprometheus.io/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Prometheus Agency Logo</image:title>
+      <image:caption>Tame Your Tech. Unleash Growth.</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/who-we-help</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Prometheus Agency Logo</image:title>
+    </image:image>
   </url>
 
   <!-- B2B Pages -->
@@ -17,11 +27,21 @@
     <loc>https://www.teamprometheus.io/b2b</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>B2B Solutions</image:title>
+      <image:caption>Win More B2B Deals with Prometheus Agency</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/b2b/manufacturing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Manufacturing Solutions</image:title>
+      <image:caption>Manufacturing Technology Solutions</image:caption>
+    </image:image>
   </url>
 
   <!-- DTC Pages -->
@@ -29,11 +49,21 @@
     <loc>https://www.teamprometheus.io/dtc</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>DTC Solutions</image:title>
+      <image:caption>Direct-to-Consumer Marketing Solutions</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/dtc/restoration</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Restoration Industry Solutions</image:title>
+      <image:caption>Specialized Marketing for Restoration Companies</image:caption>
+    </image:image>
   </url>
 
   <!-- Services Pages -->
@@ -41,26 +71,51 @@
     <loc>https://www.teamprometheus.io/services</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Prometheus Agency Services</image:title>
+      <image:caption>Our Full Service Suite</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/services/ai-enablement</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>AI Enablement</image:title>
+      <image:caption>AI Integration and Implementation for Marketing</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/services/consulting-gtm</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>GTM Strategy</image:title>
+      <image:caption>Go-To-Market Strategy and Consulting</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/services/crm-implementation</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>CRM Implementation</image:title>
+      <image:caption>Custom CRM Implementation and Integration</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/services/customer-journey</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Customer Journey Optimization</image:title>
+      <image:caption>Improve Conversion with Customer Journey Analysis</image:caption>
+    </image:image>
   </url>
 
   <!-- Other Important Pages -->
@@ -68,15 +123,30 @@
     <loc>https://www.teamprometheus.io/blueprint</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Prometheus Blueprint</image:title>
+      <image:caption>Our Strategic Approach to Marketing Technology</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/contact-us</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Contact Prometheus Agency</image:title>
+      <image:caption>Get in Touch With Our Team</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://www.teamprometheus.io/book-audit</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dxufdcvoupjqvxnwnost.supabase.co/storage/v1/object/public/cms-assets/zga9nrq2m1.png</image:loc>
+      <image:title>Book a Growth Audit</image:title>
+      <image:caption>Schedule Your Free Growth Audit Today</image:caption>
+    </image:image>
   </url>
 </urlset>

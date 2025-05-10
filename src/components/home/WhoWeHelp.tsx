@@ -42,7 +42,7 @@ const WhoWeHelp = () => {
             </div>
           </div>
           <Link to="/b2b" className="inline-flex items-center text-prometheus-orange hover:text-prometheus-orange/80 font-medium">
-            Explore B2B Solutions <ChevronRight className="ml-1 h-4 w-4" />
+            Explore B2B Solutions <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
         
@@ -75,7 +75,7 @@ const WhoWeHelp = () => {
             </div>
           </div>
           <Link to="/dtc" className="inline-flex items-center text-prometheus-orange hover:text-prometheus-orange/80 font-medium">
-            Explore DTC Solutions <ChevronRight className="ml-1 h-4 w-4" />
+            Explore DTC Solutions <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
       </div>

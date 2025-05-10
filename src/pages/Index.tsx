@@ -9,6 +9,7 @@ import WhoWeHelp from '@/components/home/WhoWeHelp';
 import ProcessStrip from '@/components/home/ProcessStrip';
 import ClientReviews from '@/components/home/ClientReviews';
 import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
+import { organizationSchema } from '@/utils/schema';
 
 const Index = () => {
   // Add effect to help with prerender detection
@@ -46,7 +47,10 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>Prometheus Agency | Tame Your Tech. Unleash Growth. | CRM & Marketing Experts</title>
-        <meta name="description" content="Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies." />
+        <meta 
+          name="description" 
+          content="Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies. Our experts deliver measurable results with custom MarTech solutions." 
+        />
         <link rel="canonical" href="https://www.teamprometheus.io/" />
         
         {/* Enhanced Prerender verification meta tags */}
@@ -54,6 +58,11 @@ const Index = () => {
         <meta name="prerender-token" content="dKzffLw7ttkED8XRG9R1" />
         <meta name="fragment" content="!" />
         <meta name="prerender" content="prerender-verification-success" />
+        
+        {/* JSON-LD structured data */}
+        <script type="application/ld+json">
+          {JSON.stringify(organizationSchema)}
+        </script>
       </Helmet>
       <Navbar />
       <main className="flex-grow">
