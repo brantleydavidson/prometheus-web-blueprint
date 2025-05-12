@@ -2,6 +2,7 @@
 const express = require('express')
 const compression = require('compression')
 const sirv = require('sirv')
+const path = require('path')
 const { renderPage } = require('vike/server')
 const { root } = require('./root.cjs')
 
@@ -9,8 +10,34 @@ const { root } = require('./root.cjs')
 const app = express()
 app.use(compression())
 
+// Improved function to determine the client directory path
+const getClientDir = () => {
+  // In Vercel environment, we need to use the correct path
+  const clientDir = path.join(root, 'dist/client')
+  console.log('Client directory path:', clientDir)
+  // Check if the directory exists - this will help with debugging
+  try {
+    const fs = require('fs')
+    const exists = fs.existsSync(clientDir)
+    console.log(`Client directory exists: ${exists}`)
+    if (!exists) {
+      console.log('Available directories:', fs.readdirSync(root))
+    }
+  } catch (error) {
+    console.error('Error checking client directory:', error)
+  }
+  return clientDir
+}
+
+// Log environment information
+console.log('NODE_ENV:', process.env.NODE_ENV)
+console.log('VERCEL_ENV:', process.env.VERCEL_ENV)
+console.log('Root path:', root)
+console.log('Application starting up...')
+
 // Serve static assets with more conservative settings for Vercel
-const serve = sirv(`${root}/dist/client`, { 
+const clientDir = getClientDir()
+const serve = sirv(clientDir, { 
   dev: process.env.NODE_ENV !== 'production',
   maxAge: 31536000, // 1 year
   immutable: true,
