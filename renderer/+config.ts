@@ -10,10 +10,12 @@ export default {
   meta: {
     // Define defaults that apply to all pages
     title: {
-      default: 'Prometheus Agency | Tame Your Tech. Unleash Growth.'
+      default: 'Prometheus Agency | Tame Your Tech. Unleash Growth.',
+      env: 'server-and-client'
     },
     description: {
-      default: 'Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies.'
+      default: 'Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies.',
+      env: 'server-and-client'
     }
   }
 } satisfies Config
