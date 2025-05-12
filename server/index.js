@@ -9,14 +9,27 @@ const { root } = require('./root.cjs')
 const app = express()
 app.use(compression())
 
-// Serve static assets
-app.use(sirv(`${root}/dist/client`, { 
+// Serve static assets with more conservative settings for Vercel
+const serve = sirv(`${root}/dist/client`, { 
+  dev: process.env.NODE_ENV !== 'production',
   maxAge: 31536000, // 1 year
-  immutable: true 
-}))
+  immutable: true,
+  etag: true,
+  single: false
+})
+app.use(serve)
+
+// Enhanced error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Express middleware error:', err)
+  res.status(500).send('Server error occurred')
+})
 
 // Handle all routes with Vike
 app.get('*', async (req, res, next) => {
+  // Log incoming requests for debugging
+  console.log(`Request received: ${req.originalUrl}`)
+  
   const pageContextInit = {
     urlOriginal: req.originalUrl
   }
@@ -30,7 +43,10 @@ app.get('*', async (req, res, next) => {
     
     const { httpResponse } = pageContext
     
-    if (!httpResponse) return next()
+    if (!httpResponse) {
+      console.log(`No httpResponse for ${req.originalUrl}`)
+      return next()
+    }
     
     const { body, statusCode, headers } = httpResponse
     
@@ -38,10 +54,17 @@ app.get('*', async (req, res, next) => {
       res.setHeader(name, value)
     })
     
+    console.log(`Response for ${req.originalUrl}: status=${statusCode}`)
     res.status(statusCode).send(body)
   } catch (error) {
-    console.error('Server-side rendering error:', error)
-    res.status(500).send('Server error')
+    console.error(`Server-side rendering error for ${req.originalUrl}:`, error)
+    
+    // More detailed error response
+    if (process.env.NODE_ENV !== 'production') {
+      res.status(500).send(`Server error: ${error.message}\n${error.stack}`)
+    } else {
+      res.status(500).send('Server error')
+    }
   }
 })
 
