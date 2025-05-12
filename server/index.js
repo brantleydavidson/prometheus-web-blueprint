@@ -5,25 +5,23 @@ const sirv = require('sirv')
 const { renderPage } = require('vike/server')
 const { root } = require('./root.cjs')
 
-startServer()
+// Create the Express app
+const app = express()
+app.use(compression())
 
-async function startServer() {
-  const app = express()
-  
-  app.use(compression())
-  
-  // Serve assets with cache headers
-  app.use(sirv(`${root}/dist/client`, { 
-    maxAge: 31536000, // 1 year
-    immutable: true 
-  }))
+// Serve static assets
+app.use(sirv(`${root}/dist/client`, { 
+  maxAge: 31536000, // 1 year
+  immutable: true 
+}))
 
-  // Handle all routes with Vike
-  app.get('*', async (req, res, next) => {
-    const pageContextInit = {
-      urlOriginal: req.originalUrl
-    }
-    
+// Handle all routes with Vike
+app.get('*', async (req, res, next) => {
+  const pageContextInit = {
+    urlOriginal: req.originalUrl
+  }
+  
+  try {
     const pageContext = await renderPage(pageContextInit)
     
     if (pageContext.errorWhileRendering) {
@@ -41,9 +39,18 @@ async function startServer() {
     })
     
     res.status(statusCode).send(body)
-  })
-  
+  } catch (error) {
+    console.error('Server-side rendering error:', error)
+    res.status(500).send('Server error')
+  }
+})
+
+// For local development
+if (!process.env.VERCEL) {
   const port = process.env.PORT || 3000
   app.listen(port)
   console.log(`Server running at http://localhost:${port}`)
 }
+
+// For Vercel deployment - export the app
+module.exports = app
