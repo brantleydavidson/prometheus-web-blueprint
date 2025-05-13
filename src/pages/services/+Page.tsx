@@ -50,7 +50,7 @@ const services = [
   }
 ];
 
-const Services = () => {
+const ServicesPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -146,4 +146,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default ServicesPage;
