@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -11,7 +10,7 @@ import ClientReviews from '@/components/home/ClientReviews';
 import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
 import { organizationSchema } from '@/utils/schema';
 
-const Index = () => {
+const HomePage = () => {
   // Add effect to help with prerender detection
   useEffect(() => {
     // Signal to Prerender that the page is ready
@@ -95,4 +94,4 @@ declare global {
   }
 }
 
-export default Index;
+export default HomePage;
