@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -6,7 +5,7 @@ import Footer from '@/components/layout/Footer';
 import HubSpotForm from '@/components/forms/HubSpotForm';
 import { CheckCircle } from 'lucide-react';
 
-const BookAudit = () => {
+const BookAuditPage = () => {
   // Updated with production HubSpot values
   const HUBSPOT_AUDIT_FORM_ID = "8309ec82-bc28-4185-bade-8e73f33d2b08";
   const HUBSPOT_PORTAL_ID = "40043781";
@@ -107,4 +106,4 @@ const BookAudit = () => {
   );
 };
 
-export default BookAudit;
+export default BookAuditPage;
