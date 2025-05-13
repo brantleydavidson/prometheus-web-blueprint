@@ -2,6 +2,8 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { escapeInject, dangerouslySkipEscape } from 'vike/server'
 import type { PageContextServer } from 'vike/types'
+// Import the App component (which is now just providers)
+import App from '../src/App' 
 import { HelmetProvider } from 'react-helmet-async'
 
 // Define a type for the Page component expected in exports
@@ -10,27 +12,26 @@ type Page = React.ComponentType<any>;
 export { onRenderHtml }
 
 async function onRenderHtml(pageContext: PageContextServer) {
-  // Access Page and pageProps from pageContext.exports or default
-  const page = pageContext.exports.Page as Page | undefined;
-  const pageProps = pageContext.exports.pageProps ?? {}; // Look for pageProps in exports too
+  const page = pageContext.exports.Page as React.ComponentType<any> | undefined;
+  const pageProps = pageContext.exports.pageProps ?? {};
 
-  // Check if Page is defined
-  if (!page) throw new Error('My render() hook expects pageContext.exports.Page to be defined')
-  
+  if (!page) throw new Error('Server-side render: pageContext.exports.Page is missing')
+
   // For collecting Helmet data
   const helmetContext: any = {}
   
-  // Render the page to HTML
+  // We render the page to HTML, wrapped in the App providers
   const pageHtml = renderToString(
-    <HelmetProvider context={helmetContext}>
-      {React.createElement(page, pageProps)}
+    // HelmetProvider wraps App and receives context
+    <HelmetProvider context={helmetContext}> 
+      <App>
+        {React.createElement(page, pageProps)}
+      </App>
     </HelmetProvider>
   )
   
-  // Extract head tags from helmet
+  // Extract head tags from the context passed to HelmetProvider
   const { helmet } = helmetContext
-  
-  // Inject page title and meta tags from Helmet
   const title = helmet?.title?.toString() || '';
   const meta = helmet?.meta?.toString() || '';
   const link = helmet?.link?.toString() || '';

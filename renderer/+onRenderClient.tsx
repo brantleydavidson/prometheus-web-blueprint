@@ -1,7 +1,7 @@
-
 import React from 'react'
 import { hydrateRoot } from 'react-dom/client'
 import { PageContext } from './types'
+import App from '../src/App'
 import { HelmetProvider } from 'react-helmet-async'
 
 export { onRenderClient }
@@ -9,12 +9,14 @@ export { onRenderClient }
 async function onRenderClient(pageContext: PageContext) {
   const { Page, pageProps } = pageContext
   
-  if (!Page) throw new Error('Page component not found')
+  if (!Page) throw new Error('Client-side render: pageContext.Page is missing')
   
   hydrateRoot(
     document.getElementById('root')!,
     <HelmetProvider>
-      <Page {...pageProps} />
+      <App>
+        <Page {...pageProps} />
+      </App>
     </HelmetProvider>
   )
 }
