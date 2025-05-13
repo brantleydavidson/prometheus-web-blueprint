@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -11,37 +11,6 @@ import EnhancedCTABanner from '@/components/shared/EnhancedCTABanner';
 import { organizationSchema } from '@/utils/schema';
 
 const HomePage = () => {
-  // Add effect to help with prerender detection
-  useEffect(() => {
-    // Signal to Prerender that the page is ready
-    const prerenderReady = () => {
-      if (window.prerenderReady === undefined) {
-        window.prerenderReady = true;
-      }
-      
-      // Log for verification purposes
-      console.log('Prerender Ready state set:', window.prerenderReady);
-      
-      // Update the hidden status div
-      const statusDiv = document.getElementById('prerender-status');
-      if (statusDiv) {
-        statusDiv.textContent = 'Page Ready for Prerender';
-      }
-    };
-    
-    // Set a timeout to ensure content is fully loaded before marking ready
-    setTimeout(() => {
-      prerenderReady();
-    }, 1000);
-    
-    // Clean up
-    return () => {
-      if (window.prerenderReady !== undefined) {
-        window.prerenderReady = false;
-      }
-    };
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
@@ -51,12 +20,6 @@ const HomePage = () => {
           content="Prometheus Agency helps B2B and DTC businesses transform tech chaos into controlled growth through AI enablement, CRM integration, and revenue-focused marketing strategies. Our experts deliver measurable results with custom MarTech solutions." 
         />
         <link rel="canonical" href="https://www.teamprometheus.io/" />
-        
-        {/* Enhanced Prerender verification meta tags */}
-        <meta name="prerender-status-code" content="200" />
-        <meta name="prerender-token" content="dKzffLw7ttkED8XRG9R1" />
-        <meta name="fragment" content="!" />
-        <meta name="prerender" content="prerender-verification-success" />
         
         {/* JSON-LD structured data */}
         <script type="application/ld+json">
@@ -78,20 +41,8 @@ const HomePage = () => {
         />
       </main>
       <Footer />
-      
-      {/* Added visible marker for Prerender verification */}
-      <div id="prerender-marker" data-testid="prerender-verification" style={{position: 'absolute', bottom: 0, right: 0, opacity: 0.1}}>
-        Prerender Verification: dKzffLw7ttkED8XRG9R1
-      </div>
     </div>
   );
 };
-
-// Add typescript declaration for window.prerenderReady
-declare global {
-  interface Window {
-    prerenderReady?: boolean;
-  }
-}
 
 export default HomePage;
