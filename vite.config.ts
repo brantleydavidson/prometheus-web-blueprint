@@ -1,7 +1,6 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import path from "path";
+// import path from "path"; // No longer needed for alias
 import { componentTagger } from "lovable-tagger";
 import vike from 'vike/plugin';
 
@@ -17,9 +16,12 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  // Remove the resolve.alias section for testing
+  /*
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  */
 }));
